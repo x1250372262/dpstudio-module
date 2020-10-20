@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+
+    <!--菜单配置
+            name:标识
+            icon:图标
+            value:页面显示文字
+            id:每个不同,用于区分上下级关系
+            url:跳转的路径
+            pid:上一级id
+            permissions:权限 为空则没有权限
+     -->
+
+    <!-- 配置所有的一级导航 -->
+    <category name="default">
+        <property name="home" icon="mdi-home" value="首页" id="1" url="/admin/home.html" pid="0" permissions="aaa"/>
+        <property name="ui" icon="mdi-palette" value="测试页面" id="2" url="" pid="0" permissions="bbb"/>
+    </category>
+
+    <!-- 配置二级导航 -->
+    <category name="ui">
+        <property name="ui_a" icon="" value="测试页面" id="3" url="/admin/home1.html" pid="2" permissions="ccc"/>
+        <property name="ui_b" icon="" value="测试页面1" id="4" url="/admin/home2.html" pid="2"  permissions="ddd,fff"/>
+        <property name="ui_c" icon="" value="测试页面2" id="5" url="http://www.baidu.com" pid="2" permissions="eee"/>
+    </category>
+</properties>
