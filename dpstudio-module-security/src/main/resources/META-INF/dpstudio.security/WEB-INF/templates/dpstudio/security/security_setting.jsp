@@ -12,12 +12,8 @@
         <ymp:property name="pageTitle">
             安全设置
         </ymp:property>
-        <ymp:property name="security">
-            active open
-        </ymp:property>
-        <ymp:property name="security_security_setting">
-            class="active active1"
-        </ymp:property>
+        <ymp:property name="topSelect">security</ymp:property>
+        <ymp:property name="twoSelect">security_setting</ymp:property>
     </ymp:layout>
     <ymp:layout>
         <!--页面主要内容-->

@@ -23,7 +23,6 @@ import net.ymate.platform.persistence.IResultSet;
 import net.ymate.platform.persistence.Params;
 import net.ymate.platform.persistence.jdbc.annotation.Transaction;
 import net.ymate.platform.webmvc.context.WebContext;
-import net.ymate.platform.webmvc.util.WebResult;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
@@ -54,7 +53,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
                 SecurityAdmin.FIELDS.USER_NAME, SecurityAdmin.FIELDS.SALT,
                 SecurityAdmin.FIELDS.REAL_NAME, SecurityAdmin.FIELDS.LOGIN_ERROR_COUNT,
                 SecurityAdmin.FIELDS.FOUNDER, SecurityAdmin.FIELDS.DISABLE_STATUS,
-                SecurityAdmin.FIELDS.LOGIN_LOCK_END_TIME);
+                SecurityAdmin.FIELDS.LOGIN_LOCK_END_TIME, SecurityAdmin.FIELDS.SESSION_TOKEN);
         if (securityAdmin == null) {
             return R.create(Code.SECURITY_ADMIN_USERNAME_NOT_EXIST.getCode()).msg(Code.SECURITY_ADMIN_USERNAME_NOT_EXIST.getMsg());
         }
@@ -100,11 +99,20 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
             return R.create(Code.SECURITY_ADMIN_DISABLED.getCode()).msg(Code.SECURITY_ADMIN_DISABLED.getMsg());
         }
         //禁止多端登录并且类型是禁止登录
-        boolean loginClientBool = Objects.equals(securitySettingDetailVO.getLoginClientStatus(), SecurityConstants.BOOL_TRUE)
-                && Objects.equals(securitySettingDetailVO.getLoginClientType(), SecurityConstants.BOOL_FALSE);
-        if (loginClientBool) {
-            return R.create(Code.SECURITY_ADMIN_OUT.getCode()).msg(Code.SECURITY_ADMIN_OUT.getMsg());
-        }
+//        boolean loginClientBool = Objects.equals(securitySettingDetailVO.getLoginClientStatus(), SecurityConstants.BOOL_TRUE)
+//                && Objects.equals(securitySettingDetailVO.getLoginClientType(), SecurityConstants.BOOL_FALSE);
+//        if (loginClientBool) {
+//            System.out.println("aaaaa");
+//            UserSessionBean oldSession = UserSessionBean.current();
+//            System.out.println(securityAdmin.getSessionToken());
+//            if (oldSession != null
+//                    && StringUtils.isNotBlank(securityAdmin.getSessionToken()) && !securityAdmin.getSessionToken().equals(oldSession.getId())) {
+//                System.out.println(oldSession.getId());
+//                System.out.println("bbbb");
+//                return R.create(Code.SECURITY_ADMIN_OUT.getCode()).msg(Code.SECURITY_ADMIN_OUT.getMsg());
+//            }
+//
+//        }
         securityAdmin.setLoginErrorCount(0);
         securityAdmin.setLoginLockStatus(SecurityConstants.BOOL_FALSE);
         securityAdmin.setLoginLockStartTime(0L);
@@ -126,7 +134,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
             iSecurityAdminLogService.create(securityAdmin.getId(), StringUtils.defaultIfBlank(securityAdmin.getRealName(), securityAdmin.getUserName()));
         }
         List<MenuBean> menuBeanList = Security.get().permissionMenu();
-        return R.ok().attr("menu_list",menuBeanList);
+        return R.ok().attr("menu_list", menuBeanList);
     }
 
     @Override

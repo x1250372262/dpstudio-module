@@ -10,12 +10,8 @@
         <ymp:property name="pageTitle">
             日志管理
         </ymp:property>
-        <ymp:property name="security">
-            active open
-        </ymp:property>
-        <ymp:property name="security_log">
-            class="active active1"
-        </ymp:property>
+        <ymp:property name="topSelect">security</ymp:property>
+        <ymp:property name="twoSelect">security_log</ymp:property>
     </ymp:layout>
     <ymp:layout>
         <!--页面主要内容-->

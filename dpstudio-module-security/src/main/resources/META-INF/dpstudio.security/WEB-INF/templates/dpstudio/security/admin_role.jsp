@@ -10,12 +10,8 @@
         <ymp:property name="pageTitle">
             角色列表
         </ymp:property>
-        <ymp:property name="security">
-            active open
-        </ymp:property>
-        <ymp:property name="security_admin">
-            class="active active1"
-        </ymp:property>
+        <ymp:property name="topSelect">security</ymp:property>
+        <ymp:property name="twoSelect">security_admin</ymp:property>
     </ymp:layout>
     <ymp:layout>
         <!--页面主要内容-->
