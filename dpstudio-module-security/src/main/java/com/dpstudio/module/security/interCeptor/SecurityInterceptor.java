@@ -1,6 +1,7 @@
 package com.dpstudio.module.security.interCeptor;
 
 import net.ymate.platform.core.beans.annotation.Before;
+import net.ymate.platform.core.beans.annotation.Clean;
 import net.ymate.platform.webmvc.IInterceptorRule;
 import net.ymate.platform.webmvc.annotation.InterceptorRule;
 
@@ -16,4 +17,5 @@ public class SecurityInterceptor implements IInterceptorRule {
     @InterceptorRule("/dpstudio/security/*")
     public void adminAll() {
     }
+
 }

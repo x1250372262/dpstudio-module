@@ -3,11 +3,11 @@ package com.dpstudio.module.security.dao.impl;
 import com.dpstudio.module.security.core.SecurityConstants;
 import com.dpstudio.module.security.dao.ISecurityAdminDao;
 import com.dpstudio.module.security.model.SecurityAdmin;
-import com.dpstudio.module.security.vo.SecurityAdminListVO;
+import com.dpstudio.module.security.vo.list.SecurityAdminListVO;
 import net.ymate.platform.core.beans.annotation.Bean;
-import net.ymate.platform.persistence.Fields;
-import net.ymate.platform.persistence.IResultSet;
-import net.ymate.platform.persistence.Page;
+import net.ymate.platform.core.persistence.Fields;
+import net.ymate.platform.core.persistence.IResultSet;
+import net.ymate.platform.core.persistence.Page;
 import net.ymate.platform.persistence.jdbc.JDBC;
 import net.ymate.platform.persistence.jdbc.base.impl.BeanResultSetHandler;
 import net.ymate.platform.persistence.jdbc.query.Cond;
@@ -34,14 +34,14 @@ public class SecurityAdminDaoImpl implements ISecurityAdminDao {
     }
 
     @Override
-    public IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, int page, int pageSize) throws Exception {
-        Cond cond = Cond.create().eq("sa", SecurityAdmin.FIELDS.FOUNDER).param(SecurityConstants.BOOL_FALSE)
-                .and().eq("sa", SecurityAdmin.FIELDS.DELETE_STATUS).param(SecurityConstants.BOOL_FALSE);
-        cond.exprNotEmpty(userName, Cond.create().and().like("sa", SecurityAdmin.FIELDS.USER_NAME).param("%" + userName + "%"));
-        cond.exprNotEmpty(realName, Cond.create().and().like("sa", SecurityAdmin.FIELDS.REAL_NAME).param("%" + realName + "%"));
-        cond.exprNotEmpty(disableStatus, Cond.create().and().eq("sa", SecurityAdmin.FIELDS.DISABLE_STATUS).param(disableStatus));
+    public IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, Integer page, Integer pageSize) throws Exception {
+        Cond cond = Cond.create().eq(Fields.field("sa", SecurityAdmin.FIELDS.FOUNDER)).param(SecurityConstants.BOOL_FALSE)
+                .and().eq(Fields.field("sa", SecurityAdmin.FIELDS.DELETE_STATUS)).param(SecurityConstants.BOOL_FALSE)
+                .exprNotEmpty(userName, c -> c.and().like(Fields.field("sa", SecurityAdmin.FIELDS.USER_NAME)).param("%" + userName + "%"))
+                .exprNotEmpty(realName, c -> c.and().like(Fields.field("sa", SecurityAdmin.FIELDS.REAL_NAME)).param("%" + realName + "%"))
+                .exprNotEmpty(disableStatus, c -> c.and().eq(Fields.field("sa", SecurityAdmin.FIELDS.DISABLE_STATUS)).param(disableStatus));
         return JDBC.get().openSession(session -> {
-            String prefix = session.getConnectionHolder().getDataSourceCfgMeta().getTablePrefix();
+            String prefix = session.getConnectionHolder().getDataSourceConfig().getTablePrefix();
 
             Select select = Select.create(prefix, SecurityAdmin.TABLE_NAME, "sa")
                     .field("sa", SecurityAdmin.FIELDS.ID)
@@ -51,13 +51,9 @@ public class SecurityAdminDaoImpl implements ISecurityAdminDao {
                     .field("sa", SecurityAdmin.FIELDS.USER_NAME)
                     .field("sa", SecurityAdmin.FIELDS.REAL_NAME)
                     .field("sa", SecurityAdmin.FIELDS.PHOTO_URI)
-                    .where(Where.create(cond).orderDesc("sa", SecurityAdmin.FIELDS.CREATE_TIME));
-            if (page > 0 && pageSize > 0) {
-                return session.find(SQL.create(select),
-                        new BeanResultSetHandler<>(SecurityAdminListVO.class), Page.create(page).pageSize(pageSize));
-            }
+                    .where(Where.create(cond).orderByDesc("sa", SecurityAdmin.FIELDS.CREATE_TIME));
             return session.find(SQL.create(select),
-                    new BeanResultSetHandler<>(SecurityAdminListVO.class));
+                    new BeanResultSetHandler<>(SecurityAdminListVO.class), Page.createIfNeed(page, pageSize));
         });
 
     }

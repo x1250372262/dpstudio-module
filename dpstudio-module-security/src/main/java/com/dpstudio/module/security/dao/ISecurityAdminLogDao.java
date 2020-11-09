@@ -1,16 +1,10 @@
 package com.dpstudio.module.security.dao;
 
 import com.dpstudio.module.security.model.SecurityAdminLog;
-import net.ymate.platform.persistence.IResultSet;
+import net.ymate.platform.core.persistence.IResultSet;
 
 import java.util.List;
 
-/**
- * @Author: 刘玉奇.
- * @Date: 2020/10/16.
- * @Time: 22:01.
- * @Description:
- */
 public interface ISecurityAdminLogDao {
 
 
@@ -26,7 +20,7 @@ public interface ISecurityAdminLogDao {
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityAdminLog> findAll(String adminId, String content, Long startTime, Long endTime, int page, int pageSize) throws Exception;
+    IResultSet<SecurityAdminLog> findAll(String adminId, String content, Long startTime, Long endTime, Integer page, Integer pageSize) throws Exception;
 
     /**
      * 添加日志

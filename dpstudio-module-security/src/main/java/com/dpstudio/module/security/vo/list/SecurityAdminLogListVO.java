@@ -1,14 +1,8 @@
-package com.dpstudio.module.security.vo;
+package com.dpstudio.module.security.vo.list;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.dpstudio.module.security.model.SecurityAdminLog;
 
-/**
- * @Author: 刘玉奇.
- * @Date: 2020/10/16.
- * @Time: 22:09.
- * @Description:
- */
 public class SecurityAdminLogListVO {
 
     private String id;

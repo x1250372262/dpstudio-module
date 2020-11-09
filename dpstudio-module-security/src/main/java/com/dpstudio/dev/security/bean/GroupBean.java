@@ -1,7 +1,7 @@
 package com.dpstudio.dev.security.bean;
 
 /**
- * @Author: 徐建鹏.
+ * @Author: mengxiang.
  * @Date: 2019-01-16.
  * @Time: 11:48.
  * @Description:
@@ -30,7 +30,7 @@ public class GroupBean {
         this.id = id;
     }
 
-    public GroupBean(String name, String id,String level) {
+    public GroupBean(String name, String id, String level) {
         this.name = name;
         this.id = id;
         this.level = level;

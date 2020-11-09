@@ -1,13 +1,13 @@
 package com.dpstudio.dev.security.init;
 
 import com.dpstudio.dev.security.ISecurity;
-import com.dpstudio.dev.security.ISecurityModuleCfg;
+import com.dpstudio.dev.security.ISecurityConfig;
 import com.dpstudio.dev.security.annotation.Group;
 import com.dpstudio.dev.security.annotation.Permission;
 import com.dpstudio.dev.security.annotation.Security;
 import com.dpstudio.dev.security.bean.GroupBean;
 import com.dpstudio.dev.security.bean.PermissionBean;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.reflections.Reflections;
@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * @Author: 徐建鹏.
+ * @Author: mengxiang.
  * @Date: 2019-01-17.
  * @Time: 08:24.
  * @Description:
@@ -28,9 +28,14 @@ public class PermissionMeta {
 
     private static final Log LOG = LogFactory.getLog(PermissionMeta.class);
 
-    //权限组
+    /**
+     * 权限组
+     */
     private static final Map<String, List<GroupBean>> GROUP_CACHES;
-    //权限
+
+    /**
+     * 权限
+     */
     private static final Map<String, List<PermissionBean>> PERMISSIONS_CACHES;
 
     static {
@@ -44,8 +49,8 @@ public class PermissionMeta {
     /**
      * 创建权限列表
      */
-    public static void init(ISecurityModuleCfg moduleCfg) {
-        create(moduleCfg);
+    public static void init(ISecurityConfig securityConfig) {
+        create(securityConfig);
         LOG.info("权限列表收集成功");
     }
 
@@ -65,10 +70,11 @@ public class PermissionMeta {
     public static List<PermissionBean> getPermissions(String groupId) {
         if (StringUtils.isNotBlank(groupId)) {
             return PERMISSIONS_CACHES.get(ISecurity.CacheKey.PERMISSIONS_CACHE_KEY.name())
-                    .stream().filter(permissionBean -> groupId.equals(permissionBean.getGroupId())).collect(Collectors.toList());
+                    .stream().filter(groupBean -> groupId.equals(groupBean.getGroupId())).collect(Collectors.toList());
         }
         return PERMISSIONS_CACHES.get(ISecurity.CacheKey.PERMISSIONS_CACHE_KEY.name());
     }
+
 
     /**
      * 根据code获取权限
@@ -110,43 +116,41 @@ public class PermissionMeta {
      *
      * @return
      */
-    private static void create(ISecurityModuleCfg moduleCfg) {
-        if (moduleCfg.enabled()) {
-            String packageName = moduleCfg.getPackageName();
+    private static void create(ISecurityConfig securityConfig) {
+        String packageName = securityConfig.packageName();
 
-            Reflections reflections = new Reflections(packageName);
-            Set<Class<?>> classesList = reflections.getTypesAnnotatedWith(Security.class);
-            List<PermissionBean> permissionBeans = new ArrayList<>();
-            List<GroupBean> groupBeans = new ArrayList<>();
-            for (Class<?> classes : classesList) {
-                //得到该类下面的所有方法
-                Method[] methods = classes.getDeclaredMethods();
-                for (Method method : methods) {
-                    //得到该类下面的Group注解
-                    Group group = method.getAnnotation(Group.class);
-                    if (null == group) {
-                        continue;
+        Reflections reflections = new Reflections(packageName);
+        Set<Class<?>> classesList = reflections.getTypesAnnotatedWith(Security.class);
+        List<PermissionBean> permissionBeans = new ArrayList<>();
+        List<GroupBean> groupBeans = new ArrayList<>();
+        for (Class<?> classes : classesList) {
+            //得到该类下面的所有方法
+            Method[] methods = classes.getDeclaredMethods();
+            for (Method method : methods) {
+                //得到该类下面的Group注解
+                Group group = method.getAnnotation(Group.class);
+                if (null == group) {
+                    continue;
+                }
+                Permission[] permissions = group.permissions();
+                if (permissions.length <= 0) {
+                    continue;
+                }
+                for (Permission permission : permissions) {
+                    //添加权限列表
+                    Optional<PermissionBean> permissionBean = permissionBeans.stream().filter(p -> p.getCode().equals(permission.code())).findFirst();
+                    if (!permissionBean.isPresent()) {
+                        permissionBeans.add(new PermissionBean(permission.name(), permission.code(), permission.groupId(), permission.groupName(),group.level()));
                     }
-                    Permission[] permissions = group.permissions();
-                    if (permissions.length <= 0) {
-                        continue;
-                    }
-                    for (Permission permission : permissions) {
-                        //添加权限列表
-                        Optional<PermissionBean> permissionBean = permissionBeans.stream().filter(p -> p.getCode().equals(permission.code())).findFirst();
-                        if (!permissionBean.isPresent()) {
-                            permissionBeans.add(new PermissionBean(permission.name(), permission.code(), permission.groupId(), permission.groupName(),group.level()));
-                        }
-                        //添加组列表
-                        Optional<GroupBean> groupBean = groupBeans.stream().filter(gb -> gb.getId().equals(permission.groupId())).findFirst();
-                        if (!groupBean.isPresent()) {
-                            groupBeans.add(new GroupBean(permission.groupName(), permission.groupId(),group.level()));
-                        }
+                    //添加组列表
+                    Optional<GroupBean> groupBean = groupBeans.stream().filter(gb -> gb.getName().equals(permission.groupId())).findFirst();
+                    if (!groupBean.isPresent()) {
+                        groupBeans.add(new GroupBean(permission.groupName(), permission.groupId(),group.level()));
                     }
                 }
             }
-            GROUP_CACHES.put(ISecurity.CacheKey.GROUP_CACHE_KEY.name(), groupBeans);
-            PERMISSIONS_CACHES.put(ISecurity.CacheKey.PERMISSIONS_CACHE_KEY.name(), permissionBeans);
         }
+        GROUP_CACHES.put(ISecurity.CacheKey.GROUP_CACHE_KEY.name(), groupBeans);
+        PERMISSIONS_CACHES.put(ISecurity.CacheKey.PERMISSIONS_CACHE_KEY.name(), permissionBeans);
     }
 }

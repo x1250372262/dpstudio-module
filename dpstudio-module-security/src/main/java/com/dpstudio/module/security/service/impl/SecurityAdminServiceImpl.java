@@ -1,11 +1,12 @@
 package com.dpstudio.module.security.service.impl;
 
 import com.dpstudio.dev.core.R;
+import com.dpstudio.dev.core.UserSession;
+import com.dpstudio.dev.core.method.M;
 import com.dpstudio.dev.security.Security;
 import com.dpstudio.dev.security.bean.MenuBean;
 import com.dpstudio.dev.utils.BeanUtils;
 import com.dpstudio.module.security.core.Code;
-import com.dpstudio.module.security.core.CommonMethod;
 import com.dpstudio.module.security.core.SecurityConstants;
 import com.dpstudio.module.security.dao.ISecurityAdminDao;
 import com.dpstudio.module.security.dao.ISecurityAdminRoleDao;
@@ -13,19 +14,22 @@ import com.dpstudio.module.security.model.SecurityAdmin;
 import com.dpstudio.module.security.service.ISecurityAdminLogService;
 import com.dpstudio.module.security.service.ISecurityAdminService;
 import com.dpstudio.module.security.service.ISecuritySettingService;
-import com.dpstudio.module.security.vo.*;
-import net.ymate.framework.webmvc.support.UserSessionBean;
+import com.dpstudio.module.security.vo.detail.SecurityAdminDetailVO;
+import com.dpstudio.module.security.vo.detail.SecuritySettingDetailVO;
+import com.dpstudio.module.security.vo.list.SecurityAdminListVO;
+import com.dpstudio.module.security.vo.list.SecurityAdminRoleListVO;
+import com.dpstudio.module.security.vo.op.SecurityAdminVO;
+import net.ymate.platform.commons.util.DateTimeUtils;
+import net.ymate.platform.commons.util.UUIDUtils;
 import net.ymate.platform.core.beans.annotation.Bean;
 import net.ymate.platform.core.beans.annotation.Inject;
-import net.ymate.platform.core.util.DateTimeUtils;
-import net.ymate.platform.core.util.UUIDUtils;
-import net.ymate.platform.persistence.IResultSet;
-import net.ymate.platform.persistence.Params;
-import net.ymate.platform.persistence.jdbc.annotation.Transaction;
+import net.ymate.platform.core.persistence.IResultSet;
+import net.ymate.platform.core.persistence.Params;
+import net.ymate.platform.core.persistence.annotation.Transaction;
 import net.ymate.platform.webmvc.context.WebContext;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -117,7 +121,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         securityAdmin.setLoginLockStatus(SecurityConstants.BOOL_FALSE);
         securityAdmin.setLoginLockStartTime(0L);
         securityAdmin.setLoginLockEndTime(0L);
-        UserSessionBean userSessionBean = UserSessionBean
+        UserSession userSessionBean = UserSession
                 .create(WebContext.getRequest().getSession().getId()).reset()
                 .setUid(securityAdmin.getId())
                 .addAttribute("founder", securityAdmin.getFounder())
@@ -142,7 +146,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         if (!newPwd.equals(reNewPwd)) {
             return R.create(Code.SECURITY_ADMIN_PASSWORD_NO_SAME.getCode()).msg(Code.SECURITY_ADMIN_PASSWORD_NO_SAME.getMsg());
         }
-        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(UserSessionBean.current().getUid(), SecurityAdmin.FIELDS.USER_NAME, SecurityAdmin.FIELDS.PASSWORD, SecurityAdmin.FIELDS.ID, SecurityAdmin.FIELDS.SALT);
+        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(UserSession.current().getUid(), SecurityAdmin.FIELDS.USER_NAME, SecurityAdmin.FIELDS.PASSWORD, SecurityAdmin.FIELDS.ID, SecurityAdmin.FIELDS.SALT);
         if (securityAdmin == null) {
             return R.create(Code.SECURITY_ADMIN_NOT_EXIST.getCode()).msg(Code.SECURITY_ADMIN_NOT_EXIST.getMsg());
         }
@@ -154,7 +158,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         pwd = DigestUtils.md5Hex(Base64.encodeBase64((newPwd + salt).getBytes(SecurityConstants.CHARTSET)));
         securityAdmin.setPassword(pwd);
         securityAdmin.setLastModifyTime(DateTimeUtils.currentTimeMillis());
-        securityAdmin.setLastModifyUser(CommonMethod.userId());
+        securityAdmin.setLastModifyUser(M.userId());
         securityAdmin = iSecurityAdminDao.update(securityAdmin, SecurityAdmin.FIELDS.PASSWORD, SecurityAdmin.FIELDS.LAST_MODIFY_TIME, SecurityAdmin.FIELDS.LAST_MODIFY_USER);
         WebContext.getRequest().getSession().invalidate();
         return R.result(securityAdmin);
@@ -169,16 +173,16 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
     }
 
     @Override
-    public R updateInfo(SecurityAdminOPVO securityAdminOPVO) throws Exception {
-        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(UserSessionBean.current().getUid());
+    public R updateInfo(SecurityAdminVO securityAdminVO) throws Exception {
+        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(UserSession.current().getUid());
         if (securityAdmin == null) {
             return R.create(Code.SECURITY_ADMIN_NOT_EXIST.getCode())
                     .msg(Code.SECURITY_ADMIN_NOT_EXIST.getMsg());
         }
-        securityAdmin.setRealName(StringUtils.defaultIfBlank(securityAdminOPVO.getRealName(), ""));
-        securityAdmin.setPhotoUri(StringUtils.defaultIfBlank(securityAdminOPVO.getThumb(), ""));
-        securityAdmin.setMobile(StringUtils.defaultIfBlank(securityAdminOPVO.getMobile(), ""));
-        securityAdmin.setGender(securityAdminOPVO.getGender());
+        securityAdmin.setRealName(StringUtils.defaultIfBlank(securityAdminVO.getRealName(), ""));
+        securityAdmin.setPhotoUri(StringUtils.defaultIfBlank(securityAdminVO.getThumb(), ""));
+        securityAdmin.setMobile(StringUtils.defaultIfBlank(securityAdminVO.getMobile(), ""));
+        securityAdmin.setGender(securityAdminVO.getGender());
         securityAdmin = iSecurityAdminDao.update(securityAdmin, SecurityAdmin.FIELDS.REAL_NAME, SecurityAdmin.FIELDS.PHOTO_URI, SecurityAdmin.FIELDS.MOBILE, SecurityAdmin.FIELDS.GENDER);
         Map<String, Object> jdbcSession = WebContext.getContext().getSession();
         jdbcSession.put("userName", StringUtils.defaultIfBlank(securityAdmin.getRealName(), securityAdmin.getUserName()));
@@ -187,7 +191,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
     }
 
     @Override
-    public IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, int page, int pageSize) throws Exception {
+    public IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, Integer page, Integer pageSize) throws Exception {
         IResultSet<SecurityAdminListVO> list = iSecurityAdminDao.list(userName, realName, disableStatus, page, pageSize);
         Params adminIds = Params.create();
         for (SecurityAdminListVO securityAdminListVO : list.getResultData()) {
@@ -211,22 +215,22 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
     }
 
     @Override
-    public R create(SecurityAdminOPVO securityAdminOPVO, String password) throws Exception {
-        SecurityAdmin securityAdmin = iSecurityAdminDao.findByUserName(securityAdminOPVO.getUserName());
+    public R create(SecurityAdminVO securityAdminVO, String password) throws Exception {
+        SecurityAdmin securityAdmin = iSecurityAdminDao.findByUserName(securityAdminVO.getUserName());
         if (securityAdmin != null) {
             return R.create(Code.SECURITY_ADMIN_EXIST.getCode()).msg(Code.SECURITY_ADMIN_EXIST.getMsg());
         }
         String salt = UUIDUtils.randomStr(6, false);
         password = DigestUtils.md5Hex(Base64.encodeBase64((password + salt).getBytes(SecurityConstants.CHARTSET)));
         String finalPassword = password;
-        securityAdmin = BeanUtils.copy(securityAdminOPVO, SecurityAdmin::new, (securityAdminOPVOCopy, securityAdminCopy) -> {
-            securityAdminCopy.setId(UUIDUtils.UUID());
-            securityAdminCopy.setSalt(salt);
-            securityAdminCopy.setPassword(finalPassword);
-            securityAdminCopy.setCreateTime(DateTimeUtils.currentTimeMillis());
-            securityAdminCopy.setCreateUser(CommonMethod.userId());
-            securityAdminCopy.setLastModifyTime(DateTimeUtils.currentTimeMillis());
-            securityAdminCopy.setLastModifyUser(CommonMethod.userId());
+        securityAdmin = BeanUtils.copy(securityAdminVO, SecurityAdmin::new, (s, t) -> {
+            t.setId(UUIDUtils.UUID());
+            t.setSalt(salt);
+            t.setPassword(finalPassword);
+            t.setCreateTime(DateTimeUtils.currentTimeMillis());
+            t.setCreateUser(M.userId());
+            t.setLastModifyTime(DateTimeUtils.currentTimeMillis());
+            t.setLastModifyUser(M.userId());
         });
         securityAdmin = iSecurityAdminDao.create(securityAdmin);
         return R.result(securityAdmin);

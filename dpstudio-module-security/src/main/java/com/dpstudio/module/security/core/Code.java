@@ -22,8 +22,8 @@ public enum Code {
     SECURITY_ADMIN_OUT(65009, "该帐号已在别处登录"),
 
     SECURITY_SYSTEM_ROLE_NAME_EXIST(65100, "角色名称已存在"),
-    SECURITY_SYSTEM_ADMIN_ROLE_EXIST(65101, "管理员角色已存在");
-
+    SECURITY_SYSTEM_ADMIN_ROLE_EXIST(65101, "管理员角色已存在"),
+    SECURITY_ADMIN_INVALID_OR_TIMEOUT(65102, "用户未授权登录或会话已过期，请重新登录");
 
 
     /**

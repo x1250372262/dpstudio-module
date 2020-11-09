@@ -1,10 +1,10 @@
 package com.dpstudio.module.security.service;
 
 import com.dpstudio.dev.core.R;
-import com.dpstudio.module.security.vo.SecurityAdminDetailVO;
-import com.dpstudio.module.security.vo.SecurityAdminListVO;
-import com.dpstudio.module.security.vo.SecurityAdminOPVO;
-import net.ymate.platform.persistence.IResultSet;
+import com.dpstudio.module.security.vo.detail.SecurityAdminDetailVO;
+import com.dpstudio.module.security.vo.list.SecurityAdminListVO;
+import com.dpstudio.module.security.vo.op.SecurityAdminVO;
+import net.ymate.platform.core.persistence.IResultSet;
 
 public interface ISecurityAdminService {
 
@@ -40,11 +40,11 @@ public interface ISecurityAdminService {
     /**
      * 更新用户
      *
-     * @param securityAdminOPVO
+     * @param securityAdminVO
      * @return
      * @throws Exception
      */
-    R updateInfo(SecurityAdminOPVO securityAdminOPVO) throws Exception;
+    R updateInfo(SecurityAdminVO securityAdminVO) throws Exception;
 
     /**
      * 管理员列表
@@ -55,16 +55,16 @@ public interface ISecurityAdminService {
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, int page, int pageSize) throws Exception;
+    IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, Integer page, Integer pageSize) throws Exception;
 
     /**
      * 添加管理员
      *
-     * @param securityAdminOPVO
+     * @param securityAdminVO
      * @return
      * @throws Exception
      */
-    R create(SecurityAdminOPVO securityAdminOPVO,String password) throws Exception;
+    R create(SecurityAdminVO securityAdminVO, String password) throws Exception;
 
     /**
      * 删除/禁用管理员

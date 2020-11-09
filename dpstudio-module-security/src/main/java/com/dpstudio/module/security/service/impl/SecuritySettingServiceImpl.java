@@ -2,23 +2,17 @@ package com.dpstudio.module.security.service.impl;
 
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.core.code.C;
+import com.dpstudio.dev.core.method.M;
 import com.dpstudio.dev.utils.BeanUtils;
-import com.dpstudio.module.security.core.CommonMethod;
-import com.dpstudio.module.security.model.SecuritySetting;
 import com.dpstudio.module.security.dao.ISecuritySettingDao;
+import com.dpstudio.module.security.model.SecuritySetting;
 import com.dpstudio.module.security.service.ISecuritySettingService;
-import com.dpstudio.module.security.vo.SecuritySettingDetailVO;
-import com.dpstudio.module.security.vo.SecuritySettingOPVO;
+import com.dpstudio.module.security.vo.detail.SecuritySettingDetailVO;
+import com.dpstudio.module.security.vo.op.SecuritySettingVO;
+import net.ymate.platform.commons.util.DateTimeUtils;
 import net.ymate.platform.core.beans.annotation.Bean;
 import net.ymate.platform.core.beans.annotation.Inject;
-import net.ymate.platform.core.util.DateTimeUtils;
 
-/**
- * @Author: 刘玉奇.
- * @Date: 2020/10/17.
- * @Time: 9:39.
- * @Description:
- */
 @Bean
 public class SecuritySettingServiceImpl implements ISecuritySettingService {
 
@@ -26,7 +20,7 @@ public class SecuritySettingServiceImpl implements ISecuritySettingService {
     private ISecuritySettingDao iSecuritySettingDao;
 
     @Override
-    public R update(String id, Long lastModifyTime, SecuritySettingOPVO securitySettingOPVO) throws Exception {
+    public R update(String id, Long lastModifyTime, SecuritySettingVO securitySettingVO) throws Exception {
         SecuritySetting securitySetting = iSecuritySettingDao.findById(id);
         if (securitySetting == null) {
             return R.create(C.NO_DATA.getCode()).msg(C.NO_DATA.getMsg());
@@ -34,10 +28,9 @@ public class SecuritySettingServiceImpl implements ISecuritySettingService {
         if (!R.checkVersion(lastModifyTime, securitySetting.getLastModifyTime())) {
             return R.create(C.VERSION_NOT_SAME.getCode()).msg(C.VERSION_NOT_SAME.getMsg());
         }
-        securitySetting = BeanUtils.copy(securitySettingOPVO, SecuritySetting::new, (securitySettingOPVOCopy, securitySettingCopy) -> {
-            securitySettingCopy.setId(id);
-            securitySettingCopy.setLastModifyTime(DateTimeUtils.currentTimeMillis());
-            securitySettingCopy.setLastModifyUser(CommonMethod.userId());
+        securitySetting = BeanUtils.duplicate(securitySettingVO, securitySetting, (s, t) -> {
+            t.setLastModifyTime(DateTimeUtils.currentTimeMillis());
+            t.setLastModifyUser(M.userId());
         });
         securitySetting = iSecuritySettingDao.update(securitySetting, SecuritySetting.FIELDS.LOGIN_LOG_STATUS,
                 SecuritySetting.FIELDS.LOGIN_ERROR_COUNT, SecuritySetting.FIELDS.LOGIN_ERROR_TIME,

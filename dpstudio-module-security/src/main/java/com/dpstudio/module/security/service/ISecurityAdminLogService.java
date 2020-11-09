@@ -1,15 +1,9 @@
 package com.dpstudio.module.security.service;
 
 import com.dpstudio.dev.core.R;
-import com.dpstudio.module.security.vo.SecurityAdminLogListVO;
-import net.ymate.platform.persistence.IResultSet;
+import com.dpstudio.module.security.vo.list.SecurityAdminLogListVO;
+import net.ymate.platform.core.persistence.IResultSet;
 
-/**
- * @Author: 刘玉奇.
- * @Date: 2020/10/16.
- * @Time: 22:02.
- * @Description:
- */
 public interface ISecurityAdminLogService {
 
     /**
@@ -24,7 +18,7 @@ public interface ISecurityAdminLogService {
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityAdminLogListVO> findAll(String adminId, String content, Long startTime, Long endTime, int page, int pageSize) throws Exception;
+    IResultSet<SecurityAdminLogListVO> findAll(String adminId, String content, Long startTime, Long endTime, Integer page, Integer pageSize) throws Exception;
 
     /**
      * 删除日志

@@ -1,17 +1,19 @@
 package com.dpstudio.module.security.controller;
 
+import com.dpstudio.dev.core.L;
 import com.dpstudio.dev.core.R;
+import com.dpstudio.dev.core.UserSession;
+import com.dpstudio.dev.core.V;
+import com.dpstudio.module.security.interCeptor.UserSessionCheckInterceptor;
 import com.dpstudio.module.security.model.SecurityAdmin;
 import com.dpstudio.module.security.service.ISecurityAdminService;
-import com.dpstudio.module.security.vo.SecurityAdminDetailVO;
-import com.dpstudio.module.security.vo.SecurityAdminListVO;
-import com.dpstudio.module.security.vo.SecurityAdminOPVO;
-import net.ymate.framework.webmvc.intercept.UserSessionCheckInterceptor;
-import net.ymate.framework.webmvc.support.UserSessionBean;
+import com.dpstudio.module.security.vo.detail.SecurityAdminDetailVO;
+import com.dpstudio.module.security.vo.list.SecurityAdminListVO;
+import com.dpstudio.module.security.vo.op.SecurityAdminVO;
 import net.ymate.platform.core.beans.annotation.Before;
 import net.ymate.platform.core.beans.annotation.Clean;
 import net.ymate.platform.core.beans.annotation.Inject;
-import net.ymate.platform.persistence.IResultSet;
+import net.ymate.platform.core.persistence.IResultSet;
 import net.ymate.platform.validation.annotation.VModel;
 import net.ymate.platform.validation.validate.VRequired;
 import net.ymate.platform.webmvc.annotation.Controller;
@@ -56,7 +58,7 @@ public class SecurityAdminController {
             @RequestParam String password) throws Exception {
 
         R result = iSecurityAdminService.login(userName, password);
-        return result.json();
+        return V.view(result);
     }
 
     /**
@@ -90,7 +92,7 @@ public class SecurityAdminController {
                                 @VRequired(msg = "确认密码不能为空")
                                 @RequestParam(value = "confirm_pwd") String confirmpwd) throws Exception {
         R result = iSecurityAdminService.updatePassword(oldpwd, newpwd, confirmpwd);
-        return result.json();
+        return V.view(result);
     }
 
 
@@ -102,22 +104,22 @@ public class SecurityAdminController {
      */
     @RequestMapping(value = "/info", method = Type.HttpMethod.GET)
     public IView get() throws Exception {
-        SecurityAdminDetailVO securityAdminDetailVO = iSecurityAdminService.detail(UserSessionBean.current().getUid());
-        return WebResult.succeed().data(securityAdminDetailVO).keepNullValue().toJSON();
+        SecurityAdminDetailVO securityAdminDetailVO = iSecurityAdminService.detail(UserSession.current().getUid());
+        return WebResult.succeed().data(securityAdminDetailVO).keepNullValue().toJsonView();
     }
 
     /**
      * 修改用户信息
      *
-     * @param securityAdminOPVO
+     * @param securityAdminVO
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/update/info", method = Type.HttpMethod.POST)
     public IView updateUser(@VModel
-                            @ModelBind SecurityAdminOPVO securityAdminOPVO) throws Exception {
-        R result = iSecurityAdminService.updateInfo(securityAdminOPVO);
-        return result.json();
+                            @ModelBind SecurityAdminVO securityAdminVO) throws Exception {
+        R result = iSecurityAdminService.updateInfo(securityAdminVO);
+        return V.view(result);
     }
 
     /**
@@ -133,26 +135,26 @@ public class SecurityAdminController {
     public IView list(@RequestParam(value = SecurityAdmin.FIELDS.USER_NAME) String userName,
                       @RequestParam(value = SecurityAdmin.FIELDS.REAL_NAME) String realName,
                       @RequestParam(value = SecurityAdmin.FIELDS.DISABLE_STATUS) Integer disableStatus,
-                      @RequestParam(defaultValue = "1") int page,
-                      @RequestParam(defaultValue = "10") int pageSize) throws Exception {
-        IResultSet<SecurityAdminListVO> securityAdminListVOIResultSet = iSecurityAdminService.list(userName, realName, disableStatus, page, pageSize);
-        return R.listView(securityAdminListVOIResultSet, page);
+                      @RequestParam(defaultValue = "1") Integer page,
+                      @RequestParam(defaultValue = "10") Integer pageSize) throws Exception {
+        IResultSet<SecurityAdminListVO> securityAdminListResultSet = iSecurityAdminService.list(userName, realName, disableStatus, page, pageSize);
+        return new L<SecurityAdminListVO>().listView(securityAdminListResultSet, page);
     }
 
     /**
      * 添加管理员
      *
-     * @param securityAdminOPVO
+     * @param securityAdminVO
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/create", method = Type.HttpMethod.POST)
     public IView create(@VModel
-                        @ModelBind SecurityAdminOPVO securityAdminOPVO,
+                        @ModelBind SecurityAdminVO securityAdminVO,
                         @VRequired(msg = "密码不能为空")
                         @RequestParam String password) throws Exception {
-        R r = iSecurityAdminService.create(securityAdminOPVO,password);
-        return r.json();
+        R result = iSecurityAdminService.create(securityAdminVO, password);
+        return V.view(result);
     }
 
     /**
@@ -168,8 +170,8 @@ public class SecurityAdminController {
                           @RequestParam String id,
                           @VRequired(msg = "状态不能为空")
                           @RequestParam Integer status) throws Exception {
-        R r = iSecurityAdminService.disabled(id, status);
-        return r.json();
+        R result = iSecurityAdminService.disabled(id, status);
+        return V.view(result);
     }
 
     /**
@@ -182,8 +184,8 @@ public class SecurityAdminController {
     @RequestMapping(value = "/resetPassword", method = Type.HttpMethod.POST)
     public IView resetPassword(@VRequired(msg = "id不能为空")
                                @RequestParam String id) throws Exception {
-        R r = iSecurityAdminService.resetPassword(id);
-        return r.json();
+        R result = iSecurityAdminService.resetPassword(id);
+        return V.view(result);
     }
 
     /**
@@ -195,9 +197,9 @@ public class SecurityAdminController {
      */
     @RequestMapping(value = "/unlock", method = Type.HttpMethod.POST)
     public IView unlock(@VRequired(msg = "id不能为空")
-                               @RequestParam String id) throws Exception {
-        R r = iSecurityAdminService.unlock(id);
-        return r.json();
+                        @RequestParam String id) throws Exception {
+        R result = iSecurityAdminService.unlock(id);
+        return V.view(result);
     }
 
 }

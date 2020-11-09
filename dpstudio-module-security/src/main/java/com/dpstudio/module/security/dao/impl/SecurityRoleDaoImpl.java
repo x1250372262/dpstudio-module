@@ -1,24 +1,17 @@
 package com.dpstudio.module.security.dao.impl;
 
-import com.dpstudio.module.security.model.SecurityRole;
 import com.dpstudio.module.security.dao.ISecurityRoleDao;
+import com.dpstudio.module.security.model.SecurityRole;
 import net.ymate.platform.core.beans.annotation.Bean;
-import net.ymate.platform.persistence.Fields;
-import net.ymate.platform.persistence.IResultSet;
-import net.ymate.platform.persistence.Page;
-import net.ymate.platform.persistence.jdbc.ISessionExecutor;
+import net.ymate.platform.core.persistence.Fields;
+import net.ymate.platform.core.persistence.IResultSet;
+import net.ymate.platform.core.persistence.Page;
 import net.ymate.platform.persistence.jdbc.JDBC;
 import net.ymate.platform.persistence.jdbc.query.Cond;
 import net.ymate.platform.persistence.jdbc.query.Where;
 
 import java.util.List;
 
-/**
- * @Author: 刘玉奇.
- * @Date: 2020/10/15.
- * @Time: 15:43.
- * @Description: 角色管理
- */
 @Bean
 public class SecurityRoleDaoImpl implements ISecurityRoleDao {
 
@@ -50,17 +43,14 @@ public class SecurityRoleDaoImpl implements ISecurityRoleDao {
 
     @Override
     public void delete(List<SecurityRole> list) throws Exception {
-        JDBC.get().openSession((ISessionExecutor<Object>) session -> session.delete(list));
+        JDBC.get().openSession(session -> session.delete(list));
     }
 
     @Override
-    public IResultSet<SecurityRole> findAll(String name, int page, int pageSize) throws Exception {
+    public IResultSet<SecurityRole> findAll(String name, Integer page, Integer pageSize) throws Exception {
 
-        Cond cond = Cond.create().eqOne();
-        cond.exprNotEmpty(name, Cond.create().and().like(SecurityRole.FIELDS.NAME).param("%" + name + "%"));
-        if (page > 0 && pageSize > 0) {
-            SecurityRole.builder().build().find(Where.create(cond), Page.create(page).pageSize(pageSize));
-        }
-        return SecurityRole.builder().build().find(Where.create(cond));
+        Cond cond = Cond.create().eqOne()
+                .exprNotEmpty(name, c -> c.and().like(SecurityRole.FIELDS.NAME).param("%" + name + "%"));
+        return SecurityRole.builder().build().find(Where.create(cond), Page.createIfNeed(page, pageSize));
     }
 }

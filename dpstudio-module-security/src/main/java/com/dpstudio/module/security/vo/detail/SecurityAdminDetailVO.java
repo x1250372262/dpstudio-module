@@ -1,4 +1,4 @@
-package com.dpstudio.module.security.vo;
+package com.dpstudio.module.security.vo.detail;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.dpstudio.module.security.model.SecurityAdmin;
@@ -13,11 +13,16 @@ public class SecurityAdminDetailVO {
 
     @JSONField(name = SecurityAdmin.FIELDS.REAL_NAME)
     private String realName;
+
     private Integer gender;
+
     private String thumb;
+
     private String mobile;
+
     @JSONField(name = SecurityAdmin.FIELDS.USER_NAME)
     private String userName;
+
     private Integer onLineStatus;
 
     public String getRealName() {

@@ -1,14 +1,8 @@
-package com.dpstudio.module.security.vo;
+package com.dpstudio.module.security.vo.list;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.dpstudio.module.security.model.SecurityAdminRole;
 
-/**
- * @Author: 刘玉奇.
- * @Date: 2020/10/15.
- * @Time: 22:35.
- * @Description:
- */
 public class SecurityAdminRoleListVO {
 
     private String id;

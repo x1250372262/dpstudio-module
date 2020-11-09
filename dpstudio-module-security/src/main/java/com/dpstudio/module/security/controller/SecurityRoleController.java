@@ -1,14 +1,16 @@
 package com.dpstudio.module.security.controller;
 
+import com.dpstudio.dev.core.L;
 import com.dpstudio.dev.core.R;
+import com.dpstudio.dev.core.V;
 import com.dpstudio.module.security.model.SecurityRole;
 import com.dpstudio.module.security.service.ISecurityRoleService;
-import com.dpstudio.module.security.vo.SecurityRoleDetailVO;
-import com.dpstudio.module.security.vo.SecurityRoleListVO;
-import com.dpstudio.module.security.vo.SecurityRoleOPVO;
-import com.dpstudio.module.security.vo.SecurityRoleSelectVO;
+import com.dpstudio.module.security.vo.detail.SecurityRoleDetailVO;
+import com.dpstudio.module.security.vo.detail.SecurityRoleListVO;
+import com.dpstudio.module.security.vo.op.SecurityRoleVO;
+import com.dpstudio.module.security.vo.select.SecurityRoleSelectVO;
 import net.ymate.platform.core.beans.annotation.Inject;
-import net.ymate.platform.persistence.IResultSet;
+import net.ymate.platform.core.persistence.IResultSet;
 import net.ymate.platform.validation.annotation.VModel;
 import net.ymate.platform.validation.validate.VRequired;
 import net.ymate.platform.webmvc.annotation.Controller;
@@ -21,12 +23,6 @@ import net.ymate.platform.webmvc.view.IView;
 
 import java.util.List;
 
-/**
- * @Author: 刘玉奇.
- * @Date: 2020/10/15.
- * @Time: 15:42.
- * @Description: 角色管理
- */
 @Controller
 @RequestMapping("/role")
 public class SecurityRoleController {
@@ -45,10 +41,10 @@ public class SecurityRoleController {
      */
     @RequestMapping(value = "/list", method = Type.HttpMethod.GET)
     public IView list(@RequestParam String name,
-                      @RequestParam(defaultValue = "1") int page,
-                      @RequestParam(defaultValue = "10") int pageSize) throws Exception {
-        IResultSet<SecurityRoleListVO> securityRoleListVOIResultSet = iSecurityRoleService.list(name, page, pageSize);
-        return R.listView(securityRoleListVOIResultSet, page);
+                      @RequestParam(defaultValue = "1") Integer page,
+                      @RequestParam(defaultValue = "10") Integer pageSize) throws Exception {
+        IResultSet<SecurityRoleListVO> securityRoleListResultSet = iSecurityRoleService.list(name, page, pageSize);
+        return new L<SecurityRoleListVO>().listView(securityRoleListResultSet, page);
     }
 
     /**
@@ -60,21 +56,21 @@ public class SecurityRoleController {
     @RequestMapping(value = "/select", method = Type.HttpMethod.GET)
     public IView select() throws Exception {
         List<SecurityRoleSelectVO> securityRoleSelectVOList = iSecurityRoleService.select();
-        return WebResult.succeed().data(securityRoleSelectVOList).keepNullValue().toJSON();
+        return WebResult.succeed().data(securityRoleSelectVOList).keepNullValue().toJsonView();
     }
 
     /**
      * 添加角色
      *
-     * @param securityRoleOPVO
+     * @param securityRoleVO
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/create", method = Type.HttpMethod.POST)
     public IView create(@VModel
-                        @ModelBind SecurityRoleOPVO securityRoleOPVO) throws Exception {
-        R r = iSecurityRoleService.create(securityRoleOPVO);
-        return r.json();
+                        @ModelBind SecurityRoleVO securityRoleVO) throws Exception {
+        R r = iSecurityRoleService.create(securityRoleVO);
+        return V.view(r);
     }
 
     /**
@@ -88,14 +84,14 @@ public class SecurityRoleController {
     public IView detail(@VRequired(msg = "id不能为空")
                         @RequestParam String id) throws Exception {
         SecurityRoleDetailVO securityRoleDetailVO = iSecurityRoleService.detail(id);
-        return WebResult.succeed().data(securityRoleDetailVO).keepNullValue().toJSON();
+        return WebResult.succeed().data(securityRoleDetailVO).keepNullValue().toJsonView();
     }
 
     /**
      * 修改角色
      *
      * @param id
-     * @param securityRoleOPVO
+     * @param securityRoleVO
      * @return
      * @throws Exception
      */
@@ -105,9 +101,9 @@ public class SecurityRoleController {
                         @VRequired(msg = "最后修改时间不能为空")
                         @RequestParam(value = SecurityRole.FIELDS.LAST_MODIFY_TIME) Long lastModifyTime,
                         @VModel
-                        @ModelBind SecurityRoleOPVO securityRoleOPVO) throws Exception {
-        R r = iSecurityRoleService.update(id, lastModifyTime, securityRoleOPVO);
-        return r.json();
+                        @ModelBind SecurityRoleVO securityRoleVO) throws Exception {
+        R r = iSecurityRoleService.update(id, lastModifyTime, securityRoleVO);
+        return V.view(r);
     }
 
     /**
@@ -122,7 +118,7 @@ public class SecurityRoleController {
             @VRequired(msg = "id不能为空")
             @RequestParam(value = "ids[]") String[] ids) throws Exception {
         R r = iSecurityRoleService.delete(ids);
-        return r.json();
+        return V.view(r);
     }
 
 }

@@ -1,20 +1,14 @@
 package com.dpstudio.module.security.service;
 
 import com.dpstudio.dev.core.R;
-import com.dpstudio.module.security.vo.SecurityRoleDetailVO;
-import com.dpstudio.module.security.vo.SecurityRoleListVO;
-import com.dpstudio.module.security.vo.SecurityRoleOPVO;
-import com.dpstudio.module.security.vo.SecurityRoleSelectVO;
-import net.ymate.platform.persistence.IResultSet;
+import com.dpstudio.module.security.vo.detail.SecurityRoleDetailVO;
+import com.dpstudio.module.security.vo.detail.SecurityRoleListVO;
+import com.dpstudio.module.security.vo.op.SecurityRoleVO;
+import com.dpstudio.module.security.vo.select.SecurityRoleSelectVO;
+import net.ymate.platform.core.persistence.IResultSet;
 
 import java.util.List;
 
-/**
- * @Author: 刘玉奇.
- * @Date: 2020/10/15.
- * @Time: 15:43.
- * @Description:角色管理
- */
 public interface ISecurityRoleService {
 
     /**
@@ -26,7 +20,7 @@ public interface ISecurityRoleService {
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityRoleListVO> list(String name, int page, int pageSize) throws Exception;
+    IResultSet<SecurityRoleListVO> list(String name, Integer page, Integer pageSize) throws Exception;
 
     /**
      * 角色下拉选
@@ -39,11 +33,11 @@ public interface ISecurityRoleService {
     /**
      * 添加角色
      *
-     * @param securityRoleOPVO
+     * @param securityRoleVO
      * @return
      * @throws Exception
      */
-    R create(SecurityRoleOPVO securityRoleOPVO) throws Exception;
+    R create(SecurityRoleVO securityRoleVO) throws Exception;
 
     /**
      * 角色详情
@@ -59,11 +53,11 @@ public interface ISecurityRoleService {
      * 修改角色
      *
      * @param id
-     * @param securityRoleOPVO
+     * @param securityRoleVO
      * @return
      * @throws Exception
      */
-    R update(String id, Long lastModifyTime, SecurityRoleOPVO securityRoleOPVO) throws Exception;
+    R update(String id, Long lastModifyTime, SecurityRoleVO securityRoleVO) throws Exception;
 
     /**
      * 删除角色

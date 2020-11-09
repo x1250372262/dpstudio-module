@@ -1,15 +1,9 @@
 package com.dpstudio.module.security.service;
 
 import com.dpstudio.dev.core.R;
-import com.dpstudio.module.security.vo.SecuritySettingDetailVO;
-import com.dpstudio.module.security.vo.SecuritySettingOPVO;
+import com.dpstudio.module.security.vo.detail.SecuritySettingDetailVO;
+import com.dpstudio.module.security.vo.op.SecuritySettingVO;
 
-/**
- * @Author: 刘玉奇.
- * @Date: 2020/10/17.
- * @Time: 9:38.
- * @Description:
- */
 public interface ISecuritySettingService {
 
     /**
@@ -17,11 +11,11 @@ public interface ISecuritySettingService {
      *
      * @param id
      * @param lastModifyTime
-     * @param securitySettingOPVO
+     * @param securitySettingVO
      * @return
      * @throws Exception
      */
-    R update(String id,  Long lastModifyTime,SecuritySettingOPVO securitySettingOPVO) throws Exception;
+    R update(String id, Long lastModifyTime, SecuritySettingVO securitySettingVO) throws Exception;
 
     /**
      * 设置详情

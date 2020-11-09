@@ -1,14 +1,8 @@
-package com.dpstudio.module.security.vo;
+package com.dpstudio.module.security.vo.detail;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.dpstudio.module.security.model.SecuritySetting;
 
-/**
- * @Author: 刘玉奇.
- * @Date: 2020/10/17.
- * @Time: 10:08.
- * @Description:
- */
 public class SecuritySettingDetailVO {
 
     private String id;

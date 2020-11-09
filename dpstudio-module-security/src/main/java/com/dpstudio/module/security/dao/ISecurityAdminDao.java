@@ -2,8 +2,8 @@ package com.dpstudio.module.security.dao;
 
 
 import com.dpstudio.module.security.model.SecurityAdmin;
-import com.dpstudio.module.security.vo.SecurityAdminListVO;
-import net.ymate.platform.persistence.IResultSet;
+import com.dpstudio.module.security.vo.list.SecurityAdminListVO;
+import net.ymate.platform.core.persistence.IResultSet;
 
 public interface ISecurityAdminDao {
 
@@ -46,7 +46,7 @@ public interface ISecurityAdminDao {
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, int page, int pageSize) throws Exception;
+    IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, Integer page, Integer pageSize) throws Exception;
 
     /**
      * 添加管理员

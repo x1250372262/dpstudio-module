@@ -58,7 +58,7 @@ public class PermissionBean {
         this.level = level;
     }
 
-    public PermissionBean(String name, String code, String groupId, String groupName,String level) {
+    public PermissionBean(String name, String code, String groupId, String groupName, String level) {
         this.name = name;
         this.code = code;
         this.groupId = groupId;

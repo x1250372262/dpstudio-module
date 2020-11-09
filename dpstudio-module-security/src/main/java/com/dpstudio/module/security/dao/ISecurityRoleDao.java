@@ -1,16 +1,10 @@
 package com.dpstudio.module.security.dao;
 
 import com.dpstudio.module.security.model.SecurityRole;
-import net.ymate.platform.persistence.IResultSet;
+import net.ymate.platform.core.persistence.IResultSet;
 
 import java.util.List;
 
-/**
- * @Author: 刘玉奇.
- * @Date: 2020/10/15.
- * @Time: 15:43.
- * @Description: 角色管理
- */
 public interface ISecurityRoleDao {
 
     /**
@@ -80,6 +74,6 @@ public interface ISecurityRoleDao {
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityRole> findAll(String name, int page, int pageSize) throws Exception;
+    IResultSet<SecurityRole> findAll(String name, Integer page, Integer pageSize) throws Exception;
 
 }

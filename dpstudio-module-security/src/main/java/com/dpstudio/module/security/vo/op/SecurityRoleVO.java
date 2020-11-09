@@ -1,19 +1,14 @@
-package com.dpstudio.module.security.vo;
+package com.dpstudio.module.security.vo.op;
 
 import net.ymate.platform.validation.validate.VRequired;
 import net.ymate.platform.webmvc.annotation.RequestParam;
 
-/**
- * @Author: 刘玉奇.
- * @Date: 2020/10/15.
- * @Time: 16:55.
- * @Description:
- */
-public class SecurityRoleOPVO {
+public class SecurityRoleVO {
 
     @VRequired(msg = "角色名称不能为空")
     @RequestParam
     private String name;
+
     @RequestParam
     private String remark;
 

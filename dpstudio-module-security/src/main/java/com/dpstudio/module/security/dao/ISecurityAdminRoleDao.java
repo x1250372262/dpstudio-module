@@ -1,18 +1,12 @@
 package com.dpstudio.module.security.dao;
 
 import com.dpstudio.module.security.model.SecurityAdminRole;
-import com.dpstudio.module.security.vo.SecurityAdminRoleListVO;
-import net.ymate.platform.persistence.IResultSet;
-import net.ymate.platform.persistence.Params;
+import com.dpstudio.module.security.vo.list.SecurityAdminRoleListVO;
+import net.ymate.platform.core.persistence.IResultSet;
+import net.ymate.platform.core.persistence.Params;
 
 import java.util.List;
 
-/**
- * @Author: 刘玉奇.
- * @Date: 2020/10/15.
- * @Time: 22:29.
- * @Description:
- */
 public interface ISecurityAdminRoleDao {
 
     /**
@@ -24,7 +18,7 @@ public interface ISecurityAdminRoleDao {
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityAdminRoleListVO> findAll(String adminId, int page, int pageSize) throws Exception;
+    IResultSet<SecurityAdminRoleListVO> findAll(String adminId, Integer page, Integer pageSize) throws Exception;
 
     /**
      * 管理员角色集合
@@ -35,7 +29,7 @@ public interface ISecurityAdminRoleDao {
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityAdminRoleListVO> findByAdminIds(Params adminIds, int page, int pageSize) throws Exception;
+    IResultSet<SecurityAdminRoleListVO> findByAdminIds(Params adminIds, Integer page, Integer pageSize) throws Exception;
 
     /**
      * 添加角色

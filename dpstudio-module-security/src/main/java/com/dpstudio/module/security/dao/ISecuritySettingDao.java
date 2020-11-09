@@ -2,12 +2,6 @@ package com.dpstudio.module.security.dao;
 
 import com.dpstudio.module.security.model.SecuritySetting;
 
-/**
- * @Author: 刘玉奇.
- * @Date: 2020/10/17.
- * @Time: 9:37.
- * @Description:
- */
 public interface ISecuritySettingDao {
 
     /**

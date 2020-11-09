@@ -1,11 +1,13 @@
 package com.dpstudio.module.security.controller;
 
+import com.dpstudio.dev.core.L;
 import com.dpstudio.dev.core.R;
+import com.dpstudio.dev.core.V;
 import com.dpstudio.module.security.model.SecurityAdminLog;
 import com.dpstudio.module.security.service.ISecurityAdminLogService;
-import com.dpstudio.module.security.vo.SecurityAdminLogListVO;
+import com.dpstudio.module.security.vo.list.SecurityAdminLogListVO;
 import net.ymate.platform.core.beans.annotation.Inject;
-import net.ymate.platform.persistence.IResultSet;
+import net.ymate.platform.core.persistence.IResultSet;
 import net.ymate.platform.validation.validate.VRequired;
 import net.ymate.platform.webmvc.annotation.Controller;
 import net.ymate.platform.webmvc.annotation.RequestMapping;
@@ -13,12 +15,6 @@ import net.ymate.platform.webmvc.annotation.RequestParam;
 import net.ymate.platform.webmvc.base.Type;
 import net.ymate.platform.webmvc.view.IView;
 
-/**
- * @Author: 刘玉奇.
- * @Date: 2020/10/16.
- * @Time: 22:01.
- * @Description:
- */
 @Controller
 @RequestMapping("/admin/log")
 public class SecurityAdminLogController {
@@ -43,10 +39,10 @@ public class SecurityAdminLogController {
                       @RequestParam String content,
                       @RequestParam(value = "start_time") Long startTime,
                       @RequestParam(value = "end_time") Long endTime,
-                      @RequestParam(defaultValue = "1") int page,
-                      @RequestParam(defaultValue = "10") int pageSize) throws Exception {
-        IResultSet<SecurityAdminLogListVO> adminLogListVOIResultSet = iAdminLogService.findAll(adminId, content, startTime, endTime, page, pageSize);
-        return R.listView(adminLogListVOIResultSet, page);
+                      @RequestParam(defaultValue = "1") Integer page,
+                      @RequestParam(defaultValue = "10") Integer pageSize) throws Exception {
+        IResultSet<SecurityAdminLogListVO> adminLogListResultSet = iAdminLogService.findAll(adminId, content, startTime, endTime, page, pageSize);
+        return new L<SecurityAdminLogListVO>().listView(adminLogListResultSet, page);
     }
 
     /**
@@ -60,8 +56,8 @@ public class SecurityAdminLogController {
     public IView delete(
             @VRequired(msg = "id不能为空")
             @RequestParam(value = "ids[]") String[] ids) throws Exception {
-        R r = iAdminLogService.delete(ids);
-        return r.json();
+        R result = iAdminLogService.delete(ids);
+        return V.view(result);
     }
 
 }

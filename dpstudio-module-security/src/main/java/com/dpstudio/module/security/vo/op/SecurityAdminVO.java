@@ -1,4 +1,4 @@
-package com.dpstudio.module.security.vo;
+package com.dpstudio.module.security.vo.op;
 
 import com.dpstudio.module.security.model.SecurityAdmin;
 import net.ymate.platform.validation.validate.VRequired;
@@ -10,19 +10,24 @@ import net.ymate.platform.webmvc.annotation.RequestParam;
  * @Time: 4:11 下午.
  * @Description:
  */
-public class SecurityAdminOPVO {
+public class SecurityAdminVO {
 
     @RequestParam(value = SecurityAdmin.FIELDS.REAL_NAME)
     private String realName;
+
     @RequestParam
     private Integer gender;
+
     @RequestParam
     private String thumb;
+
     @RequestParam
     private String mobile;
+
     @VRequired(msg = "用户名称不能为空")
     @RequestParam(value = SecurityAdmin.FIELDS.USER_NAME)
     private String userName;
+
     @RequestParam(value = SecurityAdmin.FIELDS.PHOTO_URI)
     private String photoUri;
 

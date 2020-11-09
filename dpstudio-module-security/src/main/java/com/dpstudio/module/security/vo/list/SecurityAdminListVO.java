@@ -1,29 +1,30 @@
-package com.dpstudio.module.security.vo;
+package com.dpstudio.module.security.vo.list;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.dpstudio.module.security.model.SecurityAdmin;
 
-/**
- * @Author: 刘玉奇.
- * @Date: 2020/10/15.
- * @Time: 18:26.
- * @Description:
- */
 public class SecurityAdminListVO {
 
     private String id;
+
     @JSONField(name = SecurityAdmin.FIELDS.USER_NAME)
     private String userName;
+
     @JSONField(name = SecurityAdmin.FIELDS.PHOTO_URI)
     private String photoUri;
+
     @JSONField(name = SecurityAdmin.FIELDS.REAL_NAME)
     private String realName;
+
     @JSONField(name = "role_name")
     private String roleName;
+
     @JSONField(name = SecurityAdmin.FIELDS.CREATE_TIME)
     private Long createTime;
+
     @JSONField(name = SecurityAdmin.FIELDS.DISABLE_STATUS)
     private Integer disableStatus;
+
     @JSONField(name = SecurityAdmin.FIELDS.LOGIN_LOCK_STATUS)
     private Integer loginLockStatus;
 

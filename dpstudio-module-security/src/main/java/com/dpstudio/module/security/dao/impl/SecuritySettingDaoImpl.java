@@ -1,16 +1,10 @@
 package com.dpstudio.module.security.dao.impl;
 
-import com.dpstudio.module.security.model.SecuritySetting;
 import com.dpstudio.module.security.dao.ISecuritySettingDao;
+import com.dpstudio.module.security.model.SecuritySetting;
 import net.ymate.platform.core.beans.annotation.Bean;
-import net.ymate.platform.persistence.Fields;
+import net.ymate.platform.core.persistence.Fields;
 
-/**
- * @Author: 刘玉奇.
- * @Date: 2020/10/17.
- * @Time: 9:38.
- * @Description:
- */
 @Bean
 public class SecuritySettingDaoImpl implements ISecuritySettingDao {
 

@@ -1,11 +1,5 @@
-package com.dpstudio.module.security.vo;
+package com.dpstudio.module.security.vo.select;
 
-/**
- * @Author: 刘玉奇.
- * @Date: 2020/10/16.
- * @Time: 0:19.
- * @Description:
- */
 public class SecurityRoleSelectVO {
 
     private String id;
