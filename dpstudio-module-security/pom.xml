@@ -22,7 +22,6 @@
         <ymate.platform.version>2.1.0</ymate.platform.version>
     </properties>
 
-
     <build>
         <resources>
             <resource>
