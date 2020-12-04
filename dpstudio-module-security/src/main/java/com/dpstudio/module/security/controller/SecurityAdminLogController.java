@@ -3,9 +3,11 @@ package com.dpstudio.module.security.controller;
 import com.dpstudio.dev.core.L;
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.core.V;
+import com.dpstudio.module.security.interCeptor.JwtCheckInterceptor;
 import com.dpstudio.module.security.model.SecurityAdminLog;
 import com.dpstudio.module.security.service.ISecurityAdminLogService;
 import com.dpstudio.module.security.vo.list.SecurityAdminLogListVO;
+import net.ymate.platform.core.beans.annotation.Before;
 import net.ymate.platform.core.beans.annotation.Inject;
 import net.ymate.platform.core.persistence.IResultSet;
 import net.ymate.platform.validation.validate.VRequired;
@@ -17,6 +19,7 @@ import net.ymate.platform.webmvc.view.IView;
 
 @Controller
 @RequestMapping("/admin/log")
+@Before(JwtCheckInterceptor.class)
 public class SecurityAdminLogController {
 
     @Inject

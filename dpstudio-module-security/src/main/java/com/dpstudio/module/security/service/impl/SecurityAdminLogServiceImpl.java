@@ -1,8 +1,8 @@
 package com.dpstudio.module.security.service.impl;
 
 import com.dpstudio.dev.core.R;
-import com.dpstudio.dev.core.method.M;
 import com.dpstudio.dev.utils.ResultSetUtils;
+import com.dpstudio.module.security.SecurityCache;
 import com.dpstudio.module.security.core.SecurityConstants;
 import com.dpstudio.module.security.dao.ISecurityAdminLogDao;
 import com.dpstudio.module.security.model.SecurityAdminLog;
@@ -50,8 +50,8 @@ public class SecurityAdminLogServiceImpl implements ISecurityAdminLogService {
                 .adminId(adminId)
                 .createTime(DateTimeUtils.currentTimeMillis())
                 .lastModifyTime(DateTimeUtils.currentTimeMillis())
-                .lastModifyUser(M.userId())
-                .createUser(M.userId())
+                .lastModifyUser(SecurityCache.userId())
+                .createUser(SecurityCache.userId())
                 .content(userName + "在" + DateTimeUtils.formatTime(DateTimeUtils.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss") + "登录了系统，IP是" + WebUtils.getRemoteAddress(WebContext.getRequest()))
                 .build();
         securityAdminLog = iSecurityAdminLogDao.create(securityAdminLog);

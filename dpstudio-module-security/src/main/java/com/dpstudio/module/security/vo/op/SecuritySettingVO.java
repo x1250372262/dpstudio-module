@@ -26,12 +26,6 @@ public class SecuritySettingVO {
     @RequestParam(value = SecuritySetting.FIELDS.LOGIN_NOT_IP_NOTICE)
     private Integer loginNotIpNotice;
 
-    @RequestParam(value = SecuritySetting.FIELDS.LOGIN_CLIENT_STATUS)
-    private Integer loginClientStatus;
-
-    @RequestParam(value = SecuritySetting.FIELDS.LOGIN_CLIENT_TYPE)
-    private Integer loginClientType;
-
     public Integer getLoginLogStatus() {
         return loginLogStatus;
     }
@@ -88,19 +82,4 @@ public class SecuritySettingVO {
         this.loginNotIpNotice = loginNotIpNotice;
     }
 
-    public Integer getLoginClientStatus() {
-        return loginClientStatus;
-    }
-
-    public void setLoginClientStatus(Integer loginClientStatus) {
-        this.loginClientStatus = loginClientStatus;
-    }
-
-    public Integer getLoginClientType() {
-        return loginClientType;
-    }
-
-    public void setLoginClientType(Integer loginClientType) {
-        this.loginClientType = loginClientType;
-    }
 }

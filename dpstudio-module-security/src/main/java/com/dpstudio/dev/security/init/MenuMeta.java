@@ -74,7 +74,8 @@ public class MenuMeta {
                         .icon(Objects.get(v1.getAttribute("icon"), ""))
                         .url(Objects.get(v1.getAttribute("url"), ""))
                         .pid(Objects.get(v1.getAttribute("pid"), ""))
-                        .permissions(Objects.get(v1.getAttribute("permissions"), ""));
+                        .permissions(Objects.get(v1.getAttribute("permissions"), ""))
+                        .path(Objects.get(v1.getAttribute("path"), ""));
                 menuList.add(menuBean);
             });
         });

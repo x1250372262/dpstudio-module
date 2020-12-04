@@ -67,6 +67,31 @@ public final class DefaultSecurityConfigurable extends DefaultModuleConfigurable
             configurable.addConfig(ISecurityConfig.HOT_LOADING, String.valueOf(hotLoading));
             return this;
         }
+
+        public Builder verifyTime(long verifyTime) {
+            configurable.addConfig(ISecurityConfig.VERIFY_TIME, String.valueOf(verifyTime));
+            return this;
+        }
+
+        public Builder secret(String secret) {
+            configurable.addConfig(ISecurityConfig.SECRET, secret);
+            return this;
+        }
+
+        public Builder headerName(String headerName) {
+            configurable.addConfig(ISecurityConfig.HEADER_NAME, headerName);
+            return this;
+        }
+
+        public Builder paramName(String paramName) {
+            configurable.addConfig(ISecurityConfig.PARAM_NAME, paramName);
+            return this;
+        }
+
+        public Builder autoResponse(boolean autoResponse) {
+            configurable.addConfig(ISecurityConfig.AUTO_RESPONSE, String.valueOf(autoResponse));
+            return this;
+        }
         public IModuleConfigurer build() {
             return configurable.toModuleConfigurer();
         }

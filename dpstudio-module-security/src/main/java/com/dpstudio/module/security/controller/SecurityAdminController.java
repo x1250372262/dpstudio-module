@@ -2,14 +2,16 @@ package com.dpstudio.module.security.controller;
 
 import com.dpstudio.dev.core.L;
 import com.dpstudio.dev.core.R;
-import com.dpstudio.dev.core.UserSession;
 import com.dpstudio.dev.core.V;
-import com.dpstudio.module.security.interCeptor.UserSessionCheckInterceptor;
+import com.dpstudio.dev.security.jwt.JWT;
+import com.dpstudio.module.security.interCeptor.JwtCheckInterceptor;
+import com.dpstudio.module.security.interCeptor.JwtOutInterceptor;
 import com.dpstudio.module.security.model.SecurityAdmin;
 import com.dpstudio.module.security.service.ISecurityAdminService;
 import com.dpstudio.module.security.vo.detail.SecurityAdminDetailVO;
 import com.dpstudio.module.security.vo.list.SecurityAdminListVO;
 import com.dpstudio.module.security.vo.op.SecurityAdminVO;
+import net.ymate.platform.commons.lang.BlurObject;
 import net.ymate.platform.core.beans.annotation.Before;
 import net.ymate.platform.core.beans.annotation.Clean;
 import net.ymate.platform.core.beans.annotation.Inject;
@@ -21,10 +23,8 @@ import net.ymate.platform.webmvc.annotation.ModelBind;
 import net.ymate.platform.webmvc.annotation.RequestMapping;
 import net.ymate.platform.webmvc.annotation.RequestParam;
 import net.ymate.platform.webmvc.base.Type;
-import net.ymate.platform.webmvc.context.WebContext;
 import net.ymate.platform.webmvc.util.WebResult;
 import net.ymate.platform.webmvc.view.IView;
-import net.ymate.platform.webmvc.view.View;
 
 
 /**
@@ -35,7 +35,7 @@ import net.ymate.platform.webmvc.view.View;
  */
 @Controller
 @RequestMapping("/admin")
-@Before(UserSessionCheckInterceptor.class)
+@Before(JwtCheckInterceptor.class)
 public class SecurityAdminController {
 
     @Inject
@@ -68,11 +68,11 @@ public class SecurityAdminController {
      * @return 登录页面
      * @throws Exception
      */
-    @Clean
-    @RequestMapping(value = "/logout")
-    public IView logout() throws Exception {
-        WebContext.getRequest().getSession().invalidate();
-        return View.jspView("admin/login_view");
+    @Clean(JwtCheckInterceptor.class)
+    @Before(JwtOutInterceptor.class)
+    @RequestMapping(value = "/logout", method = Type.HttpMethod.POST)
+    public IView logout() {
+        return V.ok();
     }
 
     /**
@@ -104,7 +104,7 @@ public class SecurityAdminController {
      */
     @RequestMapping(value = "/info", method = Type.HttpMethod.GET)
     public IView get() throws Exception {
-        SecurityAdminDetailVO securityAdminDetailVO = iSecurityAdminService.detail(UserSession.current().getUid());
+        SecurityAdminDetailVO securityAdminDetailVO = iSecurityAdminService.detail(BlurObject.bind(JWT.Store.getPara("uid")).toStringValue());
         return WebResult.succeed().data(securityAdminDetailVO).keepNullValue().toJsonView();
     }
 
@@ -160,17 +160,17 @@ public class SecurityAdminController {
     /**
      * 禁用/启用管理员
      *
-     * @param id
+     * @param ids
      * @param status
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/disabled", method = Type.HttpMethod.POST)
     public IView disabled(@VRequired(msg = "id不能为空")
-                          @RequestParam String id,
+                          @RequestParam(value = "ids[]") String[] ids,
                           @VRequired(msg = "状态不能为空")
                           @RequestParam Integer status) throws Exception {
-        R result = iSecurityAdminService.disabled(id, status);
+        R result = iSecurityAdminService.disabled(ids, status);
         return V.view(result);
     }
 
@@ -200,6 +200,21 @@ public class SecurityAdminController {
                         @RequestParam String id) throws Exception {
         R result = iSecurityAdminService.unlock(id);
         return V.view(result);
+    }
+
+    /**
+     * 删除
+     *
+     * @param ids
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/delete", method = Type.HttpMethod.POST)
+    public IView delete(
+            @VRequired(msg = "id不能为空")
+            @RequestParam(value = "ids[]") String[] ids) throws Exception {
+        R r = iSecurityAdminService.delete(ids);
+        return V.view(r);
     }
 
 }

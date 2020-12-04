@@ -3,20 +3,19 @@ package com.dpstudio.module.security.controller;
 import com.dpstudio.dev.core.L;
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.core.V;
+import com.dpstudio.module.security.interCeptor.JwtCheckInterceptor;
 import com.dpstudio.module.security.model.SecurityRole;
 import com.dpstudio.module.security.service.ISecurityRoleService;
 import com.dpstudio.module.security.vo.detail.SecurityRoleDetailVO;
 import com.dpstudio.module.security.vo.detail.SecurityRoleListVO;
 import com.dpstudio.module.security.vo.op.SecurityRoleVO;
 import com.dpstudio.module.security.vo.select.SecurityRoleSelectVO;
+import net.ymate.platform.core.beans.annotation.Before;
 import net.ymate.platform.core.beans.annotation.Inject;
 import net.ymate.platform.core.persistence.IResultSet;
 import net.ymate.platform.validation.annotation.VModel;
 import net.ymate.platform.validation.validate.VRequired;
-import net.ymate.platform.webmvc.annotation.Controller;
-import net.ymate.platform.webmvc.annotation.ModelBind;
-import net.ymate.platform.webmvc.annotation.RequestMapping;
-import net.ymate.platform.webmvc.annotation.RequestParam;
+import net.ymate.platform.webmvc.annotation.*;
 import net.ymate.platform.webmvc.base.Type;
 import net.ymate.platform.webmvc.util.WebResult;
 import net.ymate.platform.webmvc.view.IView;
@@ -25,6 +24,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/role")
+@Before(JwtCheckInterceptor.class)
 public class SecurityRoleController {
 
     @Inject
@@ -80,9 +80,9 @@ public class SecurityRoleController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/detail", method = Type.HttpMethod.POST)
+    @RequestMapping(value = "/detail/{id}", method = Type.HttpMethod.GET)
     public IView detail(@VRequired(msg = "id不能为空")
-                        @RequestParam String id) throws Exception {
+                        @PathVariable String id) throws Exception {
         SecurityRoleDetailVO securityRoleDetailVO = iSecurityRoleService.detail(id);
         return WebResult.succeed().data(securityRoleDetailVO).keepNullValue().toJsonView();
     }
@@ -95,9 +95,9 @@ public class SecurityRoleController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/update", method = Type.HttpMethod.POST)
+    @RequestMapping(value = "/update/{id}", method = Type.HttpMethod.POST)
     public IView update(@VRequired(msg = "id不能为空")
-                        @RequestParam String id,
+                        @PathVariable String id,
                         @VRequired(msg = "最后修改时间不能为空")
                         @RequestParam(value = SecurityRole.FIELDS.LAST_MODIFY_TIME) Long lastModifyTime,
                         @VModel

@@ -54,4 +54,30 @@ public @interface SecurityConf {
      * @return 是否支持热加载 正式环境中不建议使用 默认false
      */
     boolean hotLoading() default false;
+
+
+    /**
+     * @return 有效期，单位分钟
+     */
+    int verifyTime() default 0;
+
+    /**
+     * @return 密钥
+     */
+    String secret() default "";
+
+    /**
+     * @return header参数名
+     */
+    String headerName() default "";
+
+    /**
+     * @return 参数名
+     */
+    String paramName() default "";
+
+    /**
+     * @return 是否自动设置到response
+     */
+    boolean autoResponse() default true;
 }

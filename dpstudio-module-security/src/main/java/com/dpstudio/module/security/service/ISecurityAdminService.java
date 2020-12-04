@@ -69,12 +69,12 @@ public interface ISecurityAdminService {
     /**
      * 删除/禁用管理员
      *
-     * @param id
+     * @param ids
      * @param disableStatus
      * @return
      * @throws Exception
      */
-    R disabled(String id, Integer disableStatus) throws Exception;
+    R disabled(String[] ids, Integer disableStatus) throws Exception;
 
     /**
      * 重置密码
@@ -93,5 +93,14 @@ public interface ISecurityAdminService {
      * @throws Exception
      */
     R unlock(String id) throws Exception;
+
+    /**
+     * 删除
+     *
+     * @param ids
+     * @return
+     * @throws Exception
+     */
+    R delete(String[] ids) throws Exception;
 
 }

@@ -31,6 +31,11 @@ public interface ISecurityConfig extends IInitialization<ISecurity> {
     String PACKAGE_NAME = "package_name";
     String AUTHENTICATOR_CLASS = "authenticator_class";
     String MENU_FILE_PATH = "menu_file_path";
+    String VERIFY_TIME = "jwt_verify_time";
+    String SECRET = "jwt_secret";
+    String HEADER_NAME = "jwt_header_name";
+    String PARAM_NAME = "jwt_param_name";
+    String AUTO_RESPONSE = "jwt_auto_response";
 
     /**
      * 模块是否已启用, 默认值: true
@@ -65,5 +70,35 @@ public interface ISecurityConfig extends IInitialization<ISecurity> {
      * @return 返回false标识不开启
      */
     boolean isHotLoading();
+
+    /**
+     * 有效期，单位豪秒， 默认0  永久有效
+     * @return 有效期
+     */
+    int verifyTime();
+
+    /**
+     * 密钥
+     * @return 密钥
+     */
+    String secret();
+
+    /**
+     * header参数名
+     * @return header参数名
+     */
+    String headerName();
+
+    /**
+     * 参数名
+     * @return 参数名
+     */
+    String paramName();
+
+    /**
+     * 是否自动设置到response
+     * @return 是否自动设置到response
+     */
+    boolean autoResponse();
 
 }

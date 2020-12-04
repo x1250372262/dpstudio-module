@@ -2,9 +2,9 @@ package com.dpstudio.module.security.service.impl;
 
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.core.code.C;
-import com.dpstudio.dev.core.method.M;
 import com.dpstudio.dev.utils.BeanUtils;
 import com.dpstudio.dev.utils.ResultSetUtils;
+import com.dpstudio.module.security.SecurityCache;
 import com.dpstudio.module.security.core.Code;
 import com.dpstudio.module.security.dao.ISecurityRoleDao;
 import com.dpstudio.module.security.model.SecurityRole;
@@ -49,9 +49,9 @@ public class SecurityRoleServiceImpl implements ISecurityRoleService {
         securityRole = BeanUtils.copy(securityRoleVO, SecurityRole::new, (s, t) -> {
             t.setId(UUIDUtils.UUID());
             t.setCreateTime(DateTimeUtils.currentTimeMillis());
-            t.setCreateUser(M.userId());
+            t.setCreateUser(SecurityCache.userId());
             t.setLastModifyTime(DateTimeUtils.currentTimeMillis());
-            t.setLastModifyUser(M.userId());
+            t.setLastModifyUser(SecurityCache.userId());
         });
         securityRole = iSecurityRoleDao.create(securityRole);
         return R.result(securityRole);
@@ -78,7 +78,7 @@ public class SecurityRoleServiceImpl implements ISecurityRoleService {
         }
         securityRole = BeanUtils.duplicate(securityRoleVO, securityRole, (s, t) -> {
             t.setLastModifyTime(DateTimeUtils.currentTimeMillis());
-            t.setLastModifyUser(M.userId());
+            t.setLastModifyUser(SecurityCache.userId());
         });
         securityRole = iSecurityRoleDao.update(securityRole, SecurityRole.FIELDS.NAME, SecurityRole.FIELDS.REMARK,
                 SecurityRole.FIELDS.LAST_MODIFY_TIME, SecurityRole.FIELDS.LAST_MODIFY_USER);

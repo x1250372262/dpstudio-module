@@ -2,8 +2,8 @@ package com.dpstudio.module.security.service.impl;
 
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.core.code.C;
-import com.dpstudio.dev.core.method.M;
 import com.dpstudio.dev.utils.BeanUtils;
+import com.dpstudio.module.security.SecurityCache;
 import com.dpstudio.module.security.dao.ISecuritySettingDao;
 import com.dpstudio.module.security.model.SecuritySetting;
 import com.dpstudio.module.security.service.ISecuritySettingService;
@@ -30,13 +30,12 @@ public class SecuritySettingServiceImpl implements ISecuritySettingService {
         }
         securitySetting = BeanUtils.duplicate(securitySettingVO, securitySetting, (s, t) -> {
             t.setLastModifyTime(DateTimeUtils.currentTimeMillis());
-            t.setLastModifyUser(M.userId());
+            t.setLastModifyUser(SecurityCache.userId());
         });
         securitySetting = iSecuritySettingDao.update(securitySetting, SecuritySetting.FIELDS.LOGIN_LOG_STATUS,
                 SecuritySetting.FIELDS.LOGIN_ERROR_COUNT, SecuritySetting.FIELDS.LOGIN_ERROR_TIME,
                 SecuritySetting.FIELDS.LOGIN_ERROR_STATUS, SecuritySetting.FIELDS.LOGIN_UNLOCK_FOUNDER,
                 SecuritySetting.FIELDS.LOGIN_NOT_IP_STATUS, SecuritySetting.FIELDS.LOGIN_NOT_IP_NOTICE,
-                SecuritySetting.FIELDS.LOGIN_CLIENT_STATUS, SecuritySetting.FIELDS.LOGIN_CLIENT_TYPE,
                 SecuritySetting.FIELDS.LAST_MODIFY_TIME, SecuritySetting.FIELDS.LAST_MODIFY_USER);
         return R.result(securitySetting);
     }

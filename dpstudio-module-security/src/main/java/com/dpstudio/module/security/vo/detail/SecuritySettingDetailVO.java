@@ -28,12 +28,6 @@ public class SecuritySettingDetailVO {
     @JSONField(name = SecuritySetting.FIELDS.LOGIN_NOT_IP_NOTICE)
     private Integer loginNotIpNotice;
 
-    @JSONField(name = SecuritySetting.FIELDS.LOGIN_CLIENT_STATUS)
-    private Integer loginClientStatus;
-
-    @JSONField(name = SecuritySetting.FIELDS.LOGIN_CLIENT_TYPE)
-    private Integer loginClientType;
-
     @JSONField(name = SecuritySetting.FIELDS.LAST_MODIFY_TIME)
     private Long lastModifyTime;
 
@@ -99,22 +93,6 @@ public class SecuritySettingDetailVO {
 
     public void setLoginNotIpNotice(Integer loginNotIpNotice) {
         this.loginNotIpNotice = loginNotIpNotice;
-    }
-
-    public Integer getLoginClientStatus() {
-        return loginClientStatus;
-    }
-
-    public void setLoginClientStatus(Integer loginClientStatus) {
-        this.loginClientStatus = loginClientStatus;
-    }
-
-    public Integer getLoginClientType() {
-        return loginClientType;
-    }
-
-    public void setLoginClientType(Integer loginClientType) {
-        this.loginClientType = loginClientType;
     }
 
     public Long getLastModifyTime() {

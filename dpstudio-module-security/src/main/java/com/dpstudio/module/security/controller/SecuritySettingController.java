@@ -3,10 +3,12 @@ package com.dpstudio.module.security.controller;
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.core.V;
 import com.dpstudio.module.security.core.SecurityConstants;
+import com.dpstudio.module.security.interCeptor.JwtCheckInterceptor;
 import com.dpstudio.module.security.model.SecuritySetting;
 import com.dpstudio.module.security.service.ISecuritySettingService;
 import com.dpstudio.module.security.vo.detail.SecuritySettingDetailVO;
 import com.dpstudio.module.security.vo.op.SecuritySettingVO;
+import net.ymate.platform.core.beans.annotation.Before;
 import net.ymate.platform.core.beans.annotation.Inject;
 import net.ymate.platform.validation.annotation.VModel;
 import net.ymate.platform.validation.validate.VRequired;
@@ -20,6 +22,7 @@ import net.ymate.platform.webmvc.view.IView;
 
 @Controller
 @RequestMapping("/setting")
+@Before(JwtCheckInterceptor.class)
 public class SecuritySettingController {
 
     @Inject

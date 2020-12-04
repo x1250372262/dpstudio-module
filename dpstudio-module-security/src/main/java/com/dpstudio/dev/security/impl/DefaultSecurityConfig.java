@@ -36,6 +36,11 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
     private String packageName;
     private String menuFilePath;
     private IAuthenticator authenticatorClass;
+    private int verifyTime;
+    private String secret;
+    private String headerName;
+    private String paramName;
+    private boolean autoResponse = true;
 
 
     private boolean initialized;
@@ -68,6 +73,11 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
         menuFilePath = configReader.getString(MENU_FILE_PATH, confAnn != null ? confAnn.menuFilePath() : "${root}/menu/menu.xml");
         String authenticatorClassName = configReader.getString(AUTHENTICATOR_CLASS, confAnn != null ? confAnn.authenticatorClass().getName() : null);
         authenticatorClass = ClassUtils.impl(authenticatorClassName, IAuthenticator.class, this.getClass());
+        verifyTime = configReader.getInt(VERIFY_TIME, confAnn != null ? confAnn.verifyTime() : 0);
+        secret = configReader.getString(SECRET, confAnn != null ? confAnn.secret() : "dpstudio_jwt");
+        headerName = configReader.getString(HEADER_NAME, confAnn != null ? confAnn.headerName() : "dpstudio_jwt");
+        paramName = configReader.getString(PARAM_NAME, confAnn != null ? confAnn.paramName() : "dpstudio_jwt");
+        autoResponse = configReader.getBoolean(AUTO_RESPONSE, confAnn == null || confAnn.autoResponse());
     }
 
     @Override
@@ -114,6 +124,31 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
         return hotLoading;
     }
 
+    @Override
+    public int verifyTime() {
+        return verifyTime;
+    }
+
+    @Override
+    public String secret() {
+        return secret;
+    }
+
+    @Override
+    public String headerName() {
+        return headerName;
+    }
+
+    @Override
+    public String paramName() {
+        return paramName;
+    }
+
+    @Override
+    public boolean autoResponse() {
+        return autoResponse;
+    }
+
     public void setEnabled(boolean enabled) {
         if (!initialized) {
             this.enabled = enabled;
@@ -137,10 +172,35 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
             this.authenticatorClass = authenticatorClass;
         }
     }
-
     public void setHotLoading(boolean hotLoading) {
         if (!initialized) {
             this.hotLoading = hotLoading;
+        }
+    }
+    public void setVerifyTime(int verifyTime) {
+        if (!initialized) {
+            this.verifyTime = verifyTime;
+        }
+    }
+    public void setSecret(String secret) {
+        if (!initialized) {
+            this.secret = secret;
+        }
+    }
+    public void setHeaderName(String headerName) {
+        if (!initialized) {
+            this.headerName = headerName;
+        }
+    }
+    public void setParamName(String paramName) {
+        if (!initialized) {
+            this.paramName = paramName;
+        }
+    }
+
+    public void setAutoResponse(boolean autoResponse) {
+        if (!initialized) {
+            this.autoResponse = autoResponse;
         }
     }
 
@@ -173,6 +233,31 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
 
         public Builder hotLoading(boolean hotLoading) {
             config.setHotLoading(hotLoading);
+            return this;
+        }
+
+        public Builder verifyTime(int verifyTime) {
+            config.setVerifyTime(verifyTime);
+            return this;
+        }
+
+        public Builder secret(String secret) {
+            config.setSecret(secret);
+            return this;
+        }
+
+        public Builder headerName(String headerName) {
+            config.setHeaderName(headerName);
+            return this;
+        }
+
+        public Builder paramName(String paramName) {
+            config.setParamName(paramName);
+            return this;
+        }
+
+        public Builder autoResponse(boolean autoResponse) {
+            config.setAutoResponse(autoResponse);
             return this;
         }
 

@@ -1,8 +1,8 @@
 package com.dpstudio.module.security.service.impl;
 
 import com.dpstudio.dev.core.R;
-import com.dpstudio.dev.core.method.M;
 import com.dpstudio.dev.utils.BeanUtils;
+import com.dpstudio.module.security.SecurityCache;
 import com.dpstudio.module.security.core.Code;
 import com.dpstudio.module.security.dao.ISecurityAdminRoleDao;
 import com.dpstudio.module.security.model.SecurityAdminRole;
@@ -38,9 +38,9 @@ public class SecurityAdminRoleServiceImpl implements ISecurityAdminRoleService {
         securityAdminRole = BeanUtils.copy(adminRoleVO, SecurityAdminRole::new, (adminRoleOPVOCopy, securityAdminRoleCopy) -> {
             securityAdminRoleCopy.setId(UUIDUtils.UUID());
             securityAdminRoleCopy.setCreateTime(DateTimeUtils.currentTimeMillis());
-            securityAdminRoleCopy.setCreateUser(M.userId());
+            securityAdminRoleCopy.setCreateUser(SecurityCache.userId());
             securityAdminRoleCopy.setLastModifyTime(DateTimeUtils.currentTimeMillis());
-            securityAdminRoleCopy.setLastModifyUser(M.userId());
+            securityAdminRoleCopy.setLastModifyUser(SecurityCache.userId());
         });
         securityAdminRole = iSecurityAdminRoleDao.create(securityAdminRole);
         return R.result(securityAdminRole);

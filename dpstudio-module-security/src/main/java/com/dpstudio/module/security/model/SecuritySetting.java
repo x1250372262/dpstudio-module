@@ -87,21 +87,6 @@ public class SecuritySetting extends BaseEntity<SecuritySetting, String> {
     @PropertyState(propertyName = FIELDS.LOGIN_NOT_IP_NOTICE)
     private Integer loginNotIpNotice;
 
-    
-    @Property(name = FIELDS.LOGIN_CLIENT_STATUS, length = 1)
-    @Default("0")
-    @Comment("是否可以多端登录")
-    @PropertyState(propertyName = FIELDS.LOGIN_CLIENT_STATUS)
-    private Integer loginClientStatus;
-
-    
-    @Property(name = FIELDS.LOGIN_CLIENT_TYPE, length = 1)
-    @Default("0")
-    @Comment("多端登录的验证类型")
-    @PropertyState(propertyName = FIELDS.LOGIN_CLIENT_TYPE)
-    private Integer loginClientType;
-
-    
     @Property(name = FIELDS.LAST_MODIFY_TIME, length = 13)
     @Default("0")
     @Comment("最后修改时间")
@@ -131,7 +116,7 @@ public class SecuritySetting extends BaseEntity<SecuritySetting, String> {
             this.id = id;
         }
 
-    public SecuritySetting(String id, Integer loginLogStatus, Integer loginErrorCount, Integer loginErrorTime, Integer loginErrorStatus, Integer loginUnlockFounder, Integer loginNotIpStatus, Integer loginNotIpNotice, Integer loginClientStatus, Integer loginClientType, Long lastModifyTime, String lastModifyUser) {
+    public SecuritySetting(String id, Integer loginLogStatus, Integer loginErrorCount, Integer loginErrorTime, Integer loginErrorStatus, Integer loginUnlockFounder, Integer loginNotIpStatus, Integer loginNotIpNotice,  Long lastModifyTime, String lastModifyUser) {
         this.id = id;
         this.loginLogStatus = loginLogStatus;
         this.loginErrorCount = loginErrorCount;
@@ -140,13 +125,11 @@ public class SecuritySetting extends BaseEntity<SecuritySetting, String> {
         this.loginUnlockFounder = loginUnlockFounder;
         this.loginNotIpStatus = loginNotIpStatus;
         this.loginNotIpNotice = loginNotIpNotice;
-        this.loginClientStatus = loginClientStatus;
-        this.loginClientType = loginClientType;
         this.lastModifyTime = lastModifyTime;
         this.lastModifyUser = lastModifyUser;
     }
 
-    public SecuritySetting(IDatabase dbOwner, String id, Integer loginLogStatus, Integer loginErrorCount, Integer loginErrorTime, Integer loginErrorStatus, Integer loginUnlockFounder, Integer loginNotIpStatus, Integer loginNotIpNotice, Integer loginClientStatus, Integer loginClientType, Long lastModifyTime, String lastModifyUser) {
+    public SecuritySetting(IDatabase dbOwner, String id, Integer loginLogStatus, Integer loginErrorCount, Integer loginErrorTime, Integer loginErrorStatus, Integer loginUnlockFounder, Integer loginNotIpStatus, Integer loginNotIpNotice, Long lastModifyTime, String lastModifyUser) {
         super(dbOwner);
         this.id = id;
         this.loginLogStatus = loginLogStatus;
@@ -156,8 +139,6 @@ public class SecuritySetting extends BaseEntity<SecuritySetting, String> {
         this.loginUnlockFounder = loginUnlockFounder;
         this.loginNotIpStatus = loginNotIpStatus;
         this.loginNotIpNotice = loginNotIpNotice;
-        this.loginClientStatus = loginClientStatus;
-        this.loginClientType = loginClientType;
         this.lastModifyTime = lastModifyTime;
         this.lastModifyUser = lastModifyUser;
     }
@@ -226,22 +207,6 @@ public class SecuritySetting extends BaseEntity<SecuritySetting, String> {
 
     public void setLoginNotIpNotice(Integer loginNotIpNotice) {
         this.loginNotIpNotice = loginNotIpNotice;
-    }
-
-    public Integer getLoginClientStatus() {
-        return loginClientStatus;
-    }
-
-    public void setLoginClientStatus(Integer loginClientStatus) {
-        this.loginClientStatus = loginClientStatus;
-    }
-
-    public Integer getLoginClientType() {
-        return loginClientType;
-    }
-
-    public void setLoginClientType(Integer loginClientType) {
-        this.loginClientType = loginClientType;
     }
 
     public Long getLastModifyTime() {
@@ -393,24 +358,6 @@ public class SecuritySetting extends BaseEntity<SecuritySetting, String> {
             return this;
         }
 
-        public Integer loginClientStatus() {
-            return targetEntity.getLoginClientStatus();
-        }
-
-        public Builder loginClientStatus(Integer loginClientStatus) {
-            targetEntity.setLoginClientStatus(loginClientStatus);
-            return this;
-        }
-
-        public Integer loginClientType() {
-            return targetEntity.getLoginClientType();
-        }
-
-        public Builder loginClientType(Integer loginClientType) {
-            targetEntity.setLoginClientType(loginClientType);
-            return this;
-        }
-
         public Long lastModifyTime() {
             return targetEntity.getLastModifyTime();
         }
@@ -439,8 +386,6 @@ public class SecuritySetting extends BaseEntity<SecuritySetting, String> {
         String LOGIN_UNLOCK_FOUNDER = "login_unlock_founder";
         String LOGIN_NOT_IP_STATUS = "login_not_ip_status";
         String LOGIN_NOT_IP_NOTICE = "login_not_ip_notice";
-        String LOGIN_CLIENT_STATUS = "login_client_status";
-        String LOGIN_CLIENT_TYPE = "login_client_type";
         String LAST_MODIFY_TIME = "last_modify_time";
         String LAST_MODIFY_USER = "last_modify_user";
     }

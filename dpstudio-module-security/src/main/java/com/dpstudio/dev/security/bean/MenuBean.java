@@ -15,6 +15,7 @@ public class MenuBean {
     private String icon;
     private String url;
     private String pid;
+    private String path;
     private String permissions;
 
     public static MenuBean builder() {
@@ -85,6 +86,15 @@ public class MenuBean {
         return this.permissions;
     }
 
+    public MenuBean path(String path) {
+        this.path = path;
+        return this;
+    }
+
+    public String path() {
+        return this.path;
+    }
+
 
     public String getId() {
         return id;
@@ -140,5 +150,13 @@ public class MenuBean {
 
     public void setPermissions(String permissions) {
         this.permissions = permissions;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

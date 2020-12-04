@@ -1,16 +1,22 @@
 package com.dpstudio.module.security.service.impl;
 
 import com.dpstudio.dev.core.R;
-import com.dpstudio.dev.core.UserSession;
-import com.dpstudio.dev.core.method.M;
+import com.dpstudio.dev.core.code.C;
+import com.dpstudio.dev.security.ISecurityConfig;
 import com.dpstudio.dev.security.Security;
 import com.dpstudio.dev.security.bean.MenuBean;
+import com.dpstudio.dev.security.jwt.JWT;
+import com.dpstudio.dev.support.jwt.JwtBean;
+import com.dpstudio.dev.support.jwt.JwtConfig;
+import com.dpstudio.dev.support.jwt.JwtHelper;
 import com.dpstudio.dev.utils.BeanUtils;
+import com.dpstudio.module.security.SecurityCache;
 import com.dpstudio.module.security.core.Code;
 import com.dpstudio.module.security.core.SecurityConstants;
 import com.dpstudio.module.security.dao.ISecurityAdminDao;
 import com.dpstudio.module.security.dao.ISecurityAdminRoleDao;
 import com.dpstudio.module.security.model.SecurityAdmin;
+import com.dpstudio.module.security.model.SecurityRole;
 import com.dpstudio.module.security.service.ISecurityAdminLogService;
 import com.dpstudio.module.security.service.ISecurityAdminService;
 import com.dpstudio.module.security.service.ISecuritySettingService;
@@ -19,20 +25,25 @@ import com.dpstudio.module.security.vo.detail.SecuritySettingDetailVO;
 import com.dpstudio.module.security.vo.list.SecurityAdminListVO;
 import com.dpstudio.module.security.vo.list.SecurityAdminRoleListVO;
 import com.dpstudio.module.security.vo.op.SecurityAdminVO;
+import net.ymate.platform.commons.lang.BlurObject;
 import net.ymate.platform.commons.util.DateTimeUtils;
 import net.ymate.platform.commons.util.UUIDUtils;
+import net.ymate.platform.core.YMP;
 import net.ymate.platform.core.beans.annotation.Bean;
 import net.ymate.platform.core.beans.annotation.Inject;
 import net.ymate.platform.core.persistence.IResultSet;
 import net.ymate.platform.core.persistence.Params;
 import net.ymate.platform.core.persistence.annotation.Transaction;
+import net.ymate.platform.persistence.jdbc.IDBLocker;
 import net.ymate.platform.webmvc.context.WebContext;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 
@@ -102,37 +113,28 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         if (Objects.equals(SecurityConstants.BOOL_TRUE, securityAdmin.getDisableStatus())) {
             return R.create(Code.SECURITY_ADMIN_DISABLED.getCode()).msg(Code.SECURITY_ADMIN_DISABLED.getMsg());
         }
-        //禁止多端登录并且类型是禁止登录
-//        boolean loginClientBool = Objects.equals(securitySettingDetailVO.getLoginClientStatus(), SecurityConstants.BOOL_TRUE)
-//                && Objects.equals(securitySettingDetailVO.getLoginClientType(), SecurityConstants.BOOL_FALSE);
-//        if (loginClientBool) {
-//            System.out.println("aaaaa");
-//            UserSessionBean oldSession = UserSessionBean.current();
-//            System.out.println(securityAdmin.getSessionToken());
-//            if (oldSession != null
-//                    && StringUtils.isNotBlank(securityAdmin.getSessionToken()) && !securityAdmin.getSessionToken().equals(oldSession.getId())) {
-//                System.out.println(oldSession.getId());
-//                System.out.println("bbbb");
-//                return R.create(Code.SECURITY_ADMIN_OUT.getCode()).msg(Code.SECURITY_ADMIN_OUT.getMsg());
-//            }
-//
-//        }
         securityAdmin.setLoginErrorCount(0);
         securityAdmin.setLoginLockStatus(SecurityConstants.BOOL_FALSE);
         securityAdmin.setLoginLockStartTime(0L);
         securityAdmin.setLoginLockEndTime(0L);
-        UserSession userSessionBean = UserSession
-                .create(WebContext.getRequest().getSession().getId()).reset()
-                .setUid(securityAdmin.getId())
-                .addAttribute("founder", securityAdmin.getFounder())
-                .save();
-        securityAdmin.setSessionToken(userSessionBean.getId());
+
+        ISecurityConfig iSecurityConfig = Security.get().getConfig();
+        JwtConfig jwtConfig = JwtConfig.builder()
+                .secret(iSecurityConfig.secret())
+                .paramName(iSecurityConfig.paramName())
+                .headerName(iSecurityConfig.headerName())
+                .autoResponse(iSecurityConfig.autoResponse())
+                .verifyTime(DateTimeUtils.MINUTE * iSecurityConfig.verifyTime());
+        R jwtResult = JWT.attr("uid", securityAdmin.getId())
+                .create(jwtConfig);
+        if (!Objects.equals(jwtResult.code(), C.SUCCESS.getCode())) {
+            return jwtResult;
+        }
+        //放到缓存
+        SecurityCache.JwtCache.setPara(jwtResult.attr("jwtToken"));
+        SecurityCache.JwtCache.setParaByAdminId(securityAdmin.getId(), jwtResult.attr("jwtToken"));
         iSecurityAdminDao.update(securityAdmin, SecurityAdmin.FIELDS.LOGIN_ERROR_COUNT, SecurityAdmin.FIELDS.LOGIN_LOCK_STATUS,
                 SecurityAdmin.FIELDS.LOGIN_LOCK_START_TIME, SecurityAdmin.FIELDS.LOGIN_LOCK_END_TIME, SecurityAdmin.FIELDS.SESSION_TOKEN);
-        Map<String, Object> jdbcSession = WebContext.getContext().getSession();
-        jdbcSession.put("userName", StringUtils.defaultIfBlank(securityAdmin.getRealName(), securityAdmin.getUserName()));
-//        jdbcSession.put("permissions", permissions);
-        jdbcSession.put("photo", StringUtils.defaultIfBlank(securityAdmin.getPhotoUri(), ""));
         //开启日志记录
         if (Objects.equals(securitySettingDetailVO.getLoginLogStatus(), SecurityConstants.BOOL_TRUE)) {
             iSecurityAdminLogService.create(securityAdmin.getId(), StringUtils.defaultIfBlank(securityAdmin.getRealName(), securityAdmin.getUserName()));
@@ -146,7 +148,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         if (!newPwd.equals(reNewPwd)) {
             return R.create(Code.SECURITY_ADMIN_PASSWORD_NO_SAME.getCode()).msg(Code.SECURITY_ADMIN_PASSWORD_NO_SAME.getMsg());
         }
-        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(UserSession.current().getUid(), SecurityAdmin.FIELDS.USER_NAME, SecurityAdmin.FIELDS.PASSWORD, SecurityAdmin.FIELDS.ID, SecurityAdmin.FIELDS.SALT);
+        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(BlurObject.bind(JWT.Store.getPara("uid")).toStringValue(), IDBLocker.DEFAULT, SecurityAdmin.FIELDS.USER_NAME, SecurityAdmin.FIELDS.PASSWORD, SecurityAdmin.FIELDS.ID, SecurityAdmin.FIELDS.SALT);
         if (securityAdmin == null) {
             return R.create(Code.SECURITY_ADMIN_NOT_EXIST.getCode()).msg(Code.SECURITY_ADMIN_NOT_EXIST.getMsg());
         }
@@ -158,15 +160,47 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         pwd = DigestUtils.md5Hex(Base64.encodeBase64((newPwd + salt).getBytes(SecurityConstants.CHARTSET)));
         securityAdmin.setPassword(pwd);
         securityAdmin.setLastModifyTime(DateTimeUtils.currentTimeMillis());
-        securityAdmin.setLastModifyUser(M.userId());
+        securityAdmin.setLastModifyUser(SecurityCache.userId());
         securityAdmin = iSecurityAdminDao.update(securityAdmin, SecurityAdmin.FIELDS.PASSWORD, SecurityAdmin.FIELDS.LAST_MODIFY_TIME, SecurityAdmin.FIELDS.LAST_MODIFY_USER);
-        WebContext.getRequest().getSession().invalidate();
+        if (securityAdmin != null) {
+            clearLoginStatus();
+        }
         return R.result(securityAdmin);
+    }
+
+    private void clearLoginStatus() {
+        HttpServletRequest request = WebContext.getRequest();
+        String token = request.getHeader(JWT.JWT_CONFIG.getHeaderName());
+
+        if (StringUtils.isBlank(token) && StringUtils.isBlank(JWT.JWT_CONFIG.getParamName())) {
+            token = request.getParameter(JWT.JWT_CONFIG.getParamName());
+        }
+        if (StringUtils.isBlank(token)) {
+            return;
+        }
+        SecurityCache.JwtCache.removePara(token);
+        R r = JwtHelper.parse(token);
+        if (!Objects.equals(r.code(), C.SUCCESS.getCode())) {
+            return;
+        }
+        String uid = r.attr("uid");
+        if (StringUtils.isBlank(uid)) {
+            return;
+        }
+        SecurityCache.JwtCache.removeParaByAdminId(uid);
+        try {
+            SecurityAdmin securityAdmin = YMP.get().getBeanFactory().getBean(ISecurityAdminDao.class).findById(uid, null);
+            if (securityAdmin == null) {
+                return;
+            }
+            SecurityCache.AdminCache.removePara(securityAdmin.getId());
+        } catch (Exception ignored) {
+        }
     }
 
     @Override
     public SecurityAdminDetailVO detail(String id) throws Exception {
-        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(id);
+        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(id, null);
         return BeanUtils.copy(securityAdmin, SecurityAdminDetailVO::new, (s, securityAdminDetailVO) -> {
             securityAdminDetailVO.setThumb(s.getPhotoUri());
         });
@@ -174,7 +208,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
 
     @Override
     public R updateInfo(SecurityAdminVO securityAdminVO) throws Exception {
-        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(UserSession.current().getUid());
+        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(BlurObject.bind(JWT.Store.getPara("uid")).toStringValue(), IDBLocker.DEFAULT);
         if (securityAdmin == null) {
             return R.create(Code.SECURITY_ADMIN_NOT_EXIST.getCode())
                     .msg(Code.SECURITY_ADMIN_NOT_EXIST.getMsg());
@@ -184,9 +218,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         securityAdmin.setMobile(StringUtils.defaultIfBlank(securityAdminVO.getMobile(), ""));
         securityAdmin.setGender(securityAdminVO.getGender());
         securityAdmin = iSecurityAdminDao.update(securityAdmin, SecurityAdmin.FIELDS.REAL_NAME, SecurityAdmin.FIELDS.PHOTO_URI, SecurityAdmin.FIELDS.MOBILE, SecurityAdmin.FIELDS.GENDER);
-        Map<String, Object> jdbcSession = WebContext.getContext().getSession();
-        jdbcSession.put("userName", StringUtils.defaultIfBlank(securityAdmin.getRealName(), securityAdmin.getUserName()));
-        jdbcSession.put("photo", securityAdmin.getPhotoUri());
+        SecurityCache.AdminCache.setPara(securityAdmin);
         return R.result(securityAdmin);
     }
 
@@ -228,29 +260,32 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
             t.setSalt(salt);
             t.setPassword(finalPassword);
             t.setCreateTime(DateTimeUtils.currentTimeMillis());
-            t.setCreateUser(M.userId());
+            t.setCreateUser(SecurityCache.userId());
             t.setLastModifyTime(DateTimeUtils.currentTimeMillis());
-            t.setLastModifyUser(M.userId());
+            t.setLastModifyUser(SecurityCache.userId());
         });
         securityAdmin = iSecurityAdminDao.create(securityAdmin);
         return R.result(securityAdmin);
     }
 
     @Override
-    public R disabled(String id, Integer disableStatus) throws Exception {
-        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(id);
-        if (securityAdmin == null) {
-            return R.create(Code.SECURITY_ADMIN_NOT_EXIST.getCode())
-                    .msg(Code.SECURITY_ADMIN_NOT_EXIST.getMsg());
+    public R disabled(String[] ids, Integer disableStatus) throws Exception {
+        List<String> params = Arrays.asList(ids);
+        IResultSet<SecurityAdmin> securityAdminResultSet = iSecurityAdminDao.findAllByIds(params, IDBLocker.DEFAULT);
+        if (securityAdminResultSet.isResultsAvailable()) {
+            List<SecurityAdmin> securityAdminList = BeanUtils.copyList(securityAdminResultSet.getResultData(), SecurityAdmin::new, (s, t) -> {
+                t.setDisableStatus(disableStatus);
+            });
+            if (!securityAdminList.isEmpty()) {
+                iSecurityAdminDao.updateAll(securityAdminList, SecurityAdmin.FIELDS.DISABLE_STATUS);
+            }
         }
-        securityAdmin.setDisableStatus(disableStatus);
-        securityAdmin = iSecurityAdminDao.update(securityAdmin, SecurityAdmin.FIELDS.DISABLE_STATUS);
-        return R.result(securityAdmin);
+        return R.ok();
     }
 
     @Override
     public R resetPassword(String id) throws Exception {
-        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(id);
+        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(id, IDBLocker.DEFAULT);
         if (securityAdmin == null) {
             return R.create(Code.SECURITY_ADMIN_NOT_EXIST.getCode()).msg(Code.SECURITY_ADMIN_NOT_EXIST.getMsg());
         }
@@ -264,7 +299,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
 
     @Override
     public R unlock(String id) throws Exception {
-        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(id);
+        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(id, IDBLocker.DEFAULT);
         if (securityAdmin == null) {
             return R.create(Code.SECURITY_ADMIN_NOT_EXIST.getCode()).msg(Code.SECURITY_ADMIN_NOT_EXIST.getMsg());
         }
@@ -275,6 +310,16 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         securityAdmin = iSecurityAdminDao.update(securityAdmin, SecurityAdmin.FIELDS.LOGIN_ERROR_COUNT, SecurityAdmin.FIELDS.LOGIN_LOCK_STATUS,
                 SecurityAdmin.FIELDS.LOGIN_LOCK_START_TIME, SecurityAdmin.FIELDS.LOGIN_LOCK_END_TIME);
         return R.result(securityAdmin);
+    }
+
+    @Override
+    public R delete(String[] ids) throws Exception {
+        List<SecurityAdmin> list = new ArrayList<>();
+        for (String id : ids) {
+            list.add(SecurityAdmin.builder().id(id).build());
+        }
+        iSecurityAdminDao.delete(list);
+        return R.ok();
     }
 
 

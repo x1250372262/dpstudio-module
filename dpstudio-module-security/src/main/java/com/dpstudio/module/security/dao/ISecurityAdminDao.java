@@ -4,6 +4,9 @@ package com.dpstudio.module.security.dao;
 import com.dpstudio.module.security.model.SecurityAdmin;
 import com.dpstudio.module.security.vo.list.SecurityAdminListVO;
 import net.ymate.platform.core.persistence.IResultSet;
+import net.ymate.platform.persistence.jdbc.IDBLocker;
+
+import java.util.List;
 
 public interface ISecurityAdminDao {
 
@@ -15,7 +18,7 @@ public interface ISecurityAdminDao {
      * @return 查询的数据
      * @throws Exception 查询异常
      */
-    SecurityAdmin findById(String id, String... fields) throws Exception;
+    SecurityAdmin findById(String id, IDBLocker idbLocker, String... fields) throws Exception;
 
     /**
      * 根据用户名查询
@@ -38,6 +41,16 @@ public interface ISecurityAdminDao {
     SecurityAdmin update(SecurityAdmin securityAdmin, String... fields) throws Exception;
 
     /**
+     * 修改
+     *
+     * @param securityAdminList
+     * @param fields
+     * @return
+     * @throws Exception
+     */
+    void updateAll(List<SecurityAdmin> securityAdminList, String... fields) throws Exception;
+
+    /**
      * 管理员列表
      *
      * @param userName
@@ -56,5 +69,23 @@ public interface ISecurityAdminDao {
      * @throws Exception
      */
     SecurityAdmin create(SecurityAdmin securityAdmin) throws Exception;
+
+    /**
+     * 根据ids查询所有
+     *
+     * @param params
+     * @param idbLocker
+     * @return
+     * @throws Exception
+     */
+    IResultSet<SecurityAdmin> findAllByIds(List<String> params, IDBLocker idbLocker) throws Exception;
+
+    /**
+     * 删除
+     *
+     * @param list
+     * @throws Exception
+     */
+    void delete(List<SecurityAdmin> list) throws Exception;
 
 }

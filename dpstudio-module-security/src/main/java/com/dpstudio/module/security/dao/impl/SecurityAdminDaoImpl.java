@@ -8,6 +8,9 @@ import net.ymate.platform.core.beans.annotation.Bean;
 import net.ymate.platform.core.persistence.Fields;
 import net.ymate.platform.core.persistence.IResultSet;
 import net.ymate.platform.core.persistence.Page;
+import net.ymate.platform.core.persistence.Params;
+import net.ymate.platform.persistence.jdbc.IDBLocker;
+import net.ymate.platform.persistence.jdbc.IDatabaseSessionExecutor;
 import net.ymate.platform.persistence.jdbc.JDBC;
 import net.ymate.platform.persistence.jdbc.base.impl.BeanResultSetHandler;
 import net.ymate.platform.persistence.jdbc.query.Cond;
@@ -15,12 +18,14 @@ import net.ymate.platform.persistence.jdbc.query.SQL;
 import net.ymate.platform.persistence.jdbc.query.Select;
 import net.ymate.platform.persistence.jdbc.query.Where;
 
+import java.util.List;
+
 @Bean
 public class SecurityAdminDaoImpl implements ISecurityAdminDao {
 
     @Override
-    public SecurityAdmin findById(String id, String... fields) throws Exception {
-        return SecurityAdmin.builder().id(id).build().load(Fields.create(fields));
+    public SecurityAdmin findById(String id, IDBLocker idbLocker, String... fields) throws Exception {
+        return SecurityAdmin.builder().id(id).build().load(Fields.create(fields), idbLocker);
     }
 
     @Override
@@ -31,6 +36,11 @@ public class SecurityAdminDaoImpl implements ISecurityAdminDao {
     @Override
     public SecurityAdmin update(SecurityAdmin securityAdmin, String... fields) throws Exception {
         return securityAdmin.update(Fields.create(fields));
+    }
+
+    @Override
+    public void updateAll(List<SecurityAdmin> securityAdminList, String... fields) throws Exception {
+        JDBC.get().openSession((IDatabaseSessionExecutor<Object>) session -> session.update(securityAdminList, Fields.create(fields)));
     }
 
     @Override
@@ -61,6 +71,16 @@ public class SecurityAdminDaoImpl implements ISecurityAdminDao {
     @Override
     public SecurityAdmin create(SecurityAdmin securityAdmin) throws Exception {
         return securityAdmin.save();
+    }
+
+    @Override
+    public IResultSet<SecurityAdmin> findAllByIds(List<String> params, IDBLocker idbLocker) throws Exception {
+        return SecurityAdmin.builder().build().find(Where.create(Cond.create().in(SecurityAdmin.FIELDS.ID, Params.create(params))), idbLocker);
+    }
+
+    @Override
+    public void delete(List<SecurityAdmin> list) throws Exception {
+        JDBC.get().openSession((IDatabaseSessionExecutor<Object>) session -> session.delete(list));
     }
 
 }

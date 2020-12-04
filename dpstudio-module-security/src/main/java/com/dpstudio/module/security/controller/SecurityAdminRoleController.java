@@ -3,10 +3,12 @@ package com.dpstudio.module.security.controller;
 import com.dpstudio.dev.core.L;
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.core.V;
+import com.dpstudio.module.security.interCeptor.JwtCheckInterceptor;
 import com.dpstudio.module.security.model.SecurityAdminRole;
 import com.dpstudio.module.security.service.ISecurityAdminRoleService;
 import com.dpstudio.module.security.vo.list.SecurityAdminRoleListVO;
 import com.dpstudio.module.security.vo.op.SecurityAdminRoleVO;
+import net.ymate.platform.core.beans.annotation.Before;
 import net.ymate.platform.core.beans.annotation.Inject;
 import net.ymate.platform.core.persistence.IResultSet;
 import net.ymate.platform.validation.annotation.VModel;
@@ -20,6 +22,7 @@ import net.ymate.platform.webmvc.view.IView;
 
 @Controller
 @RequestMapping("/admin/role")
+@Before(JwtCheckInterceptor.class)
 public class SecurityAdminRoleController {
 
     @Inject
