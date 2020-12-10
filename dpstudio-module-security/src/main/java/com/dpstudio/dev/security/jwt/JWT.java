@@ -2,10 +2,13 @@ package com.dpstudio.dev.security.jwt;
 
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.core.code.C;
+import com.dpstudio.dev.security.ISecurityConfig;
+import com.dpstudio.dev.security.Security;
 import com.dpstudio.dev.support.jwt.JwtBean;
 import com.dpstudio.dev.support.jwt.JwtConfig;
 import com.dpstudio.dev.support.jwt.JwtHelper;
 import net.ymate.platform.commons.json.JsonWrapper;
+import net.ymate.platform.commons.util.DateTimeUtils;
 import net.ymate.platform.webmvc.context.WebContext;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,25 +34,34 @@ public class JWT {
 
     }
 
+    static {
+        ISecurityConfig iSecurityConfig = Security.get().getConfig();
+        JWT_CONFIG.setSecret(iSecurityConfig.secret());
+        JWT_CONFIG.setParamName(iSecurityConfig.paramName());
+        JWT_CONFIG.setHeaderName(iSecurityConfig.headerName());
+        JWT_CONFIG.setAutoResponse(iSecurityConfig.autoResponse());
+        JWT_CONFIG.setVerifyTime(DateTimeUtils.MINUTE * iSecurityConfig.verifyTime());
+    }
+
     public static class Store {
-        private static final ThreadLocal<Map<String, Object>> jwtThreadLocal = new ThreadLocal<>();
+        private static final ThreadLocal<Map<String, Object>> JWT_THREAD_LOCAL = new ThreadLocal<>();
 
 
         public static void setPara(Map<String, Object> map) {
-            jwtThreadLocal.set(map);
+            JWT_THREAD_LOCAL.set(map);
         }
 
         public static void removePara() {
-            jwtThreadLocal.remove();
+            JWT_THREAD_LOCAL.remove();
         }
 
         public static Object getPara(String key) {
-            Map<String, Object> map = jwtThreadLocal.get();
+            Map<String, Object> map = JWT_THREAD_LOCAL.get();
             return map == null ? null : map.get(key);
         }
 
         public static Map<String, Object> getParas() {
-            return jwtThreadLocal.get();
+            return JWT_THREAD_LOCAL.get();
         }
 
     }
@@ -74,25 +86,17 @@ public class JWT {
         return JwtHelper.parse(token);
     }
 
-    public R create(JwtConfig jwtConfig) {
-        return build(jwtConfig);
-    }
-
-    public R build(JwtConfig jwtConfig) {
-        JwtBean jwtBean = JwtHelper.get(jwtConfig)
+    public R build() {
+        JwtBean jwtBean = JwtHelper.get(JWT_CONFIG)
                 .attrs(attrMap)
                 .create();
         if (StringUtils.isBlank(jwtBean.getToken())) {
             return R.create(C.JWT_CREATE_ERROR.getCode()).msg(C.JWT_CREATE_ERROR.getMsg());
         }
-        if (jwtConfig.autoResponse()) {
-            WebContext.getResponse().setHeader(jwtConfig.getHeaderName(), JsonWrapper.toJsonString(jwtBean,false,true));
+        if (JWT_CONFIG.autoResponse()) {
+            WebContext.getResponse().setHeader(JWT_CONFIG.getHeaderName(), JsonWrapper.toJsonString(jwtBean, false, true));
         }
         return R.ok().attr("jwtToken", jwtBean);
-    }
-
-    public R create() {
-        return build(JWT_CONFIG);
     }
 
 }

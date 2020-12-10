@@ -2,12 +2,9 @@ package com.dpstudio.module.security.service.impl;
 
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.core.code.C;
-import com.dpstudio.dev.security.ISecurityConfig;
 import com.dpstudio.dev.security.Security;
 import com.dpstudio.dev.security.bean.MenuBean;
 import com.dpstudio.dev.security.jwt.JWT;
-import com.dpstudio.dev.support.jwt.JwtBean;
-import com.dpstudio.dev.support.jwt.JwtConfig;
 import com.dpstudio.dev.support.jwt.JwtHelper;
 import com.dpstudio.dev.utils.BeanUtils;
 import com.dpstudio.module.security.SecurityCache;
@@ -16,7 +13,6 @@ import com.dpstudio.module.security.core.SecurityConstants;
 import com.dpstudio.module.security.dao.ISecurityAdminDao;
 import com.dpstudio.module.security.dao.ISecurityAdminRoleDao;
 import com.dpstudio.module.security.model.SecurityAdmin;
-import com.dpstudio.module.security.model.SecurityRole;
 import com.dpstudio.module.security.service.ISecurityAdminLogService;
 import com.dpstudio.module.security.service.ISecurityAdminService;
 import com.dpstudio.module.security.service.ISecuritySettingService;
@@ -118,15 +114,8 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         securityAdmin.setLoginLockStartTime(0L);
         securityAdmin.setLoginLockEndTime(0L);
 
-        ISecurityConfig iSecurityConfig = Security.get().getConfig();
-        JwtConfig jwtConfig = JwtConfig.builder()
-                .secret(iSecurityConfig.secret())
-                .paramName(iSecurityConfig.paramName())
-                .headerName(iSecurityConfig.headerName())
-                .autoResponse(iSecurityConfig.autoResponse())
-                .verifyTime(DateTimeUtils.MINUTE * iSecurityConfig.verifyTime());
         R jwtResult = JWT.attr("uid", securityAdmin.getId())
-                .create(jwtConfig);
+                .build();
         if (!Objects.equals(jwtResult.code(), C.SUCCESS.getCode())) {
             return jwtResult;
         }

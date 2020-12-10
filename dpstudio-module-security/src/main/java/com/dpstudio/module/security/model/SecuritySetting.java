@@ -38,49 +38,42 @@ public class SecuritySetting extends BaseEntity<SecuritySetting, String> {
     @PropertyState(propertyName = FIELDS.ID)
     private String id;
 
-    
+
     @Property(name = FIELDS.LOGIN_LOG_STATUS, length = 1)
     @Default("0")
     @Comment("是否记录登录日志")
     @PropertyState(propertyName = FIELDS.LOGIN_LOG_STATUS)
     private Integer loginLogStatus;
 
-    
+
     @Property(name = FIELDS.LOGIN_ERROR_COUNT, length = 4)
     @Default("0")
     @Comment("登录错误锁定次数")
     @PropertyState(propertyName = FIELDS.LOGIN_ERROR_COUNT)
     private Integer loginErrorCount;
 
-    
+
     @Property(name = FIELDS.LOGIN_ERROR_TIME, length = 4)
     @Default("0")
     @Comment("登录错误锁定时间(单位分钟)")
     @PropertyState(propertyName = FIELDS.LOGIN_ERROR_TIME)
     private Integer loginErrorTime;
 
-    
+
     @Property(name = FIELDS.LOGIN_ERROR_STATUS, length = 1)
     @Default("0")
     @Comment("是否开启错误次数")
     @PropertyState(propertyName = FIELDS.LOGIN_ERROR_STATUS)
     private Integer loginErrorStatus;
 
-    
-    @Property(name = FIELDS.LOGIN_UNLOCK_FOUNDER, length = 1)
-    @Default("0")
-    @Comment("总管理员是否可以解锁")
-    @PropertyState(propertyName = FIELDS.LOGIN_UNLOCK_FOUNDER)
-    private Integer loginUnlockFounder;
 
-    
     @Property(name = FIELDS.LOGIN_NOT_IP_STATUS, length = 1)
     @Default("0")
     @Comment("是否开启异地登录")
     @PropertyState(propertyName = FIELDS.LOGIN_NOT_IP_STATUS)
     private Integer loginNotIpStatus;
 
-    
+
     @Property(name = FIELDS.LOGIN_NOT_IP_NOTICE, length = 1)
     @Default("0")
     @Comment("异地登录是否提醒")
@@ -93,7 +86,7 @@ public class SecuritySetting extends BaseEntity<SecuritySetting, String> {
     @PropertyState(propertyName = FIELDS.LAST_MODIFY_TIME)
     private Long lastModifyTime;
 
-    
+
     @Property(name = FIELDS.LAST_MODIFY_USER, length = 32)
     @Comment("最后修改人")
     @PropertyState(propertyName = FIELDS.LAST_MODIFY_USER)
@@ -111,32 +104,30 @@ public class SecuritySetting extends BaseEntity<SecuritySetting, String> {
         this.id = id;
     }
 
-        public SecuritySetting(IDatabase dbOwner, String id) {
-            super(dbOwner);
-            this.id = id;
-        }
+    public SecuritySetting(IDatabase dbOwner, String id) {
+        super(dbOwner);
+        this.id = id;
+    }
 
-    public SecuritySetting(String id, Integer loginLogStatus, Integer loginErrorCount, Integer loginErrorTime, Integer loginErrorStatus, Integer loginUnlockFounder, Integer loginNotIpStatus, Integer loginNotIpNotice,  Long lastModifyTime, String lastModifyUser) {
+    public SecuritySetting(String id, Integer loginLogStatus, Integer loginErrorCount, Integer loginErrorTime, Integer loginErrorStatus, Integer loginNotIpStatus, Integer loginNotIpNotice, Long lastModifyTime, String lastModifyUser) {
         this.id = id;
         this.loginLogStatus = loginLogStatus;
         this.loginErrorCount = loginErrorCount;
         this.loginErrorTime = loginErrorTime;
         this.loginErrorStatus = loginErrorStatus;
-        this.loginUnlockFounder = loginUnlockFounder;
         this.loginNotIpStatus = loginNotIpStatus;
         this.loginNotIpNotice = loginNotIpNotice;
         this.lastModifyTime = lastModifyTime;
         this.lastModifyUser = lastModifyUser;
     }
 
-    public SecuritySetting(IDatabase dbOwner, String id, Integer loginLogStatus, Integer loginErrorCount, Integer loginErrorTime, Integer loginErrorStatus, Integer loginUnlockFounder, Integer loginNotIpStatus, Integer loginNotIpNotice, Long lastModifyTime, String lastModifyUser) {
+    public SecuritySetting(IDatabase dbOwner, String id, Integer loginLogStatus, Integer loginErrorCount, Integer loginErrorTime, Integer loginErrorStatus, Integer loginNotIpStatus, Integer loginNotIpNotice, Long lastModifyTime, String lastModifyUser) {
         super(dbOwner);
         this.id = id;
         this.loginLogStatus = loginLogStatus;
         this.loginErrorCount = loginErrorCount;
         this.loginErrorTime = loginErrorTime;
         this.loginErrorStatus = loginErrorStatus;
-        this.loginUnlockFounder = loginUnlockFounder;
         this.loginNotIpStatus = loginNotIpStatus;
         this.loginNotIpNotice = loginNotIpNotice;
         this.lastModifyTime = lastModifyTime;
@@ -185,14 +176,6 @@ public class SecuritySetting extends BaseEntity<SecuritySetting, String> {
         this.loginErrorStatus = loginErrorStatus;
     }
 
-    public Integer getLoginUnlockFounder() {
-        return loginUnlockFounder;
-    }
-
-    public void setLoginUnlockFounder(Integer loginUnlockFounder) {
-        this.loginUnlockFounder = loginUnlockFounder;
-    }
-
     public Integer getLoginNotIpStatus() {
         return loginNotIpStatus;
     }
@@ -234,9 +217,9 @@ public class SecuritySetting extends BaseEntity<SecuritySetting, String> {
         return new Builder();
     }
 
-        public static Builder builder(IDatabase dbOwner) {
-            return new Builder(dbOwner);
-        }
+    public static Builder builder(IDatabase dbOwner) {
+        return new Builder(dbOwner);
+    }
 
     public static class Builder {
 
@@ -331,15 +314,6 @@ public class SecuritySetting extends BaseEntity<SecuritySetting, String> {
             return this;
         }
 
-        public Integer loginUnlockFounder() {
-            return targetEntity.getLoginUnlockFounder();
-        }
-
-        public Builder loginUnlockFounder(Integer loginUnlockFounder) {
-            targetEntity.setLoginUnlockFounder(loginUnlockFounder);
-            return this;
-        }
-
         public Integer loginNotIpStatus() {
             return targetEntity.getLoginNotIpStatus();
         }
@@ -383,7 +357,6 @@ public class SecuritySetting extends BaseEntity<SecuritySetting, String> {
         String LOGIN_ERROR_COUNT = "login_error_count";
         String LOGIN_ERROR_TIME = "login_error_time";
         String LOGIN_ERROR_STATUS = "login_error_status";
-        String LOGIN_UNLOCK_FOUNDER = "login_unlock_founder";
         String LOGIN_NOT_IP_STATUS = "login_not_ip_status";
         String LOGIN_NOT_IP_NOTICE = "login_not_ip_notice";
         String LAST_MODIFY_TIME = "last_modify_time";

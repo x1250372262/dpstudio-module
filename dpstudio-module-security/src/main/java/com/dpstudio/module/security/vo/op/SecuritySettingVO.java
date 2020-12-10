@@ -17,9 +17,6 @@ public class SecuritySettingVO {
     @RequestParam(value = SecuritySetting.FIELDS.LOGIN_ERROR_STATUS)
     private Integer loginErrorStatus;
 
-    @RequestParam(value = SecuritySetting.FIELDS.LOGIN_UNLOCK_FOUNDER)
-    private Integer loginUnlockFounder;
-
     @RequestParam(value = SecuritySetting.FIELDS.LOGIN_NOT_IP_STATUS)
     private Integer loginNotIpStatus;
 
@@ -56,14 +53,6 @@ public class SecuritySettingVO {
 
     public void setLoginErrorStatus(Integer loginErrorStatus) {
         this.loginErrorStatus = loginErrorStatus;
-    }
-
-    public Integer getLoginUnlockFounder() {
-        return loginUnlockFounder;
-    }
-
-    public void setLoginUnlockFounder(Integer loginUnlockFounder) {
-        this.loginUnlockFounder = loginUnlockFounder;
     }
 
     public Integer getLoginNotIpStatus() {

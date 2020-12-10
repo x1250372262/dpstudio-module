@@ -82,15 +82,8 @@ public class JwtCheckInterceptor implements IInterceptor {
             }
             //验证通过之后判断是否需要刷新token
             if (jwtBean.getVerifyTime() > 0 && jwtBean.getVerifyTime() - DateTimeUtils.currentTimeMillis() <= DateTimeUtils.MINUTE) {
-                ISecurityConfig iSecurityConfig = Security.get().getConfig();
-                JwtConfig jwtConfig = JwtConfig.builder()
-                        .secret(iSecurityConfig.secret())
-                        .paramName(iSecurityConfig.paramName())
-                        .headerName(iSecurityConfig.headerName())
-                        .autoResponse(iSecurityConfig.autoResponse())
-                        .verifyTime(DateTimeUtils.MINUTE * iSecurityConfig.verifyTime());
                 R jwtResult = JWT.attr("uid", uid)
-                        .create(jwtConfig);
+                        .build();
                 if (!Objects.equals(jwtResult.code(), C.SUCCESS.getCode())) {
                     return jwtResult;
                 }

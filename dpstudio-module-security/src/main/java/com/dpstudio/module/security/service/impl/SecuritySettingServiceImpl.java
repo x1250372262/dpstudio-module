@@ -34,9 +34,8 @@ public class SecuritySettingServiceImpl implements ISecuritySettingService {
         });
         securitySetting = iSecuritySettingDao.update(securitySetting, SecuritySetting.FIELDS.LOGIN_LOG_STATUS,
                 SecuritySetting.FIELDS.LOGIN_ERROR_COUNT, SecuritySetting.FIELDS.LOGIN_ERROR_TIME,
-                SecuritySetting.FIELDS.LOGIN_ERROR_STATUS, SecuritySetting.FIELDS.LOGIN_UNLOCK_FOUNDER,
-                SecuritySetting.FIELDS.LOGIN_NOT_IP_STATUS, SecuritySetting.FIELDS.LOGIN_NOT_IP_NOTICE,
-                SecuritySetting.FIELDS.LAST_MODIFY_TIME, SecuritySetting.FIELDS.LAST_MODIFY_USER);
+                SecuritySetting.FIELDS.LOGIN_ERROR_STATUS, SecuritySetting.FIELDS.LOGIN_NOT_IP_STATUS,
+                SecuritySetting.FIELDS.LOGIN_NOT_IP_NOTICE,SecuritySetting.FIELDS.LAST_MODIFY_TIME, SecuritySetting.FIELDS.LAST_MODIFY_USER);
         return R.result(securitySetting);
     }
 

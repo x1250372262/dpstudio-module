@@ -114,6 +114,8 @@
 <script type="text/javascript" src="/statics/js/custom/md5.js"></script>
 <script type="text/javascript" src="/statics/plugins/layer/layer.min.js"></script>
 <script type="text/javascript" src="/statics/js/custom/validator.js"></script>
+<script type="text/javascript" src="/statics/js/custom/store.js"></script>
+<script type="text/javascript" src="/statics/js/custom/token.js"></script>
 <script type="text/javascript">
 
     function getQueryVariable (variable) {
@@ -159,10 +161,8 @@
         var logout = getQueryVariable("logout");
         if(logout!==undefined&&logout!==null&&logout==="1"){
             localStorage.removeItem("menu_list");
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("verifyTime");
+            Token.remove()
         }
-
         hk();
 
 
@@ -230,9 +230,8 @@
                         }else {
                             if(result.ret === 0){
                                 setCookie();
-                                var jwtData = JSON.parse(xhr.getResponseHeader("dpstudio_jwt"));
-                                localStorage.setItem("verifyTime",jwtData.verifyTime);
-                                localStorage.setItem("access_token",jwtData.token);
+                                var jwtData = JSON.parse(xhr.getResponseHeader(RESPONSE_PARAM_NAME));
+                                Token.set(jwtData.token,jwtData.verifyTime)
                                 localStorage.setItem("menu_list",JSON.stringify(result.menu_list));
                                 window.location.href = "/admin/home.html"
                             }else{

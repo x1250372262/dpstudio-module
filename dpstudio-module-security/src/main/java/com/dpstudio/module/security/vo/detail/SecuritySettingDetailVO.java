@@ -19,9 +19,6 @@ public class SecuritySettingDetailVO {
     @JSONField(name = SecuritySetting.FIELDS.LOGIN_ERROR_STATUS)
     private Integer loginErrorStatus;
 
-    @JSONField(name = SecuritySetting.FIELDS.LOGIN_UNLOCK_FOUNDER)
-    private Integer loginUnlockFounder;
-
     @JSONField(name = SecuritySetting.FIELDS.LOGIN_NOT_IP_STATUS)
     private Integer loginNotIpStatus;
 
@@ -69,14 +66,6 @@ public class SecuritySettingDetailVO {
 
     public void setLoginErrorStatus(Integer loginErrorStatus) {
         this.loginErrorStatus = loginErrorStatus;
-    }
-
-    public Integer getLoginUnlockFounder() {
-        return loginUnlockFounder;
-    }
-
-    public void setLoginUnlockFounder(Integer loginUnlockFounder) {
-        this.loginUnlockFounder = loginUnlockFounder;
     }
 
     public Integer getLoginNotIpStatus() {
