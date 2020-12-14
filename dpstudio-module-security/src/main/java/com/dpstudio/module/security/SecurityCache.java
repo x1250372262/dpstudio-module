@@ -7,7 +7,10 @@ import com.dpstudio.module.security.model.SecurityAdmin;
 import net.ymate.platform.cache.Caches;
 import net.ymate.platform.cache.ICaches;
 import net.ymate.platform.commons.lang.BlurObject;
+import net.ymate.platform.webmvc.context.WebContext;
+import org.apache.commons.lang3.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 /**
@@ -21,8 +24,18 @@ public class SecurityCache {
     private static final int TIME_OUT = Security.get().getConfig().verifyTime() * 60;
 
     public static String userId() {
-        return (String) Optional.ofNullable(JWT.Store.getPara("uid"))
+        return (String) Optional.ofNullable(JWT.Store.getPara(token(), "uid"))
                 .orElse("1");
+    }
+
+    public static String token() {
+        HttpServletRequest request = WebContext.getRequest();
+        String token = request.getHeader(JWT.JWT_CONFIG.getHeaderName());
+
+        if (StringUtils.isBlank(token) && StringUtils.isBlank(JWT.JWT_CONFIG.getParamName())) {
+            token = request.getParameter(JWT.JWT_CONFIG.getParamName());
+        }
+        return token;
     }
 
     private static final ICaches CACHES = Caches.get();
@@ -46,7 +59,7 @@ public class SecurityCache {
 
     public static class JwtCache {
 
-        public static void setParaByAdminId(String adminId,JwtBean jwtBean) {
+        public static void setParaByAdminId(String adminId, JwtBean jwtBean) {
             SecurityCache.setPara("jwtCacheByAdminId", adminId, jwtBean, TIME_OUT);
         }
 

@@ -75,7 +75,7 @@ public class JwtCheckInterceptor implements IInterceptor {
                 if (securityAdmin == null) {
                     return timeOut();
                 }
-                JWT.Store.setPara(r.attrs());
+                JWT.Store.setPara(token,r.attrs());
                 SecurityCache.AdminCache.setPara(securityAdmin);
             } catch (Exception e) {
                 return timeOut();

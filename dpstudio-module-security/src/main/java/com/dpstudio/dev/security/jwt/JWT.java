@@ -7,6 +7,8 @@ import com.dpstudio.dev.security.Security;
 import com.dpstudio.dev.support.jwt.JwtBean;
 import com.dpstudio.dev.support.jwt.JwtConfig;
 import com.dpstudio.dev.support.jwt.JwtHelper;
+import net.ymate.platform.cache.Caches;
+import net.ymate.platform.cache.ICaches;
 import net.ymate.platform.commons.json.JsonWrapper;
 import net.ymate.platform.commons.util.DateTimeUtils;
 import net.ymate.platform.webmvc.context.WebContext;
@@ -15,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @Author: xujianpeng.
@@ -44,24 +47,24 @@ public class JWT {
     }
 
     public static class Store {
-        private static final ThreadLocal<Map<String, Object>> JWT_THREAD_LOCAL = new ThreadLocal<>();
+        private static final ICaches CACHES = Caches.get();
 
-
-        public static void setPara(Map<String, Object> map) {
-            JWT_THREAD_LOCAL.set(map);
+        public static void setPara(String token,Map<String, Object> map) {
+            CACHES.put(token,map);
         }
 
-        public static void removePara() {
-            JWT_THREAD_LOCAL.remove();
+        public static void removePara(String token) {
+            CACHES.remove(token);
         }
 
-        public static Object getPara(String key) {
-            Map<String, Object> map = JWT_THREAD_LOCAL.get();
+        public static Object getPara(String token,String key) {
+            Map<String, Object> map = ( Map<String, Object>) Optional.ofNullable(CACHES.get(token))
+                    .orElse(null);
             return map == null ? null : map.get(key);
         }
 
-        public static Map<String, Object> getParas() {
-            return JWT_THREAD_LOCAL.get();
+        public static Map<String, Object> getParas(String token) {
+            return (Map<String, Object>) CACHES.get(token);
         }
 
     }

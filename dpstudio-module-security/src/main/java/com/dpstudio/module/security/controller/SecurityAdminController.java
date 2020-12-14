@@ -4,6 +4,7 @@ import com.dpstudio.dev.core.L;
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.core.V;
 import com.dpstudio.dev.security.jwt.JWT;
+import com.dpstudio.module.security.SecurityCache;
 import com.dpstudio.module.security.interCeptor.JwtCheckInterceptor;
 import com.dpstudio.module.security.interCeptor.JwtOutInterceptor;
 import com.dpstudio.module.security.model.SecurityAdmin;
@@ -104,7 +105,7 @@ public class SecurityAdminController {
      */
     @RequestMapping(value = "/info", method = Type.HttpMethod.GET)
     public IView get() throws Exception {
-        SecurityAdminDetailVO securityAdminDetailVO = iSecurityAdminService.detail(BlurObject.bind(JWT.Store.getPara("uid")).toStringValue());
+        SecurityAdminDetailVO securityAdminDetailVO = iSecurityAdminService.detail(SecurityCache.userId());
         return WebResult.succeed().data(securityAdminDetailVO).keepNullValue().toJsonView();
     }
 

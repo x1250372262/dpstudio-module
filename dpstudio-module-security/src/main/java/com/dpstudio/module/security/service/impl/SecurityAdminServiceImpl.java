@@ -137,7 +137,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         if (!newPwd.equals(reNewPwd)) {
             return R.create(Code.SECURITY_ADMIN_PASSWORD_NO_SAME.getCode()).msg(Code.SECURITY_ADMIN_PASSWORD_NO_SAME.getMsg());
         }
-        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(BlurObject.bind(JWT.Store.getPara("uid")).toStringValue(), IDBLocker.DEFAULT, SecurityAdmin.FIELDS.USER_NAME, SecurityAdmin.FIELDS.PASSWORD, SecurityAdmin.FIELDS.ID, SecurityAdmin.FIELDS.SALT);
+        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(SecurityCache.userId(), IDBLocker.DEFAULT, SecurityAdmin.FIELDS.USER_NAME, SecurityAdmin.FIELDS.PASSWORD, SecurityAdmin.FIELDS.ID, SecurityAdmin.FIELDS.SALT);
         if (securityAdmin == null) {
             return R.create(Code.SECURITY_ADMIN_NOT_EXIST.getCode()).msg(Code.SECURITY_ADMIN_NOT_EXIST.getMsg());
         }
@@ -197,7 +197,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
 
     @Override
     public R updateInfo(SecurityAdminVO securityAdminVO) throws Exception {
-        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(BlurObject.bind(JWT.Store.getPara("uid")).toStringValue(), IDBLocker.DEFAULT);
+        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(SecurityCache.userId(), IDBLocker.DEFAULT);
         if (securityAdmin == null) {
             return R.create(Code.SECURITY_ADMIN_NOT_EXIST.getCode())
                     .msg(Code.SECURITY_ADMIN_NOT_EXIST.getMsg());
