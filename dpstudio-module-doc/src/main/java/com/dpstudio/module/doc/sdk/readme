@@ -1,0 +1,30 @@
+调用方式:SDK.模块名.控制器方法名(编号)(参数,success=>{},fail=>{})
+控制器方法名:eg OrderController下的create方法  =====>   orderCreate        主要是区分两个类重名的方法
+编号:eq 0,1,2  ======>orderCreate1,orderCreate2   主要用来区分一个类重名的方法      生成的时候增加检查机制  提示有重名的方法  但是不报异常
+
+
+/**
+     * 查询物资物料列表
+     *
+     * @param page     每页个数|int|N|1
+     * @param pageSize 总页数|int|N|10
+     * @return 物资物料列表
+     * @throws Exception
+     * @resp ret 返回错误码 0成功|int|Y|0
+     * @resp msg 错误码为0时,可能为空|String|N|查询成功
+     * @respObj MaterielQueryVO|data|array
+     */
+
+
+
+     /**
+          * 查询物资物料详情
+          *
+          * @param id 物资物料id|String|Y|1
+          * @return 物资物料详情
+          * @throws Exception
+          * @resp ret 返回错误码 0成功|int|Y|0
+          * @resp msg 错误码为0时,可能为空|String|N|查询成功
+          * @respObj juncheng.hglw.core.vo.resources.MaterielDetailVO|data|object
+          * @respbody {"ret":0,"data":{"code":"123","model":"型号1","name":"开关电源","sNList":[{"attachStatus":1,"id":"1"},{"attachStatus":1,"id":"2"}]}}
+          */

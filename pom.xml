@@ -9,6 +9,7 @@
     <version>2.0.0</version>
     <modules>
         <module>dpstudio-module-security</module>
+        <module>dpstudio-module-doc</module>
     </modules>
     <packaging>pom</packaging>
 
