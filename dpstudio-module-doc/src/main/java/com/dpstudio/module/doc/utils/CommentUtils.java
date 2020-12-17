@@ -1,5 +1,6 @@
 package com.dpstudio.module.doc.utils;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.dpstudio.module.doc.Constants;
 import com.dpstudio.module.doc.bean.FieldInfo;
 import com.dpstudio.module.doc.impl.SourceFileManager;
@@ -7,11 +8,14 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import net.ymate.platform.webmvc.annotation.PathVariable;
+import net.ymate.platform.webmvc.annotation.RequestParam;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.beans.PropertyDescriptor;
 import java.io.FileInputStream;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,7 +86,6 @@ public class CommentUtils {
     }
 
 
-
     public static Map<String, String> fileCommentMap(Class<?> clazz) throws Exception {
 
         Map<String, String> commentMap = new HashMap<>();
@@ -127,24 +130,49 @@ public class CommentUtils {
     }
 
     public static List<FieldInfo> findFieldInfo(Class<?> clazz, Map<String, String> commentMap) {
+        Field[] fields = clazz.getDeclaredFields();
+        Map<String, Field> fieldMap = new HashMap<>();
+        for (Field field : fields) {
+            fieldMap.put(field.getName(), field);
+        }
         PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors(clazz);
 
-        List<FieldInfo> fields = new ArrayList<>();
+        List<FieldInfo> fieldInfos = new ArrayList<>();
 
         for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
             //排除掉class属性
             if ("class".equals(propertyDescriptor.getName())) {
                 continue;
             }
-            FieldInfo field = new FieldInfo();
-            field.setType(propertyDescriptor.getPropertyType());
-            field.setSimpleTypeName(propertyDescriptor.getPropertyType().getSimpleName());
-            field.setName(propertyDescriptor.getName());
+            FieldInfo fieldInfo = new FieldInfo();
+            fieldInfo.setType(propertyDescriptor.getPropertyType());
+            fieldInfo.setSimpleTypeName(propertyDescriptor.getPropertyType().getSimpleName());
+            if (fieldMap.containsKey(propertyDescriptor.getName())) {
+                Field field = fieldMap.get(propertyDescriptor.getName());
+                if (field != null) {
+                    JSONField jsonField = field.getAnnotation(JSONField.class);
+                    RequestParam requestParam = field.getAnnotation(RequestParam.class);
+                    PathVariable pathVariable = field.getAnnotation(PathVariable.class);
+                    if (jsonField != null && StringUtils.isNotBlank(jsonField.name())) {
+                        fieldInfo.setName(jsonField.name());
+                    }else if (requestParam != null && StringUtils.isNotBlank(requestParam.value())) {
+                        fieldInfo.setName(requestParam.value());
+                    }else if (pathVariable != null && StringUtils.isNotBlank(pathVariable.value())) {
+                        fieldInfo.setName(pathVariable.value());
+                    } else {
+                        fieldInfo.setName(propertyDescriptor.getName());
+                    }
+                } else {
+                    fieldInfo.setName(propertyDescriptor.getName());
+                }
+            } else {
+                fieldInfo.setName(propertyDescriptor.getName());
+            }
             String comment = commentMap.get(propertyDescriptor.getName());
             if (StringUtils.isBlank(comment)) {
-                field.setComment("");
-                field.setRequire(false);
-                fields.add(field);
+                fieldInfo.setComment("");
+                fieldInfo.setRequire(false);
+                fieldInfos.add(fieldInfo);
             } else {
                 boolean require = false;
                 String demoValue = "";
@@ -160,12 +188,12 @@ public class CommentUtils {
                         demoValue = commentArr[2];
                     }
                 }
-                field.setComment(comment);
-                field.setRequire(require);
-                field.setDemoValue(demoValue);
-                fields.add(field);
+                fieldInfo.setComment(comment);
+                fieldInfo.setRequire(require);
+                fieldInfo.setDemoValue(demoValue);
+                fieldInfos.add(fieldInfo);
             }
         }
-        return fields;
+        return fieldInfos;
     }
 }
