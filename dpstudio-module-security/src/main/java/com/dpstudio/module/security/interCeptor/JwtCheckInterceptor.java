@@ -24,6 +24,8 @@ import org.apache.commons.lang3.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
+import static com.dpstudio.dev.security.jwt.JWT.JWT_CONFIG;
+
 /**
  * @author xujianpeng
  * @Date 2020.06.13
@@ -32,7 +34,7 @@ import java.util.Objects;
  */
 public class JwtCheckInterceptor implements IInterceptor {
 
-    private IView timeOut(){
+    private IView timeOut() {
         return V.view(R.create(Code.SECURITY_ADMIN_INVALID_OR_TIMEOUT.getCode()).msg(Code.SECURITY_ADMIN_INVALID_OR_TIMEOUT.getMsg()));
     }
 
@@ -44,10 +46,10 @@ public class JwtCheckInterceptor implements IInterceptor {
         if (Direction.BEFORE.equals(context.getDirection())) {
 
             HttpServletRequest request = WebContext.getRequest();
-            String token = request.getHeader(JWT.JWT_CONFIG.getHeaderName());
+            String token = request.getHeader(JWT_CONFIG.getHeaderName());
 
-            if (StringUtils.isBlank(token) && StringUtils.isBlank(JWT.JWT_CONFIG.getParamName())) {
-                token = request.getParameter(JWT.JWT_CONFIG.getParamName());
+            if (StringUtils.isBlank(token) && StringUtils.isBlank(JWT_CONFIG.getParamName())) {
+                token = request.getParameter(JWT_CONFIG.getParamName());
             }
 
             if (StringUtils.isBlank(token)) {
@@ -75,24 +77,26 @@ public class JwtCheckInterceptor implements IInterceptor {
                 if (securityAdmin == null) {
                     return timeOut();
                 }
-                JWT.Store.setPara(token,r.attrs());
+                JWT.Store.setPara(token, r.attrs());
                 SecurityCache.AdminCache.setPara(securityAdmin);
             } catch (Exception e) {
                 return timeOut();
             }
             //验证通过之后判断是否需要刷新token
-            if (jwtBean.getVerifyTime() > 0 && jwtBean.getVerifyTime() - DateTimeUtils.currentTimeMillis() <= DateTimeUtils.MINUTE) {
-                R jwtResult = JWT.attr("uid", uid)
-                        .build();
-                if (!Objects.equals(jwtResult.code(), C.SUCCESS.getCode())) {
-                    return jwtResult;
-                }
-                //放到缓存
-                SecurityCache.JwtCache.removePara(token);
-                SecurityCache.JwtCache.removeParaByAdminId(uid);
-                SecurityCache.JwtCache.setPara(jwtResult.attr("jwtToken"));
-                SecurityCache.JwtCache.setParaByAdminId(uid, jwtResult.attr("jwtToken"));
-            }
+//            if (jwtBean.getVerifyTime() > 0 && jwtBean.getVerifyTime() - DateTimeUtils.currentTimeMillis() <= DateTimeUtils.MINUTE) {
+//            R jwtResult = JWT.attr("uid", uid)
+//                    .build();
+//            if (!Objects.equals(jwtResult.code(), C.SUCCESS.getCode())) {
+//                return jwtResult;
+//            }
+            //重新刷新时间
+            jwtBean.setVerifyTime(DateTimeUtils.currentTimeMillis() + JWT_CONFIG.verifyTime());
+            //放到缓存
+            SecurityCache.JwtCache.removePara(token);
+            SecurityCache.JwtCache.removeParaByAdminId(uid);
+            SecurityCache.JwtCache.setPara(jwtBean);
+            SecurityCache.JwtCache.setParaByAdminId(uid, jwtBean);
+//            }
         }
         return null;
     }

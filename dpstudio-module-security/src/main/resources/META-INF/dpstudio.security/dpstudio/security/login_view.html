@@ -233,7 +233,14 @@
                                 var jwtData = JSON.parse(xhr.getResponseHeader(RESPONSE_PARAM_NAME));
                                 Token.set(jwtData.token,jwtData.verifyTime)
                                 localStorage.setItem("menu_list",JSON.stringify(result.menu_list));
-                                window.location.href = "/admin/home.html"
+                                layer.msg("登录成功", {
+                                    icon: "smile",
+                                    skin: $(this).data('bg'),
+                                    time:1000
+                                });
+                                setTimeout(function(){
+                                    window.location.href = "/admin/home.html"
+                                },1000)
                             }else{
                                 layer.msg(result.msg != null ? result.msg : "登录失败", {
                                     icon: 'cry',
