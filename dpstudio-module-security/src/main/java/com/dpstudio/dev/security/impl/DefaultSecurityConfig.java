@@ -74,9 +74,9 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
         String authenticatorClassName = configReader.getString(AUTHENTICATOR_CLASS, confAnn != null ? confAnn.authenticatorClass().getName() : null);
         authenticatorClass = ClassUtils.impl(authenticatorClassName, IAuthenticator.class, this.getClass());
         verifyTime = configReader.getInt(VERIFY_TIME, confAnn != null ? confAnn.verifyTime() : 0);
-        secret = configReader.getString(SECRET, confAnn != null ? confAnn.secret() : "dpstudio_jwt");
-        headerName = configReader.getString(HEADER_NAME, confAnn != null ? confAnn.headerName() : "dpstudio_jwt");
-        paramName = configReader.getString(PARAM_NAME, confAnn != null ? confAnn.paramName() : "dpstudio_jwt");
+        secret = configReader.getString(SECRET, confAnn != null ? confAnn.secret() : "dpstudioJwt");
+        headerName = configReader.getString(HEADER_NAME, confAnn != null ? confAnn.headerName() : "dpstudioJwt");
+        paramName = configReader.getString(PARAM_NAME, confAnn != null ? confAnn.paramName() : "dpstudioJwt");
         autoResponse = configReader.getBoolean(AUTO_RESPONSE, confAnn == null || confAnn.autoResponse());
     }
 

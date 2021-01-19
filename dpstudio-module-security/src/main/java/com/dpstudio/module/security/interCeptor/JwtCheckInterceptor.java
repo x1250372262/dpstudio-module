@@ -13,6 +13,7 @@ import com.dpstudio.module.security.SecurityCache;
 import com.dpstudio.module.security.core.Code;
 import com.dpstudio.module.security.dao.ISecurityAdminDao;
 import com.dpstudio.module.security.model.SecurityAdmin;
+import net.ymate.platform.commons.json.JsonWrapper;
 import net.ymate.platform.commons.util.DateTimeUtils;
 import net.ymate.platform.core.YMP;
 import net.ymate.platform.core.beans.intercept.IInterceptor;
@@ -96,6 +97,9 @@ public class JwtCheckInterceptor implements IInterceptor {
             SecurityCache.JwtCache.removeParaByAdminId(uid);
             SecurityCache.JwtCache.setPara(jwtBean);
             SecurityCache.JwtCache.setParaByAdminId(uid, jwtBean);
+            if (JWT_CONFIG.autoResponse()) {
+                WebContext.getResponse().setHeader(JWT_CONFIG.getHeaderName(), JsonWrapper.toJsonString(jwtBean, false, true));
+            }
 //            }
         }
         return null;
