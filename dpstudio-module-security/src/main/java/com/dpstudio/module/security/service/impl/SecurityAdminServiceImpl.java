@@ -1,7 +1,7 @@
 package com.dpstudio.module.security.service.impl;
 
 import com.dpstudio.dev.core.R;
-import com.dpstudio.dev.core.code.C;
+import com.dpstudio.dev.code.C;
 import com.dpstudio.dev.security.Security;
 import com.dpstudio.dev.security.bean.MenuBean;
 import com.dpstudio.dev.security.jwt.JWT;

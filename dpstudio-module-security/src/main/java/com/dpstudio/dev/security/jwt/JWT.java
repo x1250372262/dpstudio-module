@@ -1,7 +1,7 @@
 package com.dpstudio.dev.security.jwt;
 
 import com.dpstudio.dev.core.R;
-import com.dpstudio.dev.core.code.C;
+import com.dpstudio.dev.code.C;
 import com.dpstudio.dev.security.ISecurityConfig;
 import com.dpstudio.dev.security.Security;
 import com.dpstudio.dev.support.jwt.JwtBean;
