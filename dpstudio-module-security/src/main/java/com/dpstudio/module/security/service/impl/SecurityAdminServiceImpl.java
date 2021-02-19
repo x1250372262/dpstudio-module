@@ -1,11 +1,12 @@
 package com.dpstudio.module.security.service.impl;
 
-import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.code.C;
+import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.security.Security;
 import com.dpstudio.dev.security.bean.MenuBean;
 import com.dpstudio.dev.security.jwt.JWT;
 import com.dpstudio.dev.support.jwt.JwtHelper;
+import com.dpstudio.dev.support.spi.SpiLoader;
 import com.dpstudio.dev.utils.BeanUtils;
 import com.dpstudio.module.security.SecurityCache;
 import com.dpstudio.module.security.core.Code;
@@ -16,12 +17,12 @@ import com.dpstudio.module.security.model.SecurityAdmin;
 import com.dpstudio.module.security.service.ISecurityAdminLogService;
 import com.dpstudio.module.security.service.ISecurityAdminService;
 import com.dpstudio.module.security.service.ISecuritySettingService;
+import com.dpstudio.module.security.service.handler.ISecurityAdminHandler;
 import com.dpstudio.module.security.vo.detail.SecurityAdminDetailVO;
 import com.dpstudio.module.security.vo.detail.SecuritySettingDetailVO;
 import com.dpstudio.module.security.vo.list.SecurityAdminListVO;
 import com.dpstudio.module.security.vo.list.SecurityAdminRoleListVO;
 import com.dpstudio.module.security.vo.op.SecurityAdminVO;
-import net.ymate.platform.commons.lang.BlurObject;
 import net.ymate.platform.commons.util.DateTimeUtils;
 import net.ymate.platform.commons.util.UUIDUtils;
 import net.ymate.platform.core.YMP;
@@ -59,6 +60,15 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
     @Override
     @Transaction
     public R login(String userName, String password) throws Exception {
+        ISecurityAdminHandler securityAdminHandler = SpiLoader.load(ISecurityAdminHandler.class, null);
+        if (securityAdminHandler == null) {
+            securityAdminHandler = new ISecurityAdminHandler.SecurityAdminHandler();
+        }
+        //处理登录之前的逻辑 返回成功往下走
+        R loginBeforeResult = securityAdminHandler.loginBefore(userName, password);
+        if (!Objects.equals(loginBeforeResult.code(), C.SUCCESS.getCode())) {
+            return loginBeforeResult;
+        }
         SecurityAdmin securityAdmin = iSecurityAdminDao.findByUserName(userName, SecurityAdmin.FIELDS.ID,
                 SecurityAdmin.FIELDS.GENDER, SecurityAdmin.FIELDS.PHOTO_URI, SecurityAdmin.FIELDS.PASSWORD,
                 SecurityAdmin.FIELDS.USER_NAME, SecurityAdmin.FIELDS.SALT,
@@ -109,6 +119,12 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         if (Objects.equals(SecurityConstants.BOOL_TRUE, securityAdmin.getDisableStatus())) {
             return R.create(Code.SECURITY_ADMIN_DISABLED.getCode()).msg(Code.SECURITY_ADMIN_DISABLED.getMsg());
         }
+
+        //处理登录之后的逻辑 返回成功往下走
+        R loginAfterResult = securityAdminHandler.loginAfter(securityAdmin);
+        if (!Objects.equals(loginAfterResult.code(), C.SUCCESS.getCode())) {
+            return loginAfterResult;
+        }
         securityAdmin.setLoginErrorCount(0);
         securityAdmin.setLoginLockStatus(SecurityConstants.BOOL_FALSE);
         securityAdmin.setLoginLockStartTime(0L);
@@ -119,6 +135,8 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         if (!Objects.equals(jwtResult.code(), C.SUCCESS.getCode())) {
             return jwtResult;
         }
+
+
         //放到缓存
         SecurityCache.JwtCache.setPara(jwtResult.attr("jwtToken"));
         SecurityCache.JwtCache.setParaByAdminId(securityAdmin.getId(), jwtResult.attr("jwtToken"));

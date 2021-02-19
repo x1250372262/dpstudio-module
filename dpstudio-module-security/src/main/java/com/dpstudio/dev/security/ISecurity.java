@@ -109,6 +109,13 @@ public interface ISecurity extends IInitialization<IApplication>, IDestroyable {
     List<MenuBean> menuList();
 
     /**
+     * 菜单列表根据文件获取
+     * @param filePath
+     * @return
+     */
+    List<MenuBean> menuListByFile(String filePath);
+
+    /**
      * 带权限的菜单
      *
      * @return 带权限的菜单
