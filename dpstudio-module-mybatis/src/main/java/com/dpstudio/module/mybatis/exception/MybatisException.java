@@ -3,7 +3,7 @@ package com.dpstudio.module.mybatis.exception;
 import net.ymate.platform.commons.util.RuntimeUtils;
 
 /**
- * @Author: 徐建鹏.
+ * @Author: mengxiang.
  * @create: 2021-02-23 14:12
  * @Description:
  */

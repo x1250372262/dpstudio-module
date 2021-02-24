@@ -4,7 +4,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.dpstudio.module.security.model.SecurityAdmin;
 
 /**
- * @Author: 徐建鹏.
+ * @Author: mengxiang.
  * @Date: 2020/10/15.
  * @Time: 4:11 下午.
  * @Description:

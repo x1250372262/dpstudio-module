@@ -5,7 +5,7 @@ import com.dpstudio.module.security.vo.detail.SecuritySettingDetailVO;
 import net.ymate.platform.core.YMP;
 
 /**
- * @Author: 徐建鹏.
+ * @Author: mengxiang.
  * @Date: 2020/10/19.
  * @Time: 4:43 下午.
  * @Description:
