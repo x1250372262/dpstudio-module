@@ -32,7 +32,6 @@ import org.apache.ibatis.session.SqlSessionManager;
  */
 public final class Mybatis implements IModule, IMybatis {
 
-    private static final Log LOG = LogFactory.getLog(Mybatis.class);
 
     private static volatile IMybatis instance;
 
@@ -73,7 +72,6 @@ public final class Mybatis implements IModule, IMybatis {
     public void initialize(IApplication owner) throws Exception {
         if (!initialized) {
             //
-            System.out.println("mybatis");
             YMP.showVersion("Initializing dpstudio-module-mybatis-mybatis-${version}", new Version(1, 0, 0, Mybatis.class, Version.VersionType.Alpha));
             //
             this.owner = owner;

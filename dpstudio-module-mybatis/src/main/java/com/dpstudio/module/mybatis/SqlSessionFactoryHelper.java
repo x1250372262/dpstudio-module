@@ -4,7 +4,6 @@ import com.dpstudio.dev.utils.ListUtils;
 import com.dpstudio.module.mybatis.exception.MybatisException;
 import net.ymate.platform.commons.util.RuntimeUtils;
 import net.ymate.platform.core.YMP;
-import net.ymate.platform.persistence.jdbc.IDatabaseDataSourceAdapter;
 import net.ymate.platform.persistence.jdbc.JDBC;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.builder.xml.XMLConfigBuilder;
@@ -17,11 +16,10 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.type.TypeHandler;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.Properties;
 
 /**
@@ -34,11 +32,9 @@ public class SqlSessionFactoryHelper {
     private static SqlSessionFactoryBuilder SQL_SESSION_FACTORY_BUILDER = new SqlSessionFactoryBuilder();
 
 
-    private static Class<? extends IDatabaseDataSourceAdapter> dataSourceClass = JDBC.get().getConfig().getDefaultDataSourceConfig().getAdapterClass();
+    public static SqlSessionFactory initialize(IMybatisConfig iMybatisConfig) throws Exception {
 
-
-    public static SqlSessionFactory initialize(IMybatisConfig iMybatisConfig) throws MybatisException, IOException {
-
+        DataSource dataSource = JDBC.get().getDefaultDataSourceAdapter().getDataSource();
         Configuration configuration;
         XMLConfigBuilder xmlConfigBuilder = null;
         if (StringUtils.isNotBlank(iMybatisConfig.configLocation())) {
@@ -97,8 +93,8 @@ public class SqlSessionFactoryHelper {
 
         if (iMybatisConfig.databaseIdProvider() != null) {
             try {
-                configuration.setDatabaseId(iMybatisConfig.databaseIdProvider().getDatabaseId(DataSourceHelper.getDataSource(dataSourceClass.getName())));
-            } catch (SQLException e) {
+                configuration.setDatabaseId(iMybatisConfig.databaseIdProvider().getDatabaseId(dataSource));
+            } catch (Exception e) {
                 throw new MybatisException("databaseId获取失败", e);
             }
         }
@@ -117,7 +113,7 @@ public class SqlSessionFactoryHelper {
             }
         }
 
-        configuration.setEnvironment(new Environment(iMybatisConfig.environment(), iMybatisConfig.transactionFactory(), DataSourceHelper.getDataSource(dataSourceClass.getName())));
+        configuration.setEnvironment(new Environment(iMybatisConfig.environment(), iMybatisConfig.transactionFactory(), dataSource));
 
         if (StringUtils.isNotBlank(iMybatisConfig.mapperLocations())) {
 
