@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
 /**
- * @author xujianpeng
+ * @author mengxiang
  * @Date 2020.06.13
  * @Time: 20:40
  * @Description: jwt退出拦截器

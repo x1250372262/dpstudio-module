@@ -28,7 +28,7 @@ import java.util.Objects;
 import static com.dpstudio.dev.security.jwt.JWT.JWT_CONFIG;
 
 /**
- * @author xujianpeng
+ * @author mengxiang
  * @Date 2020.06.13
  * @Time: 20:40
  * @Description: jwt拦截器
@@ -83,13 +83,6 @@ public class JwtCheckInterceptor implements IInterceptor {
             } catch (Exception e) {
                 return timeOut();
             }
-            //验证通过之后判断是否需要刷新token
-//            if (jwtBean.getVerifyTime() > 0 && jwtBean.getVerifyTime() - DateTimeUtils.currentTimeMillis() <= DateTimeUtils.MINUTE) {
-//            R jwtResult = JWT.attr("uid", uid)
-//                    .build();
-//            if (!Objects.equals(jwtResult.code(), C.SUCCESS.getCode())) {
-//                return jwtResult;
-//            }
             //重新刷新时间
             jwtBean.setVerifyTime(DateTimeUtils.currentTimeMillis() + JWT_CONFIG.verifyTime());
             //放到缓存

@@ -1,5 +1,6 @@
 package com.dpstudio.module.security.dao.impl;
 
+import com.dpstudio.dev.dto.PageDTO;
 import com.dpstudio.module.security.dao.ISecurityAdminRoleDao;
 import com.dpstudio.module.security.model.SecurityAdmin;
 import com.dpstudio.module.security.model.SecurityAdminRole;
@@ -20,18 +21,18 @@ import java.util.List;
 public class SecurityAdminRoleDaoImpl implements ISecurityAdminRoleDao {
 
     @Override
-    public IResultSet<SecurityAdminRoleListVO> findAll(String adminId, Integer page, Integer pageSize) throws Exception {
+    public IResultSet<SecurityAdminRoleListVO> findAll(String adminId, PageDTO pageDTO) throws Exception {
 
-        Cond cond = Cond.create().eq(Fields.field("sa", SecurityAdmin.FIELDS.ID)).param(adminId);
+        Cond cond = Cond.create().eqWrap(Fields.field("sa", SecurityAdmin.FIELDS.ID)).param(adminId);
 
         return JDBC.get().openSession(session -> {
             String prefix = session.getConnectionHolder().getDataSourceConfig().getTablePrefix();
 
             Join adminRoleJoin = Join.inner(prefix, SecurityAdmin.TABLE_NAME).alias("sa")
-                    .on(Cond.create().opt(Fields.field("sar", SecurityAdminRole.FIELDS.ADMIN_ID), Cond.OPT.EQ, Fields.field("sa", SecurityAdmin.FIELDS.ID)));
+                    .on(Cond.create().optWrap(Fields.field("sar", SecurityAdminRole.FIELDS.ADMIN_ID), Cond.OPT.EQ, Fields.field("sa", SecurityAdmin.FIELDS.ID)));
 
             Join roleJoin = Join.inner(prefix, SecurityRole.TABLE_NAME).alias("sr")
-                    .on(Cond.create().opt(Fields.field("sr", SecurityRole.FIELDS.ID), Cond.OPT.EQ, Fields.field("sar", SecurityAdminRole.FIELDS.ROLE_ID)));
+                    .on(Cond.create().optWrap(Fields.field("sr", SecurityRole.FIELDS.ID), Cond.OPT.EQ, Fields.field("sar", SecurityAdminRole.FIELDS.ROLE_ID)));
 
             Select select = Select.create(prefix, SecurityAdminRole.TABLE_NAME, "sar")
                     .join(adminRoleJoin).join(roleJoin)
@@ -42,7 +43,7 @@ public class SecurityAdminRoleDaoImpl implements ISecurityAdminRoleDao {
                     .field("sr", SecurityRole.FIELDS.NAME, "role_name")
                     .where(Where.create(cond).orderByDesc("sa", SecurityAdmin.FIELDS.CREATE_TIME));
             return session.find(SQL.create(select),
-                    new BeanResultSetHandler<>(SecurityAdminRoleListVO.class), Page.createIfNeed(page, pageSize));
+                    new BeanResultSetHandler<>(SecurityAdminRoleListVO.class), pageDTO.toPage());
         });
     }
 

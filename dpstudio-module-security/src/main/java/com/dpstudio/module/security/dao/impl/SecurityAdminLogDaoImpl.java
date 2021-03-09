@@ -19,10 +19,10 @@ public class SecurityAdminLogDaoImpl implements ISecurityAdminLogDao {
     public IResultSet<SecurityAdminLog> findAll(String adminId, String content, Long startTime, Long endTime, Integer page, Integer pageSize) throws Exception {
 
         Cond cond = Cond.create().eqOne()
-                .exprNotEmpty(adminId, c -> c.and().eq(SecurityAdminLog.FIELDS.ADMIN_ID).param(adminId))
-                .exprNotEmpty(content, c -> c.and().like(SecurityAdminLog.FIELDS.CONTENT).param("%" + content + "%"))
-                .exprNotEmpty(startTime, c -> c.and().gtEq(SecurityAdminLog.FIELDS.CREATE_TIME).param(startTime))
-                .exprNotEmpty(endTime, c -> c.and().ltEq(SecurityAdminLog.FIELDS.CREATE_TIME).param(endTime));
+                .exprNotEmpty(adminId, c -> c.and().eqWrap(SecurityAdminLog.FIELDS.ADMIN_ID).param(adminId))
+                .exprNotEmpty(content, c -> c.and().likeWrap(SecurityAdminLog.FIELDS.CONTENT).param("%" + content + "%"))
+                .exprNotEmpty(startTime, c -> c.and().gtEqWrap(SecurityAdminLog.FIELDS.CREATE_TIME).param(startTime))
+                .exprNotEmpty(endTime, c -> c.and().ltEqWrap(SecurityAdminLog.FIELDS.CREATE_TIME).param(endTime));
         return SecurityAdminLog.builder().build().find(Where.create(cond).orderByDesc(SecurityAdminLog.FIELDS.CREATE_TIME), Page.createIfNeed(page, pageSize));
     }
 

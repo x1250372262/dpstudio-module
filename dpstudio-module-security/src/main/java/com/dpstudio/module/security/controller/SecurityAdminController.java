@@ -182,6 +182,17 @@ public class SecurityAdminController {
      * @return
      * @throws Exception
      */
+    /**
+     * 方法描述
+     *
+     * @param 入参参数 例子:id 用户id|String|Y|xxxxxx
+     * @return 方法描述
+     * @throws Exception
+     * @resp ret 错误码|int|Y|0
+     * @resp msg 错误描述|String|N|
+     * @resp 返回参数 例子:id 用户id|String|Y|xxxxxx
+     * @respbody 返回示例数据 例子:{"ret":0,"msg":""}
+    */
     @RequestMapping(value = "/resetPassword", method = Type.HttpMethod.POST)
     public IView resetPassword(@VRequired(msg = "id不能为空")
                                @RequestParam String id) throws Exception {

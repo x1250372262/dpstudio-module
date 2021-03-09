@@ -1,6 +1,7 @@
 package com.dpstudio.module.security.service.impl;
 
 import com.dpstudio.dev.core.R;
+import com.dpstudio.dev.utils.BeanUtils;
 import com.dpstudio.dev.utils.ResultSetUtils;
 import com.dpstudio.module.security.SecurityCache;
 import com.dpstudio.module.security.core.SecurityConstants;

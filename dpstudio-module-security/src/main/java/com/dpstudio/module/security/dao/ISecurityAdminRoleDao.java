@@ -1,5 +1,6 @@
 package com.dpstudio.module.security.dao;
 
+import com.dpstudio.dev.dto.PageDTO;
 import com.dpstudio.module.security.model.SecurityAdminRole;
 import com.dpstudio.module.security.vo.list.SecurityAdminRoleListVO;
 import net.ymate.platform.core.persistence.IResultSet;
@@ -13,12 +14,11 @@ public interface ISecurityAdminRoleDao {
      * 角色列表
      *
      * @param adminId
-     * @param page
-     * @param pageSize
+     * @param pageDTO
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityAdminRoleListVO> findAll(String adminId, Integer page, Integer pageSize) throws Exception;
+    IResultSet<SecurityAdminRoleListVO> findAll(String adminId, PageDTO pageDTO) throws Exception;
 
     /**
      * 管理员角色集合

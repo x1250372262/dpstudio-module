@@ -84,7 +84,7 @@ public class SecurityRoleController {
     public IView detail(@VRequired(msg = "id不能为空")
                         @PathVariable String id) throws Exception {
         SecurityRoleDetailVO securityRoleDetailVO = iSecurityRoleService.detail(id);
-        return WebResult.succeed().data(securityRoleDetailVO).keepNullValue().toJsonView();
+        return new L<SecurityRoleDetailVO>().detailView(securityRoleDetailVO);
     }
 
     /**

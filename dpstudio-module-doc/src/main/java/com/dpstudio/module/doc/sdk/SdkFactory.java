@@ -3,7 +3,7 @@ package com.dpstudio.module.doc.sdk;
 import com.dpstudio.module.doc.sdk.wxmini.WxMiniSdkImpl;
 
 /**
- * @Author: xujianpeng.
+ * @Author: mengxiang.
  * @Date: 2020/7/9.
  * @Time: 下午3:42.
  * @Description:

@@ -1,5 +1,6 @@
 package com.dpstudio.module.security.dao;
 
+import com.dpstudio.dev.dto.PageDTO;
 import com.dpstudio.module.security.model.SecurityRole;
 import net.ymate.platform.core.persistence.IResultSet;
 
@@ -60,20 +61,19 @@ public interface ISecurityRoleDao {
     /**
      * 删除角色
      *
-     * @param list
+     * @param ids
      * @throws Exception
      */
-    void delete(List<SecurityRole> list) throws Exception;
+    int[] delete(String[] ids) throws Exception;
 
     /**
      * 角色列表
      *
      * @param name
-     * @param page
-     * @param pageSize
+     * @param pageDTO
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityRole> findAll(String name, Integer page, Integer pageSize) throws Exception;
+    IResultSet<SecurityRole> findAll(String name, PageDTO pageDTO) throws Exception;
 
 }

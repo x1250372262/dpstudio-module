@@ -4,12 +4,14 @@ import com.dpstudio.module.security.core.SecurityConstants;
 import com.dpstudio.module.security.dao.ISecurityAdminDao;
 import com.dpstudio.module.security.model.SecurityAdmin;
 import com.dpstudio.module.security.vo.list.SecurityAdminListVO;
+import com.sun.xml.internal.bind.v2.model.core.ID;
 import net.ymate.platform.core.beans.annotation.Bean;
 import net.ymate.platform.core.persistence.Fields;
 import net.ymate.platform.core.persistence.IResultSet;
 import net.ymate.platform.core.persistence.Page;
 import net.ymate.platform.core.persistence.Params;
 import net.ymate.platform.persistence.jdbc.IDBLocker;
+import net.ymate.platform.persistence.jdbc.IDatabaseSession;
 import net.ymate.platform.persistence.jdbc.IDatabaseSessionExecutor;
 import net.ymate.platform.persistence.jdbc.JDBC;
 import net.ymate.platform.persistence.jdbc.base.impl.BeanResultSetHandler;
@@ -45,11 +47,11 @@ public class SecurityAdminDaoImpl implements ISecurityAdminDao {
 
     @Override
     public IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, Integer page, Integer pageSize) throws Exception {
-        Cond cond = Cond.create().eq(Fields.field("sa", SecurityAdmin.FIELDS.FOUNDER)).param(SecurityConstants.BOOL_FALSE)
-                .and().eq(Fields.field("sa", SecurityAdmin.FIELDS.DELETE_STATUS)).param(SecurityConstants.BOOL_FALSE)
-                .exprNotEmpty(userName, c -> c.and().like(Fields.field("sa", SecurityAdmin.FIELDS.USER_NAME)).param("%" + userName + "%"))
-                .exprNotEmpty(realName, c -> c.and().like(Fields.field("sa", SecurityAdmin.FIELDS.REAL_NAME)).param("%" + realName + "%"))
-                .exprNotEmpty(disableStatus, c -> c.and().eq(Fields.field("sa", SecurityAdmin.FIELDS.DISABLE_STATUS)).param(disableStatus));
+        Cond cond = Cond.create().eqWrap(Fields.field("sa", SecurityAdmin.FIELDS.FOUNDER)).param(SecurityConstants.BOOL_FALSE)
+                .and().eqWrap(Fields.field("sa", SecurityAdmin.FIELDS.DELETE_STATUS)).param(SecurityConstants.BOOL_FALSE)
+                .exprNotEmpty(userName, c -> c.and().likeWrap(Fields.field("sa", SecurityAdmin.FIELDS.USER_NAME)).param("%" + userName + "%"))
+                .exprNotEmpty(realName, c -> c.and().likeWrap(Fields.field("sa", SecurityAdmin.FIELDS.REAL_NAME)).param("%" + realName + "%"))
+                .exprNotEmpty(disableStatus, c -> c.and().eqWrap(Fields.field("sa", SecurityAdmin.FIELDS.DISABLE_STATUS)).param(disableStatus));
         return JDBC.get().openSession(session -> {
             String prefix = session.getConnectionHolder().getDataSourceConfig().getTablePrefix();
 

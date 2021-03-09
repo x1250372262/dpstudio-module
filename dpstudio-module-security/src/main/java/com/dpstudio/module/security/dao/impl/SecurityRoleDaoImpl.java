@@ -1,5 +1,6 @@
 package com.dpstudio.module.security.dao.impl;
 
+import com.dpstudio.dev.dto.PageDTO;
 import com.dpstudio.module.security.dao.ISecurityRoleDao;
 import com.dpstudio.module.security.model.SecurityRole;
 import net.ymate.platform.core.beans.annotation.Bean;
@@ -27,8 +28,8 @@ public class SecurityRoleDaoImpl implements ISecurityRoleDao {
 
     @Override
     public SecurityRole findByNameNotId(String name, String id, String... fields) throws Exception {
-        return SecurityRole.builder().build().findFirst(Where.create(Cond.create().eq(SecurityRole.FIELDS.NAME).param(name)
-                .and().notEq(SecurityRole.FIELDS.ID).param(id)));
+        return SecurityRole.builder().build().findFirst(Where.create(Cond.create().eqWrap(SecurityRole.FIELDS.NAME).param(name)
+                .and().notEqWrap(SecurityRole.FIELDS.ID).param(id)));
     }
 
     @Override
@@ -42,15 +43,15 @@ public class SecurityRoleDaoImpl implements ISecurityRoleDao {
     }
 
     @Override
-    public void delete(List<SecurityRole> list) throws Exception {
-        JDBC.get().openSession(session -> session.delete(list));
+    public int[] delete(String[] ids) throws Exception {
+        return JDBC.get().openSession(session -> session.delete(SecurityRole.class,ids));
     }
 
     @Override
-    public IResultSet<SecurityRole> findAll(String name, Integer page, Integer pageSize) throws Exception {
+    public IResultSet<SecurityRole> findAll(String name, PageDTO pageDTO) throws Exception {
 
         Cond cond = Cond.create().eqOne()
-                .exprNotEmpty(name, c -> c.and().like(SecurityRole.FIELDS.NAME).param("%" + name + "%"));
-        return SecurityRole.builder().build().find(Where.create(cond), Page.createIfNeed(page, pageSize));
+                .exprNotEmpty(name, c -> c.and().likeWrap(SecurityRole.FIELDS.NAME).param("%" + name + "%"));
+        return SecurityRole.builder().build().find(Where.create(cond), pageDTO.toPage());
     }
 }
