@@ -16,7 +16,7 @@ public class PermissionBean {
 
     private String groupName;
 
-    private String level;
+    private String clientName;
 
     public String getName() {
         return name;
@@ -50,20 +50,20 @@ public class PermissionBean {
         this.groupName = groupName;
     }
 
-    public String getLevel() {
-        return level;
+    public String getClientName() {
+        return clientName;
     }
 
-    public void setLevel(String level) {
-        this.level = level;
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
     }
 
-    public PermissionBean(String name, String code, String groupId, String groupName, String level) {
+    public PermissionBean(String name, String code, String groupId, String groupName, String clientName) {
         this.name = name;
         this.code = code;
         this.groupId = groupId;
         this.groupName = groupName;
-        this.level = level;
+        this.clientName = clientName;
     }
 
 }

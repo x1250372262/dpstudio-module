@@ -34,6 +34,7 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
     private boolean enabled = true;
     private boolean hotLoading = false;
     private String packageName;
+    private String clientName;
     private String menuFilePath;
     private IAuthenticator authenticatorClass;
     private int verifyTime;
@@ -70,6 +71,7 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
         enabled = configReader.getBoolean(ENABLED, confAnn == null || confAnn.enabled());
         hotLoading = configReader.getBoolean(HOT_LOADING, confAnn == null || confAnn.hotLoading());
         packageName = configReader.getString(PACKAGE_NAME, confAnn != null ? confAnn.packageName() : "");
+        clientName = configReader.getString(CLIENT_NAME, confAnn != null ? confAnn.clientName() : "");
         menuFilePath = configReader.getString(MENU_FILE_PATH, confAnn != null ? confAnn.menuFilePath() : "${root}/menu/menu.xml");
         String authenticatorClassName = configReader.getString(AUTHENTICATOR_CLASS, confAnn != null ? confAnn.authenticatorClass().getName() : null);
         authenticatorClass = ClassUtils.impl(authenticatorClassName, IAuthenticator.class, this.getClass());
@@ -85,6 +87,7 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
         if (!initialized) {
             if (enabled) {
                 packageName = StringUtils.trimToEmpty(packageName);
+                clientName = StringUtils.trimToEmpty(clientName);
                 menuFilePath = StringUtils.trimToEmpty(menuFilePath);
                 if (authenticatorClass == null) {
                     authenticatorClass = new IAuthenticator.DefaultAuthenticator();
@@ -107,6 +110,11 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
     @Override
     public String packageName() {
         return packageName;
+    }
+
+    @Override
+    public String clientName() {
+        return clientName;
     }
 
     @Override
@@ -158,6 +166,12 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
     public void setPackageName(String packageName) {
         if (!initialized) {
             this.packageName = packageName;
+        }
+    }
+
+    public void setClientName(String clientName) {
+        if (!initialized) {
+            this.clientName = clientName;
         }
     }
 
@@ -218,6 +232,11 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
 
         public Builder packageName(String packageName) {
             config.setPackageName(packageName);
+            return this;
+        }
+
+        public Builder clientName(String clientName) {
+            config.setClientName(clientName);
             return this;
         }
 

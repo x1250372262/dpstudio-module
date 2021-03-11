@@ -2,6 +2,7 @@ package com.dpstudio.module.security.service.impl;
 
 import com.dpstudio.dev.code.C;
 import com.dpstudio.dev.core.R;
+import com.dpstudio.dev.dto.PageDTO;
 import com.dpstudio.dev.security.Security;
 import com.dpstudio.dev.security.bean.MenuBean;
 import com.dpstudio.dev.security.jwt.JWT;
@@ -230,13 +231,13 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
     }
 
     @Override
-    public IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, Integer page, Integer pageSize) throws Exception {
-        IResultSet<SecurityAdminListVO> list = iSecurityAdminDao.list(userName, realName, disableStatus, page, pageSize);
+    public IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, PageDTO pageDTO) throws Exception {
+        IResultSet<SecurityAdminListVO> list = iSecurityAdminDao.list(userName, realName, disableStatus, pageDTO);
         Params adminIds = Params.create();
         for (SecurityAdminListVO securityAdminListVO : list.getResultData()) {
             adminIds.add(securityAdminListVO.getId());
         }
-        IResultSet<SecurityAdminRoleListVO> iResultSet = iSecurityAdminRoleDao.findByAdminIds(adminIds, page, pageSize);
+        IResultSet<SecurityAdminRoleListVO> iResultSet = iSecurityAdminRoleDao.findByAdminIds(adminIds,pageDTO);
         for (SecurityAdminListVO securityAdminListVO : list.getResultData()) {
             String roleName = "";
             for (SecurityAdminRoleListVO securityAdminRoleListVO : iResultSet.getResultData()) {
@@ -321,12 +322,8 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
 
     @Override
     public R delete(String[] ids) throws Exception {
-        List<SecurityAdmin> list = new ArrayList<>();
-        for (String id : ids) {
-            list.add(SecurityAdmin.builder().id(id).build());
-        }
-        iSecurityAdminDao.delete(list);
-        return R.ok();
+        int[] result = iSecurityAdminDao.delete(ids);
+        return R.result(result);
     }
 
 

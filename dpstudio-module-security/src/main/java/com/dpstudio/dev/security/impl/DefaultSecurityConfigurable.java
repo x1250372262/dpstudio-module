@@ -53,6 +53,11 @@ public final class DefaultSecurityConfigurable extends DefaultModuleConfigurable
             return this;
         }
 
+        public Builder clientName(String clientName) {
+            configurable.addConfig(ISecurityConfig.CLIENT_NAME, clientName);
+            return this;
+        }
+
         public Builder menuFilePath(String menuFilePath) {
             configurable.addConfig(ISecurityConfig.MENU_FILE_PATH,menuFilePath);
             return this;

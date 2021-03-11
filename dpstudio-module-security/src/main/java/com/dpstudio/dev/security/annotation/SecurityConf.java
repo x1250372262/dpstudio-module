@@ -40,6 +40,12 @@ public @interface SecurityConf {
     String packageName() default "";
 
     /**
+     *  客户端类型
+     * @return
+     */
+    String clientName() default "";
+
+    /**
      * @return 菜单文件位置
      */
     String menuFilePath() default "${root}/menu/menu.xml";

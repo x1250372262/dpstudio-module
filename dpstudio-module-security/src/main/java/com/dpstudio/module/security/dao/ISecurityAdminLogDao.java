@@ -1,9 +1,8 @@
 package com.dpstudio.module.security.dao;
 
+import com.dpstudio.dev.dto.PageDTO;
 import com.dpstudio.module.security.model.SecurityAdminLog;
 import net.ymate.platform.core.persistence.IResultSet;
-
-import java.util.List;
 
 public interface ISecurityAdminLogDao {
 
@@ -15,12 +14,11 @@ public interface ISecurityAdminLogDao {
      * @param content
      * @param startTime
      * @param endTime
-     * @param page
-     * @param pageSize
+     * @param pageDTO
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityAdminLog> findAll(String adminId, String content, Long startTime, Long endTime, Integer page, Integer pageSize) throws Exception;
+    IResultSet<SecurityAdminLog> findAll(String adminId, String content, Long startTime, Long endTime, PageDTO pageDTO) throws Exception;
 
     /**
      * 添加日志
@@ -34,9 +32,9 @@ public interface ISecurityAdminLogDao {
     /**
      * 删除
      *
-     * @param list
+     * @param ids
      * @throws Exception
      */
-    void delete(List<SecurityAdminLog> list) throws Exception;
+    int[] delete(String[] ids) throws Exception;
 
 }

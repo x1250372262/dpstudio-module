@@ -3,6 +3,7 @@ package com.dpstudio.module.security.controller;
 import com.dpstudio.dev.core.L;
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.core.V;
+import com.dpstudio.dev.dto.PageDTO;
 import com.dpstudio.dev.security.jwt.JWT;
 import com.dpstudio.module.security.SecurityCache;
 import com.dpstudio.module.security.interCeptor.JwtCheckInterceptor;
@@ -127,8 +128,7 @@ public class SecurityAdminController {
      * 管理员列表
      *
      * @param userName
-     * @param page
-     * @param pageSize
+     * @param pageDTO
      * @return
      * @throws Exception
      */
@@ -136,10 +136,9 @@ public class SecurityAdminController {
     public IView list(@RequestParam(value = SecurityAdmin.FIELDS.USER_NAME) String userName,
                       @RequestParam(value = SecurityAdmin.FIELDS.REAL_NAME) String realName,
                       @RequestParam(value = SecurityAdmin.FIELDS.DISABLE_STATUS) Integer disableStatus,
-                      @RequestParam(defaultValue = "1") Integer page,
-                      @RequestParam(defaultValue = "10") Integer pageSize) throws Exception {
-        IResultSet<SecurityAdminListVO> securityAdminListResultSet = iSecurityAdminService.list(userName, realName, disableStatus, page, pageSize);
-        return new L<SecurityAdminListVO>().listView(securityAdminListResultSet, page);
+                      @ModelBind PageDTO pageDTO) throws Exception {
+        IResultSet<SecurityAdminListVO> securityAdminListResultSet = iSecurityAdminService.list(userName, realName, disableStatus, pageDTO);
+        return new L<SecurityAdminListVO>().listView(securityAdminListResultSet, pageDTO.getPage());
     }
 
     /**
@@ -182,17 +181,6 @@ public class SecurityAdminController {
      * @return
      * @throws Exception
      */
-    /**
-     * 方法描述
-     *
-     * @param 入参参数 例子:id 用户id|String|Y|xxxxxx
-     * @return 方法描述
-     * @throws Exception
-     * @resp ret 错误码|int|Y|0
-     * @resp msg 错误描述|String|N|
-     * @resp 返回参数 例子:id 用户id|String|Y|xxxxxx
-     * @respbody 返回示例数据 例子:{"ret":0,"msg":""}
-    */
     @RequestMapping(value = "/resetPassword", method = Type.HttpMethod.POST)
     public IView resetPassword(@VRequired(msg = "id不能为空")
                                @RequestParam String id) throws Exception {

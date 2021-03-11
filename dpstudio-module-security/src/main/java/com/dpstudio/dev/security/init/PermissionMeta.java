@@ -7,6 +7,7 @@ import com.dpstudio.dev.security.annotation.Permission;
 import com.dpstudio.dev.security.annotation.Security;
 import com.dpstudio.dev.security.bean.GroupBean;
 import com.dpstudio.dev.security.bean.PermissionBean;
+import net.ymate.platform.commons.util.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -89,26 +90,18 @@ public class PermissionMeta {
         return permissionBeans.stream().filter(permissionBean -> code.equals(permissionBean.getCode())).findFirst().get();
     }
 
-    /**
-     * 获取权限组列表
-     *
-     * @return
-     */
-    public static List<GroupBean> getGroups() {
-        return GROUP_CACHES.get(ISecurity.CacheKey.GROUP_CACHE_KEY.name());
-    }
 
     /**
      * 获取权限组列表
      *
      * @return
      */
-    public static List<GroupBean> getGroups(String level) {
-        if(StringUtils.isNotBlank(level)){
+    public static List<GroupBean> getGroups(String clientName) {
+        if(StringUtils.isNotBlank(clientName)){
             return GROUP_CACHES.get(ISecurity.CacheKey.GROUP_CACHE_KEY.name())
-                    .stream().filter(groupBean -> level.equals(groupBean.getLevel())).collect(Collectors.toList());
+                    .stream().filter(groupBean -> clientName.equals(groupBean.getClientName())).collect(Collectors.toList());
         }
-        return getGroups();
+        return GROUP_CACHES.get(ISecurity.CacheKey.GROUP_CACHE_KEY.name());
     }
 
     /**
@@ -118,8 +111,12 @@ public class PermissionMeta {
      */
     private static void create(ISecurityConfig securityConfig) {
         String packageName = securityConfig.packageName();
-
-        Reflections reflections = new Reflections(packageName);
+        Reflections reflections;
+        if(StringUtils.isNotBlank(packageName)){
+            reflections = new Reflections(packageName);
+        }else{
+            reflections = new Reflections();
+        }
         Set<Class<?>> classesList = reflections.getTypesAnnotatedWith(Security.class);
         List<PermissionBean> permissionBeans = new ArrayList<>();
         List<GroupBean> groupBeans = new ArrayList<>();
@@ -140,12 +137,12 @@ public class PermissionMeta {
                     //添加权限列表
                     Optional<PermissionBean> permissionBean = permissionBeans.stream().filter(p -> p.getCode().equals(permission.code())).findFirst();
                     if (!permissionBean.isPresent()) {
-                        permissionBeans.add(new PermissionBean(permission.name(), permission.code(), permission.groupId(), permission.groupName(),group.level()));
+                        permissionBeans.add(new PermissionBean(permission.name(), permission.code(), permission.groupId(), permission.groupName(),group.clientName()));
                     }
                     //添加组列表
                     Optional<GroupBean> groupBean = groupBeans.stream().filter(gb -> gb.getName().equals(permission.groupId())).findFirst();
                     if (!groupBean.isPresent()) {
-                        groupBeans.add(new GroupBean(permission.groupName(), permission.groupId(),group.level()));
+                        groupBeans.add(new GroupBean(permission.groupName(), permission.groupId(),group.clientName()));
                     }
                 }
             }

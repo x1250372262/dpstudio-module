@@ -15,10 +15,9 @@ public @interface Group {
     Permission[] permissions() default {};
 
     /**
-     * 权限等级 默认所有
-     *
+     * 客户端名称 默认空
      * @return
      */
-    String level() default "all";
+    String clientName() default "";
 
 }

@@ -2,6 +2,7 @@ package com.dpstudio.module.security.service.impl;
 
 import com.dpstudio.dev.code.C;
 import com.dpstudio.dev.core.R;
+import com.dpstudio.dev.dto.PageDTO;
 import com.dpstudio.dev.utils.BeanUtils;
 import com.dpstudio.dev.utils.ResultSetUtils;
 import com.dpstudio.module.security.SecurityCache;
@@ -19,7 +20,6 @@ import net.ymate.platform.core.beans.annotation.Bean;
 import net.ymate.platform.core.beans.annotation.Inject;
 import net.ymate.platform.core.persistence.IResultSet;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Bean
@@ -29,14 +29,14 @@ public class SecurityRoleServiceImpl implements ISecurityRoleService {
     private ISecurityRoleDao iSecurityRoleDao;
 
     @Override
-    public IResultSet<SecurityRoleListVO> list(String name, Integer page, Integer pageSize) throws Exception {
-        IResultSet<SecurityRole> securityRoleResultSet = iSecurityRoleDao.findAll(name, page, pageSize);
+    public IResultSet<SecurityRoleListVO> list(String name, PageDTO pageDTO) throws Exception {
+        IResultSet<SecurityRole> securityRoleResultSet = iSecurityRoleDao.findAll(name, pageDTO);
         return ResultSetUtils.copy(securityRoleResultSet, SecurityRoleListVO::new);
     }
 
     @Override
     public List<SecurityRoleSelectVO> select() throws Exception {
-        IResultSet<SecurityRole> securityRoleResultSet = iSecurityRoleDao.findAll(null, 0, 0);
+        IResultSet<SecurityRole> securityRoleResultSet = iSecurityRoleDao.findAll(null, PageDTO.get());
         return BeanUtils.copyList(securityRoleResultSet.getResultData(), SecurityRoleSelectVO::new);
     }
 
@@ -87,11 +87,7 @@ public class SecurityRoleServiceImpl implements ISecurityRoleService {
 
     @Override
     public R delete(String[] ids) throws Exception {
-        List<SecurityRole> list = new ArrayList<>();
-        for (String id : ids) {
-            list.add(SecurityRole.builder().id(id).build());
-        }
-        iSecurityRoleDao.delete(list);
-        return R.ok();
+        int[] result = iSecurityRoleDao.delete(ids);
+        return R.result(result);
     }
 }

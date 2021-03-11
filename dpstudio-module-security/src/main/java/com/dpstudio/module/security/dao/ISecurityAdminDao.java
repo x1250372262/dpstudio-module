@@ -1,6 +1,7 @@
 package com.dpstudio.module.security.dao;
 
 
+import com.dpstudio.dev.dto.PageDTO;
 import com.dpstudio.module.security.model.SecurityAdmin;
 import com.dpstudio.module.security.vo.list.SecurityAdminListVO;
 import net.ymate.platform.core.persistence.IResultSet;
@@ -48,18 +49,17 @@ public interface ISecurityAdminDao {
      * @return
      * @throws Exception
      */
-    void updateAll(List<SecurityAdmin> securityAdminList, String... fields) throws Exception;
+    List<SecurityAdmin> updateAll(List<SecurityAdmin> securityAdminList, String... fields) throws Exception;
 
     /**
      * 管理员列表
      *
      * @param userName
-     * @param page
-     * @param pageSize
+     * @param pageDTO
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, Integer page, Integer pageSize) throws Exception;
+    IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, PageDTO pageDTO) throws Exception;
 
     /**
      * 添加管理员
@@ -83,9 +83,9 @@ public interface ISecurityAdminDao {
     /**
      * 删除
      *
-     * @param list
+     * @param ids
      * @throws Exception
      */
-    void delete(List<SecurityAdmin> list) throws Exception;
+    int[] delete(String[] ids) throws Exception;
 
 }

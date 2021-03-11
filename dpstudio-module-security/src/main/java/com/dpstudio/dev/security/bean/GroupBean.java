@@ -12,7 +12,7 @@ public class GroupBean {
 
     private String id;
 
-    private String level;
+    private String clientName;
 
     public String getName() {
         return name;
@@ -30,17 +30,17 @@ public class GroupBean {
         this.id = id;
     }
 
-    public GroupBean(String name, String id, String level) {
+    public GroupBean(String name, String id, String clientName) {
         this.name = name;
         this.id = id;
-        this.level = level;
+        this.clientName = clientName;
     }
 
-    public String getLevel() {
-        return level;
+    public String getClientName() {
+        return clientName;
     }
 
-    public void setLevel(String level) {
-        this.level = level;
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
     }
 }

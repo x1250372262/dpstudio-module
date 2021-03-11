@@ -77,7 +77,7 @@ public interface ISecurity extends IInitialization<IApplication>, IDestroyable {
      *
      * @return
      */
-    List<GroupBean> groupList(String level);
+    List<GroupBean> groupList(String clientName);
 
     /**
      * 获取权限列表
@@ -108,12 +108,6 @@ public interface ISecurity extends IInitialization<IApplication>, IDestroyable {
      */
     List<MenuBean> menuList();
 
-    /**
-     * 菜单列表根据文件获取
-     * @param filePath
-     * @return
-     */
-    List<MenuBean> menuListByFile(String filePath);
 
     /**
      * 带权限的菜单
@@ -129,4 +123,9 @@ public interface ISecurity extends IInitialization<IApplication>, IDestroyable {
      * @return 带权限的菜单
      */
     List<MenuBean> permissionMenu(boolean isFounder,List<String> userPermissions);
+
+    /**
+     * 解压文件
+     */
+    void unpackFile();
 }

@@ -29,6 +29,7 @@ public interface ISecurityConfig extends IInitialization<ISecurity> {
     String ENABLED = "enabled";
     String HOT_LOADING = "hot_loading";
     String PACKAGE_NAME = "package_name";
+    String CLIENT_NAME = "client_name";
     String AUTHENTICATOR_CLASS = "authenticator_class";
     String MENU_FILE_PATH = "menu_file_path";
     String VERIFY_TIME = "jwt_verify_time";
@@ -50,6 +51,14 @@ public interface ISecurityConfig extends IInitialization<ISecurity> {
      * @return 返回权限包名
      */
     String packageName();
+
+
+    /**
+     * 客户端名
+     *
+     * @return 返回客户端名
+     */
+    String clientName();
 
     /**
      * 菜单文件位置

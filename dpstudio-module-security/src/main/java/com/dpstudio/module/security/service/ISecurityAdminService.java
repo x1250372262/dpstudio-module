@@ -1,6 +1,7 @@
 package com.dpstudio.module.security.service;
 
 import com.dpstudio.dev.core.R;
+import com.dpstudio.dev.dto.PageDTO;
 import com.dpstudio.module.security.vo.detail.SecurityAdminDetailVO;
 import com.dpstudio.module.security.vo.list.SecurityAdminListVO;
 import com.dpstudio.module.security.vo.op.SecurityAdminVO;
@@ -50,12 +51,11 @@ public interface ISecurityAdminService {
      * 管理员列表
      *
      * @param userName
-     * @param page
-     * @param pageSize
+     * @param pageDTO
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, Integer page, Integer pageSize) throws Exception;
+    IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, PageDTO pageDTO) throws Exception;
 
     /**
      * 添加管理员

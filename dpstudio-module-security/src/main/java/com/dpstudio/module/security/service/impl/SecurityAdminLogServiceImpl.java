@@ -1,7 +1,7 @@
 package com.dpstudio.module.security.service.impl;
 
 import com.dpstudio.dev.core.R;
-import com.dpstudio.dev.utils.BeanUtils;
+import com.dpstudio.dev.dto.PageDTO;
 import com.dpstudio.dev.utils.ResultSetUtils;
 import com.dpstudio.module.security.SecurityCache;
 import com.dpstudio.module.security.core.SecurityConstants;
@@ -17,9 +17,6 @@ import net.ymate.platform.core.persistence.IResultSet;
 import net.ymate.platform.webmvc.context.WebContext;
 import net.ymate.platform.webmvc.util.WebUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Bean
 public class SecurityAdminLogServiceImpl implements ISecurityAdminLogService {
 
@@ -27,19 +24,15 @@ public class SecurityAdminLogServiceImpl implements ISecurityAdminLogService {
     private ISecurityAdminLogDao iSecurityAdminLogDao;
 
     @Override
-    public IResultSet<SecurityAdminLogListVO> findAll(String adminId, String content, Long startTime, Long endTime, Integer page, Integer pageSize) throws Exception {
-        IResultSet<SecurityAdminLog> adminLogResultSet = iSecurityAdminLogDao.findAll(adminId, content, startTime, endTime, page, pageSize);
+    public IResultSet<SecurityAdminLogListVO> findAll(String adminId, String content, Long startTime, Long endTime, PageDTO pageDTO) throws Exception {
+        IResultSet<SecurityAdminLog> adminLogResultSet = iSecurityAdminLogDao.findAll(adminId, content, startTime, endTime, pageDTO);
         return ResultSetUtils.copy(adminLogResultSet, SecurityAdminLogListVO::new);
     }
 
     @Override
     public R delete(String[] ids) throws Exception {
-        List<SecurityAdminLog> list = new ArrayList<>();
-        for (String id : ids) {
-            list.add(SecurityAdminLog.builder().id(id).build());
-        }
-        iSecurityAdminLogDao.delete(list);
-        return R.ok();
+        int[] result = iSecurityAdminLogDao.delete(ids);
+        return R.result(result);
     }
 
     @Override

@@ -23,9 +23,13 @@ import com.dpstudio.dev.security.init.MenuMeta;
 import com.dpstudio.dev.security.init.PermissionMeta;
 import com.dpstudio.dev.security.utils.Objects;
 import com.dpstudio.dev.utils.ListUtils;
+import net.ymate.module.unpack.IUnpack;
+import net.ymate.platform.commons.util.FileUtils;
+import net.ymate.platform.commons.util.RuntimeUtils;
 import net.ymate.platform.configuration.impl.XMLConfigFileParser;
 import net.ymate.platform.core.*;
 import net.ymate.platform.core.configuration.IConfigFileParser;
+import net.ymate.platform.core.event.IEventListener;
 import net.ymate.platform.core.module.IModule;
 import net.ymate.platform.core.module.IModuleConfigurer;
 import net.ymate.platform.core.module.impl.DefaultModuleConfigurer;
@@ -34,6 +38,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -108,10 +113,17 @@ public final class Security implements IModule, ISecurity {
             if (config.isEnabled()) {
                 PermissionMeta.init(config);
                 MenuMeta.init(config);
+                owner.getEvents().registerListener(ApplicationEvent.class, (IEventListener<ApplicationEvent>) context -> {
+                    if (ApplicationEvent.EVENT.APPLICATION_INITIALIZED.equals(context.getEventName())) {
+                        unpackFile();
+                    }
+                    return false;
+                });
             }
             initialized = true;
         }
     }
+
 
     @Override
     public boolean isInitialized() {
@@ -123,8 +135,7 @@ public final class Security implements IModule, ISecurity {
         if (initialized) {
             initialized = false;
             if (config.isEnabled()) {
-                PermissionMeta.init(config);
-                MenuMeta.init(config);
+                PermissionMeta.destroy();
             }
             config = null;
             owner = null;
@@ -143,12 +154,12 @@ public final class Security implements IModule, ISecurity {
 
     @Override
     public List<GroupBean> groupList() {
-        return PermissionMeta.getGroups();
+        return PermissionMeta.getGroups("");
     }
 
     @Override
-    public List<GroupBean> groupList(String level) {
-        return PermissionMeta.getGroups(level);
+    public List<GroupBean> groupList(String clientName) {
+        return PermissionMeta.getGroups(clientName);
     }
 
     @Override
@@ -180,37 +191,6 @@ public final class Security implements IModule, ISecurity {
         return MenuMeta.Store.get();
     }
 
-    @Override
-    public List<MenuBean> menuListByFile(String filePath) {
-        List<MenuBean> menuList = new ArrayList<>();
-        File file = new File(filePath);
-        if (!file.exists()) {
-            return menuList;
-        }
-        try {
-            IConfigFileParser handler = new XMLConfigFileParser(file).load(true);
-            Map<String, IConfigFileParser.Category> categoryMap = handler.getCategories();
-            categoryMap.forEach((k, v) -> {
-                Map<String, IConfigFileParser.Property> propertyMap = handler.getCategory(v.getName()).getProperties();
-                propertyMap.forEach((k1, v1) -> {
-                    MenuBean menuBean = MenuBean.builder()
-                            .id(Objects.get(v1.getAttribute("id"), ""))
-                            .name(StringUtils.defaultIfBlank(v1.getName(), ""))
-                            .value(StringUtils.defaultIfBlank(v1.getContent(), ""))
-                            .icon(Objects.get(v1.getAttribute("icon"), ""))
-                            .url(Objects.get(v1.getAttribute("url"), ""))
-                            .pid(Objects.get(v1.getAttribute("pid"), ""))
-                            .permissions(Objects.get(v1.getAttribute("permissions"), ""))
-                            .path(Objects.get(v1.getAttribute("path"), ""));
-                    menuList.add(menuBean);
-                });
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return menuList;
-    }
 
     @Override
     public List<MenuBean> permissionMenu() {
@@ -282,5 +262,49 @@ public final class Security implements IModule, ISecurity {
             }
         }
         return newMenuList;
+    }
+
+    private void unpack(String clientName) {
+        File targetPath;
+        File locker;
+        String rootPath = RuntimeUtils.getRootPath();
+        if (StringUtils.isBlank(clientName)) {
+            targetPath = new File(RuntimeUtils.getRootPath(false));
+            locker = new File(rootPath, String.format(".unpack%s%s", File.separator, "dpstudio.security"));
+        } else {
+            targetPath = new File(RuntimeUtils.getRootPath(false), clientName);
+            if(!targetPath.exists()){
+                targetPath.mkdirs();
+            }
+            locker = new File(rootPath, String.format(".unpack%s%s", File.separator, "dpstudio.security_" + clientName));
+        }
+
+
+        if (!locker.exists()) {
+            try {
+                if (FileUtils.unpackJarFile("dpstudio.security", targetPath, this.getClass())) {
+                    locker.getParentFile().mkdirs();
+                    locker.createNewFile();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("解压文件失败");
+            }
+        }
+    }
+
+    @Override
+    public synchronized void unpackFile() {
+
+        String clientName = config.clientName();
+        if (StringUtils.isBlank(clientName) || !clientName.contains("|")) {
+            unpack("");
+        }
+        String[] clientNameArray = clientName.split("\\|");
+        if (clientNameArray.length <= 0) {
+            unpack("");
+        }
+        for (String clientNameStr : clientNameArray) {
+            unpack(clientNameStr);
+        }
     }
 }

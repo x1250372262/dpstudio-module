@@ -3,6 +3,7 @@ package com.dpstudio.module.security.controller;
 import com.dpstudio.dev.core.L;
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.core.V;
+import com.dpstudio.dev.dto.PageDTO;
 import com.dpstudio.module.security.interCeptor.JwtCheckInterceptor;
 import com.dpstudio.module.security.model.SecurityAdminRole;
 import com.dpstudio.module.security.service.ISecurityAdminRoleService;
@@ -32,18 +33,16 @@ public class SecurityAdminRoleController {
      * 管理员角色集合
      *
      * @param adminId
-     * @param page
-     * @param pageSize
+     * @param pageDTO
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/list", method = Type.HttpMethod.GET)
     public IView list(@VRequired(msg = "adminId不能为空")
                       @RequestParam(value = SecurityAdminRole.FIELDS.ADMIN_ID) String adminId,
-                      @RequestParam(defaultValue = "1") Integer page,
-                      @RequestParam(defaultValue = "10") Integer pageSize) throws Exception {
-        IResultSet<SecurityAdminRoleListVO> securityAdminRoleListResultSet = iSecurityAdminRoleService.list(adminId, page, pageSize);
-        return new L<SecurityAdminRoleListVO>().listView(securityAdminRoleListResultSet, page);
+                      @ModelBind PageDTO pageDTO) throws Exception {
+        IResultSet<SecurityAdminRoleListVO> securityAdminRoleListResultSet = iSecurityAdminRoleService.list(adminId, pageDTO);
+        return new L<SecurityAdminRoleListVO>().listView(securityAdminRoleListResultSet, pageDTO.getPage());
     }
 
     /**

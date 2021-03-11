@@ -1,6 +1,7 @@
 package com.dpstudio.module.security.service;
 
 import com.dpstudio.dev.core.R;
+import com.dpstudio.dev.dto.PageDTO;
 import com.dpstudio.module.security.vo.list.SecurityAdminLogListVO;
 import net.ymate.platform.core.persistence.IResultSet;
 
@@ -13,12 +14,11 @@ public interface ISecurityAdminLogService {
      * @param content
      * @param startTime
      * @param endTime
-     * @param page
-     * @param pageSize
+     * @param pageDTO
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityAdminLogListVO> findAll(String adminId, String content, Long startTime, Long endTime, Integer page, Integer pageSize) throws Exception;
+    IResultSet<SecurityAdminLogListVO> findAll(String adminId, String content, Long startTime, Long endTime, PageDTO pageDTO) throws Exception;
 
     /**
      * 删除日志

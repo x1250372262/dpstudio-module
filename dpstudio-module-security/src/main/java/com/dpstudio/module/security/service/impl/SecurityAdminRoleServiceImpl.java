@@ -1,6 +1,7 @@
 package com.dpstudio.module.security.service.impl;
 
 import com.dpstudio.dev.core.R;
+import com.dpstudio.dev.dto.PageDTO;
 import com.dpstudio.dev.utils.BeanUtils;
 import com.dpstudio.module.security.SecurityCache;
 import com.dpstudio.module.security.core.Code;
@@ -25,8 +26,8 @@ public class SecurityAdminRoleServiceImpl implements ISecurityAdminRoleService {
     private ISecurityAdminRoleDao iSecurityAdminRoleDao;
 
     @Override
-    public IResultSet<SecurityAdminRoleListVO> list(String adminId, Integer page, Integer pageSize) throws Exception {
-        return iSecurityAdminRoleDao.findAll(adminId, page, pageSize);
+    public IResultSet<SecurityAdminRoleListVO> list(String adminId, PageDTO pageDTO) throws Exception {
+        return iSecurityAdminRoleDao.findAll(adminId,pageDTO);
     }
 
     @Override
@@ -52,8 +53,8 @@ public class SecurityAdminRoleServiceImpl implements ISecurityAdminRoleService {
         for (String id : ids) {
             list.add(SecurityAdminRole.builder().id(id).build());
         }
-        iSecurityAdminRoleDao.delete(list);
-        return R.ok();
+        int[] result = iSecurityAdminRoleDao.delete(ids);
+        return R.result(result);
     }
 
 }

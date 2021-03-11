@@ -3,6 +3,7 @@ package com.dpstudio.module.security.controller;
 import com.dpstudio.dev.core.L;
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.core.V;
+import com.dpstudio.dev.dto.PageDTO;
 import com.dpstudio.module.security.interCeptor.JwtCheckInterceptor;
 import com.dpstudio.module.security.model.SecurityRole;
 import com.dpstudio.module.security.service.ISecurityRoleService;
@@ -34,17 +35,15 @@ public class SecurityRoleController {
      * 角色列表
      *
      * @param name
-     * @param page
-     * @param pageSize
+     * @param pageDTO
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/list", method = Type.HttpMethod.GET)
     public IView list(@RequestParam String name,
-                      @RequestParam(defaultValue = "1") Integer page,
-                      @RequestParam(defaultValue = "10") Integer pageSize) throws Exception {
-        IResultSet<SecurityRoleListVO> securityRoleListResultSet = iSecurityRoleService.list(name, page, pageSize);
-        return new L<SecurityRoleListVO>().listView(securityRoleListResultSet, page);
+                      @ModelBind PageDTO pageDTO) throws Exception {
+        IResultSet<SecurityRoleListVO> securityRoleListResultSet = iSecurityRoleService.list(name, pageDTO);
+        return new L<SecurityRoleListVO>().listView(securityRoleListResultSet, pageDTO.getPage());
     }
 
     /**

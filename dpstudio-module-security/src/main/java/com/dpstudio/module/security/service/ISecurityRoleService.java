@@ -1,6 +1,7 @@
 package com.dpstudio.module.security.service;
 
 import com.dpstudio.dev.core.R;
+import com.dpstudio.dev.dto.PageDTO;
 import com.dpstudio.module.security.vo.detail.SecurityRoleDetailVO;
 import com.dpstudio.module.security.vo.detail.SecurityRoleListVO;
 import com.dpstudio.module.security.vo.op.SecurityRoleVO;
@@ -15,12 +16,11 @@ public interface ISecurityRoleService {
      * 角色列表
      *
      * @param name
-     * @param page
-     * @param pageSize
+     * @param pageDTO
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityRoleListVO> list(String name, Integer page, Integer pageSize) throws Exception;
+    IResultSet<SecurityRoleListVO> list(String name, PageDTO pageDTO) throws Exception;
 
     /**
      * 角色下拉选

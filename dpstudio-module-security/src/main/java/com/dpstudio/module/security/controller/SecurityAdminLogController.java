@@ -3,6 +3,7 @@ package com.dpstudio.module.security.controller;
 import com.dpstudio.dev.core.L;
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.core.V;
+import com.dpstudio.dev.dto.PageDTO;
 import com.dpstudio.module.security.interCeptor.JwtCheckInterceptor;
 import com.dpstudio.module.security.model.SecurityAdminLog;
 import com.dpstudio.module.security.service.ISecurityAdminLogService;
@@ -12,6 +13,7 @@ import net.ymate.platform.core.beans.annotation.Inject;
 import net.ymate.platform.core.persistence.IResultSet;
 import net.ymate.platform.validation.validate.VRequired;
 import net.ymate.platform.webmvc.annotation.Controller;
+import net.ymate.platform.webmvc.annotation.ModelBind;
 import net.ymate.platform.webmvc.annotation.RequestMapping;
 import net.ymate.platform.webmvc.annotation.RequestParam;
 import net.ymate.platform.webmvc.base.Type;
@@ -32,8 +34,7 @@ public class SecurityAdminLogController {
      * @param content
      * @param startTime
      * @param endTime
-     * @param page
-     * @param pageSize
+     * @param pageDTO
      * @return
      * @throws Exception
      */
@@ -42,10 +43,9 @@ public class SecurityAdminLogController {
                       @RequestParam String content,
                       @RequestParam(value = "start_time") Long startTime,
                       @RequestParam(value = "end_time") Long endTime,
-                      @RequestParam(defaultValue = "1") Integer page,
-                      @RequestParam(defaultValue = "10") Integer pageSize) throws Exception {
-        IResultSet<SecurityAdminLogListVO> adminLogListResultSet = iAdminLogService.findAll(adminId, content, startTime, endTime, page, pageSize);
-        return new L<SecurityAdminLogListVO>().listView(adminLogListResultSet, page);
+                      @ModelBind PageDTO pageDTO) throws Exception {
+        IResultSet<SecurityAdminLogListVO> adminLogListResultSet = iAdminLogService.findAll(adminId, content, startTime, endTime, pageDTO);
+        return new L<SecurityAdminLogListVO>().listView(adminLogListResultSet, pageDTO.getPage());
     }
 
     /**

@@ -24,12 +24,11 @@ public interface ISecurityAdminRoleDao {
      * 管理员角色集合
      *
      * @param adminIds
-     * @param page
-     * @param pageSize
+     * @param pageDTO
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityAdminRoleListVO> findByAdminIds(Params adminIds, Integer page, Integer pageSize) throws Exception;
+    IResultSet<SecurityAdminRoleListVO> findByAdminIds(Params adminIds, PageDTO pageDTO) throws Exception;
 
     /**
      * 添加角色
@@ -43,10 +42,10 @@ public interface ISecurityAdminRoleDao {
     /**
      * 删除角色
      *
-     * @param list
+     * @param ids
      * @throws Exception
      */
-    void delete(List<SecurityAdminRole> list) throws Exception;
+    int[] delete(String[] ids) throws Exception;
 
     /**
      * 根据adminId和roleId查询
