@@ -43,13 +43,13 @@ public @interface SecurityConf {
      *  客户端类型
      * @return
      */
-    String clientName() default "";
+    String clientName() default "admin";
 
     /**
      *  客户端标题  对应客户端类型
      * @return
      */
-    String clientTitle() default "";
+    String clientTitle() default "后台管理系统";
 
     /**
      * @return 菜单文件位置

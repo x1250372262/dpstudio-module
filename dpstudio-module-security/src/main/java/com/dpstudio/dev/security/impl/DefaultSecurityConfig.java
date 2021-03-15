@@ -74,8 +74,8 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
         enabled = configReader.getBoolean(ENABLED, confAnn == null || confAnn.enabled());
         hotLoading = configReader.getBoolean(HOT_LOADING, confAnn == null || confAnn.hotLoading());
         packageName = configReader.getString(PACKAGE_NAME, confAnn != null ? confAnn.packageName() : "");
-        clientName = configReader.getString(CLIENT_NAME, confAnn != null ? confAnn.clientName() : "");
-        clientTitle = configReader.getString(CLIENT_TITLE, confAnn != null ? confAnn.clientTitle() : "");
+        clientName = configReader.getString(CLIENT_NAME, confAnn != null ? confAnn.clientName() : "admin");
+        clientTitle = configReader.getString(CLIENT_TITLE, confAnn != null ? confAnn.clientTitle() : "后台管理系统");
         menuFilePath = configReader.getString(MENU_FILE_PATH, confAnn != null ? confAnn.menuFilePath() : "${root}/menu/");
         String authenticatorClassName = configReader.getString(AUTHENTICATOR_CLASS, confAnn != null ? confAnn.authenticatorClass().getName() : null);
         authenticatorClass = ClassUtils.impl(authenticatorClassName, IAuthenticator.class, this.getClass());
