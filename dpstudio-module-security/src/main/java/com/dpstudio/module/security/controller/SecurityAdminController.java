@@ -4,8 +4,13 @@ import com.dpstudio.dev.core.L;
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.core.V;
 import com.dpstudio.dev.dto.PageDTO;
+import com.dpstudio.dev.security.annotation.Group;
+import com.dpstudio.dev.security.annotation.Permission;
+import com.dpstudio.dev.security.annotation.Security;
 import com.dpstudio.dev.security.jwt.JWT;
 import com.dpstudio.module.security.SecurityCache;
+import com.dpstudio.module.security.core.SecurityConstants;
+import com.dpstudio.module.security.core.SecurityPermission;
 import com.dpstudio.module.security.interCeptor.JwtCheckInterceptor;
 import com.dpstudio.module.security.interCeptor.JwtOutInterceptor;
 import com.dpstudio.module.security.model.SecurityAdmin;
@@ -38,6 +43,7 @@ import net.ymate.platform.webmvc.view.IView;
 @Controller
 @RequestMapping("/admin")
 @Before(JwtCheckInterceptor.class)
+@Security
 public class SecurityAdminController {
 
     @Inject
@@ -57,9 +63,10 @@ public class SecurityAdminController {
             @VRequired(msg = "用户名不能为空")
             @RequestParam(value = SecurityAdmin.FIELDS.USER_NAME) String userName,
             @VRequired(msg = "密码名不能为空")
-            @RequestParam String password) throws Exception {
+            @RequestParam String password,
+            @RequestParam(value = "client_name") String clientName) throws Exception {
 
-        R result = iSecurityAdminService.login(userName, password);
+        R result = iSecurityAdminService.login(userName, password, clientName);
         return V.view(result);
     }
 
@@ -132,6 +139,10 @@ public class SecurityAdminController {
      * @return
      * @throws Exception
      */
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME,permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ADMIN,
+            groupName = SecurityPermission.GROUP_NAME_ADMIN,
+            name = SecurityPermission.PERMISSION_NAME_ADMIN_LIST,
+            code = SecurityPermission.PERMISSION_CODE_ADMIN_LIST)})
     @RequestMapping(value = "/list", method = Type.HttpMethod.GET)
     public IView list(@RequestParam(value = SecurityAdmin.FIELDS.USER_NAME) String userName,
                       @RequestParam(value = SecurityAdmin.FIELDS.REAL_NAME) String realName,
@@ -148,6 +159,10 @@ public class SecurityAdminController {
      * @return
      * @throws Exception
      */
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME,permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ADMIN,
+            groupName = SecurityPermission.GROUP_NAME_ADMIN,
+            name = SecurityPermission.PERMISSION_NAME_ADMIN_CREATE,
+            code = SecurityPermission.PERMISSION_CODE_ADMIN_CREATE)})
     @RequestMapping(value = "/create", method = Type.HttpMethod.POST)
     public IView create(@VModel
                         @ModelBind SecurityAdminVO securityAdminVO,
@@ -165,6 +180,10 @@ public class SecurityAdminController {
      * @return
      * @throws Exception
      */
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME,permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ADMIN,
+            groupName = SecurityPermission.GROUP_NAME_ADMIN,
+            name = SecurityPermission.PERMISSION_NAME_ADMIN_DISABLED,
+            code = SecurityPermission.PERMISSION_CODE_ADMIN_DISABLED)})
     @RequestMapping(value = "/disabled", method = Type.HttpMethod.POST)
     public IView disabled(@VRequired(msg = "id不能为空")
                           @RequestParam(value = "ids[]") String[] ids,
@@ -181,6 +200,10 @@ public class SecurityAdminController {
      * @return
      * @throws Exception
      */
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME,permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ADMIN,
+            groupName = SecurityPermission.GROUP_NAME_ADMIN,
+            name = SecurityPermission.PERMISSION_NAME_ADMIN_PASSWORD,
+            code = SecurityPermission.PERMISSION_CODE_ADMIN_PASSWORD)})
     @RequestMapping(value = "/resetPassword", method = Type.HttpMethod.POST)
     public IView resetPassword(@VRequired(msg = "id不能为空")
                                @RequestParam String id) throws Exception {
@@ -195,6 +218,10 @@ public class SecurityAdminController {
      * @return
      * @throws Exception
      */
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME,permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ADMIN,
+            groupName = SecurityPermission.GROUP_NAME_ADMIN,
+            name = SecurityPermission.PERMISSION_NAME_ADMIN_UNLOCK,
+            code = SecurityPermission.PERMISSION_CODE_ADMIN_UNLOCK)})
     @RequestMapping(value = "/unlock", method = Type.HttpMethod.POST)
     public IView unlock(@VRequired(msg = "id不能为空")
                         @RequestParam String id) throws Exception {
@@ -209,6 +236,10 @@ public class SecurityAdminController {
      * @return
      * @throws Exception
      */
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME,permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ADMIN,
+            groupName = SecurityPermission.GROUP_NAME_ADMIN,
+            name = SecurityPermission.PERMISSION_NAME_ADMIN_DELETE,
+            code = SecurityPermission.PERMISSION_CODE_ADMIN_DELETE)})
     @RequestMapping(value = "/delete", method = Type.HttpMethod.POST)
     public IView delete(
             @VRequired(msg = "id不能为空")

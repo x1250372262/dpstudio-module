@@ -4,6 +4,11 @@ import com.dpstudio.dev.core.L;
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.core.V;
 import com.dpstudio.dev.dto.PageDTO;
+import com.dpstudio.dev.security.annotation.Group;
+import com.dpstudio.dev.security.annotation.Permission;
+import com.dpstudio.dev.security.annotation.Security;
+import com.dpstudio.module.security.core.SecurityConstants;
+import com.dpstudio.module.security.core.SecurityPermission;
 import com.dpstudio.module.security.interCeptor.JwtCheckInterceptor;
 import com.dpstudio.module.security.model.SecurityAdminLog;
 import com.dpstudio.module.security.service.ISecurityAdminLogService;
@@ -22,6 +27,7 @@ import net.ymate.platform.webmvc.view.IView;
 @Controller
 @RequestMapping("/admin/log")
 @Before(JwtCheckInterceptor.class)
+@Security
 public class SecurityAdminLogController {
 
     @Inject
@@ -38,13 +44,17 @@ public class SecurityAdminLogController {
      * @return
      * @throws Exception
      */
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME,permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ADMIN,
+            groupName = SecurityPermission.GROUP_NAME_ADMIN,
+            name = SecurityPermission.PERMISSION_NAME_ADMIN_LOG_LIST,
+            code = SecurityPermission.PERMISSION_CODE_ADMIN_LOG_LIST)})
     @RequestMapping(value = "/list", method = Type.HttpMethod.GET)
     public IView list(@RequestParam(value = SecurityAdminLog.FIELDS.ADMIN_ID) String adminId,
                       @RequestParam String content,
                       @RequestParam(value = "start_time") Long startTime,
                       @RequestParam(value = "end_time") Long endTime,
                       @ModelBind PageDTO pageDTO) throws Exception {
-        IResultSet<SecurityAdminLogListVO> adminLogListResultSet = iAdminLogService.findAll(adminId, content, startTime, endTime, pageDTO);
+        IResultSet<SecurityAdminLogListVO> adminLogListResultSet = iAdminLogService.list(adminId, content, startTime, endTime, pageDTO);
         return new L<SecurityAdminLogListVO>().listView(adminLogListResultSet, pageDTO.getPage());
     }
 
@@ -55,6 +65,10 @@ public class SecurityAdminLogController {
      * @return
      * @throws Exception
      */
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME,permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ADMIN,
+            groupName = SecurityPermission.GROUP_NAME_ADMIN,
+            name = SecurityPermission.PERMISSION_NAME_ADMIN_LOG_DELETE,
+            code = SecurityPermission.PERMISSION_CODE_ADMIN_LOG_DELETE)})
     @RequestMapping(value = "/delete", method = Type.HttpMethod.POST)
     public IView delete(
             @VRequired(msg = "id不能为空")

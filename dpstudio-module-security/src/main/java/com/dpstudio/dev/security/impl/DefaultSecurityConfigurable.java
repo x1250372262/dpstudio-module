@@ -58,8 +58,13 @@ public final class DefaultSecurityConfigurable extends DefaultModuleConfigurable
             return this;
         }
 
+        public Builder clientTitle(String clientTitle) {
+            configurable.addConfig(ISecurityConfig.CLIENT_TITLE, clientTitle);
+            return this;
+        }
+
         public Builder menuFilePath(String menuFilePath) {
-            configurable.addConfig(ISecurityConfig.MENU_FILE_PATH,menuFilePath);
+            configurable.addConfig(ISecurityConfig.MENU_FILE_PATH, menuFilePath);
             return this;
         }
 
@@ -93,10 +98,21 @@ public final class DefaultSecurityConfigurable extends DefaultModuleConfigurable
             return this;
         }
 
+        public Builder headerClientName(String headerClientName) {
+            configurable.addConfig(ISecurityConfig.HEADER_CLIENT_NAME, headerClientName);
+            return this;
+        }
+
+        public Builder paramClientName(String paramClientName) {
+            configurable.addConfig(ISecurityConfig.PARAM_CLIENT_NAME, paramClientName);
+            return this;
+        }
+
         public Builder autoResponse(boolean autoResponse) {
             configurable.addConfig(ISecurityConfig.AUTO_RESPONSE, String.valueOf(autoResponse));
             return this;
         }
+
         public IModuleConfigurer build() {
             return configurable.toModuleConfigurer();
         }

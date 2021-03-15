@@ -74,7 +74,7 @@
 
 <div class="login-box p-5 w-420 mb-0 mr-2 ml-2">
     <div class="text-center mb-3">
-        <h3 style="color: #FFFFFF;">隽铖后台管理平台</h3>
+        <h3 style="color: #FFFFFF;">{{title}}</h3>
 <!--        <a href="index.html"> <img alt="light year admin" src="images/logo-sidebar.png"> </a>-->
     </div>
     <form action="/dpstudio/security/admin/login" id="loginForm" method="post" class="login-form">
@@ -204,6 +204,7 @@
                 var d = {};
                 d.user_name = data.userName;
                 d.password = data.password;
+                d.client_name = "{{clientName}}";
                 var loading = layer.load(0, {shade: [0.5, '#000']});  // 0.1透明度的白色背景
                 $.ajax({
                     type: "post",
@@ -213,7 +214,8 @@
                     success: function (result, status, xhr) {
                         $("#verCode").val("");
                         localStorage.removeItem("menu_list");
-                        localStorage.removeItem("access_token");
+                        Token.remove();
+                        Token.removeClientName();
                         layer.close(loading);
                         if (result.ret === -1) {
                             setTimeout(function(){
@@ -232,6 +234,7 @@
                                 setCookie();
                                 var jwtData = JSON.parse(xhr.getResponseHeader(RESPONSE_PARAM_NAME));
                                 Token.set(jwtData.token,jwtData.verifyTime)
+                                Token.setClientName(result.clientName);
                                 localStorage.setItem("menu_list",JSON.stringify(result.menu_list));
                                 layer.msg("登录成功", {
                                     icon: "smile",
@@ -239,7 +242,7 @@
                                     time:1000
                                 });
                                 setTimeout(function(){
-                                    window.location.href = "/admin/home.html"
+                                    window.location.href = "/{{baseDir}}/home.html"
                                 },1000)
                             }else{
                                 layer.msg(result.msg != null ? result.msg : "登录失败", {

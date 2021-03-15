@@ -4,6 +4,11 @@ import com.dpstudio.dev.core.L;
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.core.V;
 import com.dpstudio.dev.dto.PageDTO;
+import com.dpstudio.dev.security.annotation.Group;
+import com.dpstudio.dev.security.annotation.Permission;
+import com.dpstudio.dev.security.annotation.Security;
+import com.dpstudio.module.security.core.SecurityConstants;
+import com.dpstudio.module.security.core.SecurityPermission;
 import com.dpstudio.module.security.interCeptor.JwtCheckInterceptor;
 import com.dpstudio.module.security.model.SecurityRole;
 import com.dpstudio.module.security.service.ISecurityRoleService;
@@ -26,6 +31,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/role")
 @Before(JwtCheckInterceptor.class)
+@Security
 public class SecurityRoleController {
 
     @Inject
@@ -39,6 +45,10 @@ public class SecurityRoleController {
      * @return
      * @throws Exception
      */
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME, permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ROLE,
+            groupName = SecurityPermission.GROUP_NAME_ROLE,
+            name = SecurityPermission.PERMISSION_NAME_ROLE_LIST,
+            code = SecurityPermission.PERMISSION_CODE_ROLE_LIST)})
     @RequestMapping(value = "/list", method = Type.HttpMethod.GET)
     public IView list(@RequestParam String name,
                       @ModelBind PageDTO pageDTO) throws Exception {
@@ -52,6 +62,10 @@ public class SecurityRoleController {
      * @return
      * @throws Exception
      */
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME, permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ROLE,
+            groupName = SecurityPermission.GROUP_NAME_ROLE,
+            name = SecurityPermission.PERMISSION_NAME_ROLE_SELECT,
+            code = SecurityPermission.PERMISSION_CODE_ROLE_SELECT)})
     @RequestMapping(value = "/select", method = Type.HttpMethod.GET)
     public IView select() throws Exception {
         List<SecurityRoleSelectVO> securityRoleSelectVOList = iSecurityRoleService.select();
@@ -65,6 +79,10 @@ public class SecurityRoleController {
      * @return
      * @throws Exception
      */
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME, permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ROLE,
+            groupName = SecurityPermission.GROUP_NAME_ROLE,
+            name = SecurityPermission.PERMISSION_NAME_ROLE_CREATE,
+            code = SecurityPermission.PERMISSION_CODE_ROLE_CREATE)})
     @RequestMapping(value = "/create", method = Type.HttpMethod.POST)
     public IView create(@VModel
                         @ModelBind SecurityRoleVO securityRoleVO) throws Exception {
@@ -79,6 +97,10 @@ public class SecurityRoleController {
      * @return
      * @throws Exception
      */
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME, permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ROLE,
+            groupName = SecurityPermission.GROUP_NAME_ROLE,
+            name = SecurityPermission.PERMISSION_NAME_ROLE_DETAIL,
+            code = SecurityPermission.PERMISSION_CODE_ROLE_DETAIL)})
     @RequestMapping(value = "/detail/{id}", method = Type.HttpMethod.GET)
     public IView detail(@VRequired(msg = "id不能为空")
                         @PathVariable String id) throws Exception {
@@ -94,6 +116,10 @@ public class SecurityRoleController {
      * @return
      * @throws Exception
      */
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME, permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ROLE,
+            groupName = SecurityPermission.GROUP_NAME_ROLE,
+            name = SecurityPermission.PERMISSION_NAME_ROLE_UPDATE,
+            code = SecurityPermission.PERMISSION_CODE_ROLE_UPDATE)})
     @RequestMapping(value = "/update/{id}", method = Type.HttpMethod.POST)
     public IView update(@VRequired(msg = "id不能为空")
                         @PathVariable String id,
@@ -112,12 +138,46 @@ public class SecurityRoleController {
      * @return
      * @throws Exception
      */
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME, permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ROLE,
+            groupName = SecurityPermission.GROUP_NAME_ROLE,
+            name = SecurityPermission.PERMISSION_NAME_ROLE_DELETE,
+            code = SecurityPermission.PERMISSION_CODE_ROLE_DELETE)})
     @RequestMapping(value = "/delete", method = Type.HttpMethod.POST)
     public IView delete(
             @VRequired(msg = "id不能为空")
             @RequestParam(value = "ids[]") String[] ids) throws Exception {
         R r = iSecurityRoleService.delete(ids);
         return V.view(r);
+    }
+
+    /**
+     * 权限详情
+     *
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/permission/detail", method = Type.HttpMethod.POST)
+    public IView permissionDetail(@VRequired(msg = "id不能为空")
+                                  @RequestParam String id) throws Exception {
+        R result = iSecurityRoleService.permissionDetail(id);
+        return V.view(result);
+    }
+
+
+    /**
+     * 设置权限
+     *
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/permission/set", method = Type.HttpMethod.POST)
+    public IView permissionSet(@VRequired(msg = "id不能为空")
+                               @RequestParam String id,
+                               @RequestParam(value = "permissions[]") String[] permissions) throws Exception {
+        R result = iSecurityRoleService.permissionSet(id, permissions);
+        return V.view(result);
     }
 
 }

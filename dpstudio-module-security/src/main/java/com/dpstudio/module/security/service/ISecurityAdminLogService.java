@@ -18,7 +18,7 @@ public interface ISecurityAdminLogService {
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityAdminLogListVO> findAll(String adminId, String content, Long startTime, Long endTime, PageDTO pageDTO) throws Exception;
+    IResultSet<SecurityAdminLogListVO> list(String adminId, String content, Long startTime, Long endTime, PageDTO pageDTO) throws Exception;
 
     /**
      * 删除日志
@@ -33,10 +33,11 @@ public interface ISecurityAdminLogService {
      * 添加登录日志
      *
      * @param adminId
+     * @param clientName
      * @param userName
      * @return
      * @throws Exception
      */
-    R create(String adminId, String userName) throws Exception;
+    R create(String adminId,String clientName, String userName) throws Exception;
 
 }

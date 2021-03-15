@@ -15,9 +15,9 @@ public @interface Group {
     Permission[] permissions() default {};
 
     /**
-     * 客户端名称 默认空
+     * 客户端名称
      * @return
      */
-    String clientName() default "";
+    String clientName() default "defaultClientName";
 
 }

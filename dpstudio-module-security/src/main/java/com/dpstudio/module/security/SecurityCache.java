@@ -3,6 +3,7 @@ package com.dpstudio.module.security;
 import com.dpstudio.dev.security.Security;
 import com.dpstudio.dev.security.jwt.JWT;
 import com.dpstudio.dev.support.jwt.JwtBean;
+import com.dpstudio.module.security.core.SecurityConstants;
 import com.dpstudio.module.security.model.SecurityAdmin;
 import net.ymate.platform.cache.Caches;
 import net.ymate.platform.cache.ICaches;
@@ -24,7 +25,11 @@ public class SecurityCache {
     private static final int TIME_OUT = Security.get().getConfig().verifyTime() * 60;
 
     public static String userId() {
-        return (String) Optional.ofNullable(JWT.Store.getPara(token(), "uid"))
+        return (String) Optional.ofNullable(JWT.Store.getPara(token(), SecurityConstants.JWT_ADMIN_ID_KEY))
+                .orElse("1");
+    }
+    public static String userId(String token) {
+        return (String) Optional.ofNullable(JWT.Store.getPara(token, SecurityConstants.JWT_ADMIN_ID_KEY))
                 .orElse("1");
     }
 
@@ -43,8 +48,7 @@ public class SecurityCache {
     public static class AdminCache {
 
         public static void setPara(SecurityAdmin securityAdmin) {
-
-            SecurityCache.setPara(AdminCache.class.getName(), securityAdmin.getId(), securityAdmin, TIME_OUT);
+            SecurityCache.setPara(SecurityAdmin.class.getName(), securityAdmin.getId(), securityAdmin, TIME_OUT);
         }
 
         public static void removePara(String adminId) {
@@ -57,31 +61,36 @@ public class SecurityCache {
         }
     }
 
+
     public static class JwtCache {
 
-        public static void setParaByAdminId(String adminId, JwtBean jwtBean) {
-            SecurityCache.setPara("jwtCacheByAdminId", adminId, jwtBean, TIME_OUT);
+        private static String fixKey(String key, String clientName) {
+            return key.concat("_").concat(clientName);
         }
 
-        public static void setPara(JwtBean jwtBean) {
-            SecurityCache.setPara("jwtCache", jwtBean.getToken(), jwtBean, TIME_OUT);
+        public static void setParaByAdminId(String adminId, JwtBean jwtBean, String clientName) {
+            SecurityCache.setPara(SecurityConstants.JWT_CACHE_ADIN_NAME, fixKey(adminId, clientName), jwtBean, TIME_OUT);
         }
 
-        public static void removeParaByAdminId(String adminId) {
-            SecurityCache.removePara("jwtCacheByAdminId", adminId);
+        public static void setPara(JwtBean jwtBean, String clientName) {
+            SecurityCache.setPara(SecurityConstants.JWT_CACHE_NAME, fixKey(jwtBean.getToken(), clientName), jwtBean, TIME_OUT);
         }
 
-        public static void removePara(String token) {
-            SecurityCache.removePara("jwtCache", token);
+        public static void removeParaByAdminId(String adminId, String clientName) {
+            SecurityCache.removePara(SecurityConstants.JWT_CACHE_ADIN_NAME, fixKey(adminId, clientName));
         }
 
-        public static JwtBean getParaByAdminId(String adminId) {
-            Object object = SecurityCache.getPara("jwtCacheByAdminId", adminId);
+        public static void removePara(String token, String clientName) {
+            SecurityCache.removePara(SecurityConstants.JWT_CACHE_NAME, fixKey(token, clientName));
+        }
+
+        public static JwtBean getParaByAdminId(String adminId, String clientName) {
+            Object object = SecurityCache.getPara(SecurityConstants.JWT_CACHE_ADIN_NAME, fixKey(adminId, clientName));
             return object == null ? null : (JwtBean) object;
         }
 
-        public static JwtBean getPara(String token) {
-            Object object = SecurityCache.getPara("jwtCache", token);
+        public static JwtBean getPara(String token, String clientName) {
+            Object object = SecurityCache.getPara(SecurityConstants.JWT_CACHE_NAME, fixKey(token, clientName));
             return object == null ? null : (JwtBean) object;
         }
 

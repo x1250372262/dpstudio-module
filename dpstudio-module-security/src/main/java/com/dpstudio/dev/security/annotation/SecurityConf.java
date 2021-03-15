@@ -46,9 +46,15 @@ public @interface SecurityConf {
     String clientName() default "";
 
     /**
+     *  客户端标题  对应客户端类型
+     * @return
+     */
+    String clientTitle() default "";
+
+    /**
      * @return 菜单文件位置
      */
-    String menuFilePath() default "${root}/menu/menu.xml";
+    String menuFilePath() default "${root}/menu/";
 
     /**
      * @return 授权实现类
@@ -81,6 +87,19 @@ public @interface SecurityConf {
      * @return 参数名
      */
     String paramName() default "";
+
+    /**
+     *  header 客户端参数名
+     * @return
+     */
+    String headerClientName() default "";
+
+
+    /**
+     * 客户端参数名
+     * @return
+     */
+    String paramClientName() default "";
 
     /**
      * @return 是否自动设置到response

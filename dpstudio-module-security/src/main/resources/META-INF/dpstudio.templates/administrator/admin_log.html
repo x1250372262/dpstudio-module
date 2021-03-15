@@ -17,10 +17,10 @@
 <div class="lyear-layout-web">
     <div class="lyear-layout-container">
         <!--左侧导航-->
-        <ng-include src="'/admin/common/sidebar.html'"></ng-include>
+        <ng-include src="'/{{clientName}}/common/sidebar.html'"></ng-include>
         <!--End 左侧导航-->
         <!--头部信息-->
-        <ng-include src="'/admin/common/header.html'"></ng-include>
+        <ng-include src="'/{{clientName}}/common/header.html'"></ng-include>
         <!--End 头部信息-->
 
         <!--页面主要内容-->
@@ -86,7 +86,12 @@
 <script type="text/javascript">
 
     $(function () {
-        Table.init();
+        var id = $.trim(MX.getQueryVariable("id"));
+        var url = $("#tableAjaxId").attr("listurl")
+        if(id){
+            url = url + "?admin_id=" + id;
+        }
+        Table.initByUrl(url);
     });
 
     columns = [

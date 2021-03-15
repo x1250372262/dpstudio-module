@@ -22,14 +22,14 @@ public interface ISecurityAdminDao {
     SecurityAdmin findById(String id, IDBLocker idbLocker, String... fields) throws Exception;
 
     /**
-     * 根据用户名查询
+     * 根据用户名和客户端名称查询
      *
      * @param userName 用户名
      * @param fields   要查询哪些字段
      * @return 查询的数据
      * @throws Exception 查询异常
      */
-    SecurityAdmin findByUserName(String userName, String... fields) throws Exception;
+    SecurityAdmin findByUserNameAndClientName(String userName, String clientName,String... fields) throws Exception;
 
     /**
      * 修改
@@ -52,6 +52,23 @@ public interface ISecurityAdminDao {
     List<SecurityAdmin> updateAll(List<SecurityAdmin> securityAdminList, String... fields) throws Exception;
 
     /**
+     * 添加
+     * @param securityAdminList
+     * @return
+     * @throws Exception
+     */
+    List<SecurityAdmin> createAll(List<SecurityAdmin> securityAdminList) throws Exception;
+
+    /**
+     * 根据客户端名称和是否总管理查询
+     * @param clientName
+     * @param founder
+     * @return
+     * @throws Exception
+     */
+    SecurityAdmin findByClientNameAndFounder(String clientName,Integer founder) throws Exception;
+
+    /**
      * 管理员列表
      *
      * @param userName
@@ -59,7 +76,7 @@ public interface ISecurityAdminDao {
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, PageDTO pageDTO) throws Exception;
+    IResultSet<SecurityAdminListVO> list(String clientName,String userName, String realName, Integer disableStatus, PageDTO pageDTO) throws Exception;
 
     /**
      * 添加管理员

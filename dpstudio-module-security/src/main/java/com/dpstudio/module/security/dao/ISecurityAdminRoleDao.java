@@ -20,6 +20,8 @@ public interface ISecurityAdminRoleDao {
      */
     IResultSet<SecurityAdminRoleListVO> findAll(String adminId, PageDTO pageDTO) throws Exception;
 
+    IResultSet<SecurityAdminRole> findAll(String adminId,String...fields) throws Exception;
+
     /**
      * 管理员角色集合
      *

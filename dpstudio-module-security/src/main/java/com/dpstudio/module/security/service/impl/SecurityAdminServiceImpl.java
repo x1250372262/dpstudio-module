@@ -1,11 +1,13 @@
 package com.dpstudio.module.security.service.impl;
 
 import com.dpstudio.dev.code.C;
+import com.dpstudio.dev.core.Constants;
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.dto.PageDTO;
 import com.dpstudio.dev.security.Security;
 import com.dpstudio.dev.security.bean.MenuBean;
 import com.dpstudio.dev.security.jwt.JWT;
+import com.dpstudio.dev.support.jwt.JwtBean;
 import com.dpstudio.dev.support.jwt.JwtHelper;
 import com.dpstudio.dev.support.spi.SpiLoader;
 import com.dpstudio.dev.utils.BeanUtils;
@@ -32,6 +34,7 @@ import net.ymate.platform.core.beans.annotation.Inject;
 import net.ymate.platform.core.persistence.IResultSet;
 import net.ymate.platform.core.persistence.Params;
 import net.ymate.platform.core.persistence.annotation.Transaction;
+import net.ymate.platform.core.persistence.impl.DefaultResultSet;
 import net.ymate.platform.persistence.jdbc.IDBLocker;
 import net.ymate.platform.webmvc.context.WebContext;
 import org.apache.commons.codec.binary.Base64;
@@ -58,9 +61,63 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
     @Inject
     private ISecuritySettingService iSecuritySettingService;
 
+    private SecurityAdmin initSecurityAdmin(String clientName) throws Exception {
+        String salt = UUIDUtils.randomStr(6, false);
+        String password = DigestUtils.md5Hex(SecurityConstants.DEFAULT_ADMIN_PASSWORD);
+        password = DigestUtils.md5Hex(Base64.encodeBase64((password + salt).getBytes(Constants.DEFAULT_CHARTSET)));
+        String id = UUIDUtils.UUID();
+        return SecurityAdmin.builder()
+                .id(id)
+                .userName(SecurityConstants.DEFAULT_ADMIN_USER_NAME)
+                .realName(SecurityConstants.DEFAULT_ADMIN_REAL_NAME)
+                .password(password)
+                .founder(Constants.BOOL_TRUE)
+                .createUser(id)
+                .createTime(DateTimeUtils.currentTimeMillis())
+                .lastModifyTime(DateTimeUtils.currentTimeMillis())
+                .lastModifyUser(id)
+                .salt(salt)
+                .clientName(clientName)
+                .build();
+    }
+
+    @Override
+    public R init(String clientName) throws Exception {
+        if (StringUtils.isBlank(clientName)) {
+            SecurityAdmin securityAdmin = iSecurityAdminDao.findByClientNameAndFounder("", Constants.BOOL_TRUE);
+            if (securityAdmin == null) {
+                securityAdmin = initSecurityAdmin(clientName);
+                securityAdmin = iSecurityAdminDao.create(securityAdmin);
+            }
+            return R.result(securityAdmin);
+        } else {
+            if (!clientName.contains("|")) {
+                SecurityAdmin securityAdmin = iSecurityAdminDao.findByClientNameAndFounder(clientName, Constants.BOOL_TRUE);
+                if (securityAdmin == null) {
+                    securityAdmin = initSecurityAdmin(clientName);
+                    securityAdmin = iSecurityAdminDao.create(securityAdmin);
+                }
+                return R.result(securityAdmin);
+            }
+            String[] clientNameArray = clientName.split("\\|");
+            List<SecurityAdmin> securityAdminList = new ArrayList<>();
+            for (String clientNameStr : clientNameArray) {
+                SecurityAdmin securityAdmin = iSecurityAdminDao.findByClientNameAndFounder(clientNameStr, Constants.BOOL_TRUE);
+                if (securityAdmin == null) {
+                    securityAdminList.add(initSecurityAdmin(clientNameStr));
+                }
+            }
+            if (securityAdminList.isEmpty()) {
+                return R.ok();
+            }
+            securityAdminList = iSecurityAdminDao.createAll(securityAdminList);
+            return R.result(securityAdminList);
+        }
+    }
+
     @Override
     @Transaction
-    public R login(String userName, String password) throws Exception {
+    public R login(String userName, String password, String clientName) throws Exception {
         ISecurityAdminHandler securityAdminHandler = SpiLoader.load(ISecurityAdminHandler.class, null);
         if (securityAdminHandler == null) {
             securityAdminHandler = new ISecurityAdminHandler.SecurityAdminHandler();
@@ -70,16 +127,16 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         if (!Objects.equals(loginBeforeResult.code(), C.SUCCESS.getCode())) {
             return loginBeforeResult;
         }
-        SecurityAdmin securityAdmin = iSecurityAdminDao.findByUserName(userName, SecurityAdmin.FIELDS.ID,
+        SecurityAdmin securityAdmin = iSecurityAdminDao.findByUserNameAndClientName(userName, clientName, SecurityAdmin.FIELDS.ID,
                 SecurityAdmin.FIELDS.GENDER, SecurityAdmin.FIELDS.PHOTO_URI, SecurityAdmin.FIELDS.PASSWORD,
-                SecurityAdmin.FIELDS.USER_NAME, SecurityAdmin.FIELDS.SALT,
+                SecurityAdmin.FIELDS.USER_NAME, SecurityAdmin.FIELDS.SALT, SecurityAdmin.FIELDS.CLIENT_NAME,
                 SecurityAdmin.FIELDS.REAL_NAME, SecurityAdmin.FIELDS.LOGIN_ERROR_COUNT,
                 SecurityAdmin.FIELDS.FOUNDER, SecurityAdmin.FIELDS.DISABLE_STATUS,
                 SecurityAdmin.FIELDS.LOGIN_LOCK_END_TIME, SecurityAdmin.FIELDS.SESSION_TOKEN);
         if (securityAdmin == null) {
             return R.create(Code.SECURITY_ADMIN_USERNAME_NOT_EXIST.getCode()).msg(Code.SECURITY_ADMIN_USERNAME_NOT_EXIST.getMsg());
         }
-        SecuritySettingDetailVO securitySettingDetailVO = iSecuritySettingService.detail(SecurityConstants.SET_ID);
+        SecuritySettingDetailVO securitySettingDetailVO = iSecuritySettingService.detail(clientName);
         //开启错误计数 并且 错误次数大于等于设置的
         boolean loginErrorBool = Objects.equals(securitySettingDetailVO.getLoginErrorStatus(), SecurityConstants.BOOL_TRUE)
                 && securityAdmin.getLoginErrorCount() >= securitySettingDetailVO.getLoginErrorCount()
@@ -98,7 +155,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         }
 
         String oldPassword = securityAdmin.getPassword();
-        password = DigestUtils.md5Hex(Base64.encodeBase64((password + securityAdmin.getSalt()).getBytes(SecurityConstants.CHARTSET)));
+        password = DigestUtils.md5Hex(Base64.encodeBase64((password + securityAdmin.getSalt()).getBytes(Constants.DEFAULT_CHARTSET)));
         //两次密码不一致
         if (!oldPassword.equals(password)) {
             securityAdmin.setLoginErrorCount(securityAdmin.getLoginErrorCount() + 1);
@@ -131,24 +188,27 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         securityAdmin.setLoginLockStartTime(0L);
         securityAdmin.setLoginLockEndTime(0L);
 
-        R jwtResult = JWT.attr("uid", securityAdmin.getId())
+        R jwtResult = JWT.attr(SecurityConstants.JWT_ADMIN_ID_KEY, securityAdmin.getId())
                 .build();
         if (!Objects.equals(jwtResult.code(), C.SUCCESS.getCode())) {
             return jwtResult;
         }
 
-
+        JwtBean jwtBean = jwtResult.attr("jwtToken");
         //放到缓存
-        SecurityCache.JwtCache.setPara(jwtResult.attr("jwtToken"));
-        SecurityCache.JwtCache.setParaByAdminId(securityAdmin.getId(), jwtResult.attr("jwtToken"));
+        SecurityCache.JwtCache.setPara(jwtResult.attr("jwtToken"), clientName);
+        SecurityCache.JwtCache.setParaByAdminId(securityAdmin.getId(), jwtResult.attr("jwtToken"), clientName);
+        SecurityCache.AdminCache.setPara(securityAdmin);
+
         iSecurityAdminDao.update(securityAdmin, SecurityAdmin.FIELDS.LOGIN_ERROR_COUNT, SecurityAdmin.FIELDS.LOGIN_LOCK_STATUS,
                 SecurityAdmin.FIELDS.LOGIN_LOCK_START_TIME, SecurityAdmin.FIELDS.LOGIN_LOCK_END_TIME, SecurityAdmin.FIELDS.SESSION_TOKEN);
         //开启日志记录
         if (Objects.equals(securitySettingDetailVO.getLoginLogStatus(), SecurityConstants.BOOL_TRUE)) {
-            iSecurityAdminLogService.create(securityAdmin.getId(), StringUtils.defaultIfBlank(securityAdmin.getRealName(), securityAdmin.getUserName()));
+            iSecurityAdminLogService.create(securityAdmin.getId(), clientName, StringUtils.defaultIfBlank(securityAdmin.getRealName(), securityAdmin.getUserName()));
         }
-        List<MenuBean> menuBeanList = Security.get().permissionMenu();
-        return R.ok().attr("menu_list", menuBeanList);
+
+        List<MenuBean> menuBeanList = Security.get().permissionMenu(jwtBean.getToken(),clientName);
+        return R.ok().attr("menu_list", menuBeanList).attr("clientName", clientName);
     }
 
     @Override
@@ -156,27 +216,27 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         if (!newPwd.equals(reNewPwd)) {
             return R.create(Code.SECURITY_ADMIN_PASSWORD_NO_SAME.getCode()).msg(Code.SECURITY_ADMIN_PASSWORD_NO_SAME.getMsg());
         }
-        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(SecurityCache.userId(), IDBLocker.DEFAULT, SecurityAdmin.FIELDS.USER_NAME, SecurityAdmin.FIELDS.PASSWORD, SecurityAdmin.FIELDS.ID, SecurityAdmin.FIELDS.SALT);
+        SecurityAdmin securityAdmin = iSecurityAdminDao.findById(SecurityCache.userId(), IDBLocker.DEFAULT, SecurityAdmin.FIELDS.USER_NAME, SecurityAdmin.FIELDS.CLIENT_NAME, SecurityAdmin.FIELDS.PASSWORD, SecurityAdmin.FIELDS.ID, SecurityAdmin.FIELDS.SALT);
         if (securityAdmin == null) {
             return R.create(Code.SECURITY_ADMIN_NOT_EXIST.getCode()).msg(Code.SECURITY_ADMIN_NOT_EXIST.getMsg());
         }
         String salt = securityAdmin.getSalt();
-        String oldpwd = DigestUtils.md5Hex(Base64.encodeBase64((pwd + salt).getBytes(SecurityConstants.CHARTSET)));
+        String oldpwd = DigestUtils.md5Hex(Base64.encodeBase64((pwd + salt).getBytes(Constants.DEFAULT_CHARTSET)));
         if (!Objects.equals(oldpwd, securityAdmin.getPassword())) {
             return R.create(Code.SECURITY_ADMIN_PASSWORD_OLD_ERROR.getCode()).msg(Code.SECURITY_ADMIN_PASSWORD_OLD_ERROR.getMsg());
         }
-        pwd = DigestUtils.md5Hex(Base64.encodeBase64((newPwd + salt).getBytes(SecurityConstants.CHARTSET)));
+        pwd = DigestUtils.md5Hex(Base64.encodeBase64((newPwd + salt).getBytes(Constants.DEFAULT_CHARTSET)));
         securityAdmin.setPassword(pwd);
         securityAdmin.setLastModifyTime(DateTimeUtils.currentTimeMillis());
         securityAdmin.setLastModifyUser(SecurityCache.userId());
         securityAdmin = iSecurityAdminDao.update(securityAdmin, SecurityAdmin.FIELDS.PASSWORD, SecurityAdmin.FIELDS.LAST_MODIFY_TIME, SecurityAdmin.FIELDS.LAST_MODIFY_USER);
         if (securityAdmin != null) {
-            clearLoginStatus();
+            clearLoginStatus(securityAdmin.getClientName());
         }
         return R.result(securityAdmin);
     }
 
-    private void clearLoginStatus() {
+    private void clearLoginStatus(String clientName) {
         HttpServletRequest request = WebContext.getRequest();
         String token = request.getHeader(JWT.JWT_CONFIG.getHeaderName());
 
@@ -186,7 +246,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         if (StringUtils.isBlank(token)) {
             return;
         }
-        SecurityCache.JwtCache.removePara(token);
+        SecurityCache.JwtCache.removePara(token, clientName);
         R r = JwtHelper.parse(token);
         if (!Objects.equals(r.code(), C.SUCCESS.getCode())) {
             return;
@@ -195,7 +255,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         if (StringUtils.isBlank(uid)) {
             return;
         }
-        SecurityCache.JwtCache.removeParaByAdminId(uid);
+        SecurityCache.JwtCache.removeParaByAdminId(uid, clientName);
         try {
             SecurityAdmin securityAdmin = YMP.get().getBeanFactory().getBean(ISecurityAdminDao.class).findById(uid, null);
             if (securityAdmin == null) {
@@ -232,12 +292,16 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
 
     @Override
     public IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, PageDTO pageDTO) throws Exception {
-        IResultSet<SecurityAdminListVO> list = iSecurityAdminDao.list(userName, realName, disableStatus, pageDTO);
+        SecurityAdmin loginAdmin = SecurityCache.AdminCache.getPara(SecurityCache.userId());
+        if (loginAdmin == null) {
+            return new DefaultResultSet<>(new ArrayList<>());
+        }
+        IResultSet<SecurityAdminListVO> list = iSecurityAdminDao.list(loginAdmin.getClientName(),userName, realName, disableStatus, pageDTO);
         Params adminIds = Params.create();
         for (SecurityAdminListVO securityAdminListVO : list.getResultData()) {
             adminIds.add(securityAdminListVO.getId());
         }
-        IResultSet<SecurityAdminRoleListVO> iResultSet = iSecurityAdminRoleDao.findByAdminIds(adminIds,pageDTO);
+        IResultSet<SecurityAdminRoleListVO> iResultSet = iSecurityAdminRoleDao.findByAdminIds(adminIds, pageDTO);
         for (SecurityAdminListVO securityAdminListVO : list.getResultData()) {
             String roleName = "";
             for (SecurityAdminRoleListVO securityAdminRoleListVO : iResultSet.getResultData()) {
@@ -256,16 +320,21 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
 
     @Override
     public R create(SecurityAdminVO securityAdminVO, String password) throws Exception {
-        SecurityAdmin securityAdmin = iSecurityAdminDao.findByUserName(securityAdminVO.getUserName());
+        SecurityAdmin loginAdmin = SecurityCache.AdminCache.getPara(SecurityCache.userId());
+        if (loginAdmin == null) {
+            return R.create(Code.SECURITY_ADMIN_INVALID_OR_TIMEOUT.getCode()).msg(Code.SECURITY_ADMIN_INVALID_OR_TIMEOUT.getMsg());
+        }
+        SecurityAdmin securityAdmin = iSecurityAdminDao.findByUserNameAndClientName(securityAdminVO.getUserName(), loginAdmin.getClientName());
         if (securityAdmin != null) {
             return R.create(Code.SECURITY_ADMIN_EXIST.getCode()).msg(Code.SECURITY_ADMIN_EXIST.getMsg());
         }
         String salt = UUIDUtils.randomStr(6, false);
-        password = DigestUtils.md5Hex(Base64.encodeBase64((password + salt).getBytes(SecurityConstants.CHARTSET)));
+        password = DigestUtils.md5Hex(Base64.encodeBase64((password + salt).getBytes(Constants.DEFAULT_CHARTSET)));
         String finalPassword = password;
         securityAdmin = BeanUtils.copy(securityAdminVO, SecurityAdmin::new, (s, t) -> {
             t.setId(UUIDUtils.UUID());
             t.setSalt(salt);
+            t.setClientName(loginAdmin.getClientName());
             t.setPassword(finalPassword);
             t.setCreateTime(DateTimeUtils.currentTimeMillis());
             t.setCreateUser(SecurityCache.userId());
@@ -299,7 +368,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         }
         String userName = securityAdmin.getUserName();
         userName = DigestUtils.md5Hex(userName);
-        String password = DigestUtils.md5Hex(Base64.encodeBase64((userName + securityAdmin.getSalt()).getBytes(SecurityConstants.CHARTSET)));
+        String password = DigestUtils.md5Hex(Base64.encodeBase64((userName + securityAdmin.getSalt()).getBytes(Constants.DEFAULT_CHARTSET)));
         securityAdmin.setPassword(password);
         securityAdmin = iSecurityAdminDao.update(securityAdmin, SecurityAdmin.FIELDS.PASSWORD);
         return R.result(securityAdmin);

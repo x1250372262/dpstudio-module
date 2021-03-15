@@ -7,6 +7,8 @@ import com.dpstudio.dev.security.annotation.Permission;
 import com.dpstudio.dev.security.annotation.Security;
 import com.dpstudio.dev.security.bean.GroupBean;
 import com.dpstudio.dev.security.bean.PermissionBean;
+import com.dpstudio.module.security.core.SecurityConstants;
+import com.dpstudio.module.security.core.SecurityPermission;
 import net.ymate.platform.commons.util.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -68,10 +70,13 @@ public class PermissionMeta {
     /**
      * 获取权限列表
      */
-    public static List<PermissionBean> getPermissions(String groupId) {
+    public static List<PermissionBean> getPermissions(String groupId,String clientName) {
         if (StringUtils.isNotBlank(groupId)) {
             return PERMISSIONS_CACHES.get(ISecurity.CacheKey.PERMISSIONS_CACHE_KEY.name())
-                    .stream().filter(groupBean -> groupId.equals(groupBean.getGroupId())).collect(Collectors.toList());
+                    .stream()
+                    .filter(permissionBean -> groupId.equals(permissionBean.getGroupId()))
+                    .filter(permissionBean -> clientName.equals(permissionBean.getClientName()))
+                    .collect(Collectors.toList());
         }
         return PERMISSIONS_CACHES.get(ISecurity.CacheKey.PERMISSIONS_CACHE_KEY.name());
     }
@@ -80,11 +85,14 @@ public class PermissionMeta {
     /**
      * 根据code获取权限
      */
-    public static PermissionBean findByCode( List<PermissionBean> permissionBeans,String code) {
-        if(permissionBeans == null){
-            permissionBeans = getPermissions(null);
+    public static PermissionBean findByCode(List<PermissionBean> permissionBeans,String clientName, String code) {
+        if (permissionBeans == null) {
+            permissionBeans = getPermissions(null,clientName);
         }
         if (StringUtils.isBlank(code)) {
+            return null;
+        }
+        if(permissionBeans == null){
             return null;
         }
         return permissionBeans.stream().filter(permissionBean -> code.equals(permissionBean.getCode())).findFirst().get();
@@ -97,7 +105,7 @@ public class PermissionMeta {
      * @return
      */
     public static List<GroupBean> getGroups(String clientName) {
-        if(StringUtils.isNotBlank(clientName)){
+        if (StringUtils.isNotBlank(clientName)) {
             return GROUP_CACHES.get(ISecurity.CacheKey.GROUP_CACHE_KEY.name())
                     .stream().filter(groupBean -> clientName.equals(groupBean.getClientName())).collect(Collectors.toList());
         }
@@ -112,9 +120,9 @@ public class PermissionMeta {
     private static void create(ISecurityConfig securityConfig) {
         String packageName = securityConfig.packageName();
         Reflections reflections;
-        if(StringUtils.isNotBlank(packageName)){
+        if (StringUtils.isNotBlank(packageName)) {
             reflections = new Reflections(packageName);
-        }else{
+        } else {
             reflections = new Reflections();
         }
         Set<Class<?>> classesList = reflections.getTypesAnnotatedWith(Security.class);
@@ -134,19 +142,25 @@ public class PermissionMeta {
                     continue;
                 }
                 for (Permission permission : permissions) {
-                    //添加权限列表
+//添加权限列表
                     Optional<PermissionBean> permissionBean = permissionBeans.stream().filter(p -> p.getCode().equals(permission.code())).findFirst();
                     if (!permissionBean.isPresent()) {
-                        permissionBeans.add(new PermissionBean(permission.name(), permission.code(), permission.groupId(), permission.groupName(),group.clientName()));
+                        permissionBeans.add(new PermissionBean(permission.name(), permission.code(), permission.groupId(), permission.groupName(), group.clientName()));
                     }
                     //添加组列表
-                    Optional<GroupBean> groupBean = groupBeans.stream().filter(gb -> gb.getName().equals(permission.groupId())).findFirst();
+                    Optional<GroupBean> groupBean = groupBeans.stream().filter(gb -> gb.getId().equals(permission.groupId())).findFirst();
                     if (!groupBean.isPresent()) {
-                        groupBeans.add(new GroupBean(permission.groupName(), permission.groupId(),group.clientName()));
+                        groupBeans.add(new GroupBean(permission.groupName(), permission.groupId(), group.clientName()));
                     }
                 }
             }
         }
+        permissionBeans.add(new PermissionBean(SecurityPermission.PERMISSION_NAME_SECURITY,
+                SecurityPermission.PERMISSION_CODE_SECURITY,
+                SecurityPermission.GROUP_ID_SECURITY,
+                SecurityPermission.GROUP_NAME_SECURITY,
+                SecurityConstants.PERMISSION_CLIENT_NAME));
+        groupBeans.add(new GroupBean( SecurityPermission.GROUP_NAME_SECURITY,  SecurityPermission.GROUP_ID_SECURITY,SecurityConstants.PERMISSION_CLIENT_NAME));
         GROUP_CACHES.put(ISecurity.CacheKey.GROUP_CACHE_KEY.name(), groupBeans);
         PERMISSIONS_CACHES.put(ISecurity.CacheKey.PERMISSIONS_CACHE_KEY.name(), permissionBeans);
     }

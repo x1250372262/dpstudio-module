@@ -17,9 +17,9 @@ public class SecurityAdminLogDaoImpl implements ISecurityAdminLogDao {
 
 
     @Override
-    public IResultSet<SecurityAdminLog> findAll(String adminId, String content, Long startTime, Long endTime, PageDTO pageDTO) throws Exception {
+    public IResultSet<SecurityAdminLog> findAll(String adminId,String clientName, String content, Long startTime, Long endTime, PageDTO pageDTO) throws Exception {
 
-        Cond cond = Cond.create().eqOne()
+        Cond cond = Cond.create().eqWrap(SecurityAdminLog.FIELDS.CLIENT_NAME).param(clientName)
                 .exprNotEmpty(adminId, c -> c.and().eqWrap(SecurityAdminLog.FIELDS.ADMIN_ID).param(adminId))
                 .exprNotEmpty(content, c -> c.and().likeWrap(SecurityAdminLog.FIELDS.CONTENT).param("%" + content + "%"))
                 .exprNotEmpty(startTime, c -> c.and().gtEqWrap(SecurityAdminLog.FIELDS.CREATE_TIME).param(startTime))

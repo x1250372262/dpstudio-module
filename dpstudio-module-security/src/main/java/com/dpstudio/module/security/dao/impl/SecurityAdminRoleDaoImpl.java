@@ -45,6 +45,11 @@ public class SecurityAdminRoleDaoImpl implements ISecurityAdminRoleDao {
     }
 
     @Override
+    public IResultSet<SecurityAdminRole> findAll(String adminId,String...fields) throws Exception {
+        return SecurityAdminRole.builder().adminId(adminId).build().find(Fields.create(fields));
+    }
+
+    @Override
     public IResultSet<SecurityAdminRoleListVO> findByAdminIds(Params adminIds, PageDTO pageDTO) throws Exception {
 
         Cond cond = Cond.create().eqOne();

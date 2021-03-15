@@ -9,21 +9,29 @@ public interface ISecuritySettingService {
     /**
      * 修改安全设置
      *
-     * @param id
      * @param lastModifyTime
      * @param securitySettingVO
      * @return
      * @throws Exception
      */
-    R update(String id, Long lastModifyTime, SecuritySettingVO securitySettingVO) throws Exception;
+    R update(Long lastModifyTime, SecuritySettingVO securitySettingVO) throws Exception;
 
     /**
      * 设置详情
      *
-     * @param id
+     * @param clientName
      * @return
      * @throws Exception
      */
-    SecuritySettingDetailVO detail(String id) throws Exception;
+    SecuritySettingDetailVO detail(String clientName) throws Exception;
+
+
+    /**
+     * 模块启动初始化表
+     * @param clientName
+     * @return
+     * @throws Exception
+     */
+    R init(String clientName) throws Exception;
 
 }

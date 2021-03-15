@@ -99,6 +99,7 @@ public class JWT {
         if (JWT_CONFIG.autoResponse()) {
             WebContext.getResponse().setHeader(JWT_CONFIG.getHeaderName(), JsonWrapper.toJsonString(jwtBean, false, true));
         }
+        JWT.Store.setPara(jwtBean.getToken(), attrMap);
         return R.ok().attr("jwtToken", jwtBean);
     }
 

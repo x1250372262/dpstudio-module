@@ -6,16 +6,22 @@ import com.dpstudio.dev.utils.ResultSetUtils;
 import com.dpstudio.module.security.SecurityCache;
 import com.dpstudio.module.security.core.SecurityConstants;
 import com.dpstudio.module.security.dao.ISecurityAdminLogDao;
+import com.dpstudio.module.security.model.SecurityAdmin;
 import com.dpstudio.module.security.model.SecurityAdminLog;
 import com.dpstudio.module.security.service.ISecurityAdminLogService;
+import com.dpstudio.module.security.vo.detail.SecuritySettingDetailVO;
 import com.dpstudio.module.security.vo.list.SecurityAdminLogListVO;
 import net.ymate.platform.commons.util.DateTimeUtils;
 import net.ymate.platform.commons.util.UUIDUtils;
 import net.ymate.platform.core.beans.annotation.Bean;
 import net.ymate.platform.core.beans.annotation.Inject;
 import net.ymate.platform.core.persistence.IResultSet;
+import net.ymate.platform.core.persistence.impl.DefaultResultSet;
+import net.ymate.platform.persistence.jdbc.base.impl.BeanResultSetHandler;
 import net.ymate.platform.webmvc.context.WebContext;
 import net.ymate.platform.webmvc.util.WebUtils;
+
+import java.util.ArrayList;
 
 @Bean
 public class SecurityAdminLogServiceImpl implements ISecurityAdminLogService {
@@ -24,8 +30,12 @@ public class SecurityAdminLogServiceImpl implements ISecurityAdminLogService {
     private ISecurityAdminLogDao iSecurityAdminLogDao;
 
     @Override
-    public IResultSet<SecurityAdminLogListVO> findAll(String adminId, String content, Long startTime, Long endTime, PageDTO pageDTO) throws Exception {
-        IResultSet<SecurityAdminLog> adminLogResultSet = iSecurityAdminLogDao.findAll(adminId, content, startTime, endTime, pageDTO);
+    public IResultSet<SecurityAdminLogListVO> list(String adminId, String content, Long startTime, Long endTime, PageDTO pageDTO) throws Exception {
+        SecurityAdmin loginAdmin = SecurityCache.AdminCache.getPara(SecurityCache.userId());
+        if (loginAdmin == null) {
+           return new DefaultResultSet<>(new ArrayList<>());
+        }
+        IResultSet<SecurityAdminLog> adminLogResultSet = iSecurityAdminLogDao.findAll(adminId,loginAdmin.getClientName(), content, startTime, endTime, pageDTO);
         return ResultSetUtils.copy(adminLogResultSet, SecurityAdminLogListVO::new);
     }
 
@@ -36,9 +46,10 @@ public class SecurityAdminLogServiceImpl implements ISecurityAdminLogService {
     }
 
     @Override
-    public R create(String adminId, String userName) throws Exception {
+    public R create(String adminId,String clientName, String userName) throws Exception {
         SecurityAdminLog securityAdminLog = SecurityAdminLog.builder()
                 .id(UUIDUtils.UUID())
+                .clientName(clientName)
                 .type(SecurityConstants.ADMIN_LOG_TYPE)
                 .action(SecurityConstants.ADMIN_LOG_ACTION)
                 .adminId(adminId)

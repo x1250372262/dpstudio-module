@@ -29,8 +29,8 @@ public class SecurityAdminDaoImpl implements ISecurityAdminDao {
     }
 
     @Override
-    public SecurityAdmin findByUserName(String userName, String... fields) throws Exception {
-        return SecurityAdmin.builder().userName(userName).deleteStatus(SecurityConstants.BOOL_FALSE).build().findFirst(Fields.create(fields));
+    public SecurityAdmin findByUserNameAndClientName(String userName, String clientName, String... fields) throws Exception {
+        return SecurityAdmin.builder().userName(userName).clientName(clientName).deleteStatus(SecurityConstants.BOOL_FALSE).build().findFirst(Fields.create(fields));
     }
 
     @Override
@@ -44,9 +44,20 @@ public class SecurityAdminDaoImpl implements ISecurityAdminDao {
     }
 
     @Override
-    public IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, PageDTO pageDTO) throws Exception {
+    public List<SecurityAdmin> createAll(List<SecurityAdmin> securityAdminList) throws Exception {
+        return JDBC.get().openSession(session -> session.insert(securityAdminList));
+    }
+
+    @Override
+    public SecurityAdmin findByClientNameAndFounder(String clientName, Integer founder) throws Exception {
+        return SecurityAdmin.builder().clientName(clientName).founder(founder).build().findFirst();
+    }
+
+    @Override
+    public IResultSet<SecurityAdminListVO> list(String clientName,String userName, String realName, Integer disableStatus, PageDTO pageDTO) throws Exception {
         Cond cond = Cond.create().eqWrap(Fields.field("sa", SecurityAdmin.FIELDS.FOUNDER)).param(SecurityConstants.BOOL_FALSE)
                 .and().eqWrap(Fields.field("sa", SecurityAdmin.FIELDS.DELETE_STATUS)).param(SecurityConstants.BOOL_FALSE)
+                .and().eqWrap(Fields.field("sa",SecurityAdmin.FIELDS.CLIENT_NAME)).param(clientName)
                 .exprNotEmpty(userName, c -> c.and().likeWrap(Fields.field("sa", SecurityAdmin.FIELDS.USER_NAME)).param("%" + userName + "%"))
                 .exprNotEmpty(realName, c -> c.and().likeWrap(Fields.field("sa", SecurityAdmin.FIELDS.REAL_NAME)).param("%" + realName + "%"))
                 .exprNotEmpty(disableStatus, c -> c.and().eqWrap(Fields.field("sa", SecurityAdmin.FIELDS.DISABLE_STATUS)).param(disableStatus));

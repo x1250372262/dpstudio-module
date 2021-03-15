@@ -82,9 +82,10 @@ public interface ISecurity extends IInitialization<IApplication>, IDestroyable {
     /**
      * 获取权限列表
      * @param groupId
+     * @param clientName
      * @return 获取权限列表
      */
-    List<PermissionBean> permissionList(String groupId);
+    List<PermissionBean> permissionList(String groupId,String clientName);
 
     /**
      * 获取权限列表
@@ -97,16 +98,17 @@ public interface ISecurity extends IInitialization<IApplication>, IDestroyable {
      * 根据code获取
      * @param permissionBeans
      * @param code
+     * @param clientName
      * @return
      */
-    PermissionBean findByCode(List<PermissionBean> permissionBeans,String code);
+    PermissionBean findByCode(List<PermissionBean> permissionBeans,String code,String clientName);
 
     /**
      * 菜单列表
      *
      * @return 菜单列表
      */
-    List<MenuBean> menuList();
+    List<MenuBean> menuList(String clientName);
 
 
     /**
@@ -114,7 +116,7 @@ public interface ISecurity extends IInitialization<IApplication>, IDestroyable {
      *
      * @return 带权限的菜单
      */
-    List<MenuBean> permissionMenu();
+    List<MenuBean> permissionMenu(String token,String clientName);
 
     /**
      * 带权限的菜单
@@ -122,10 +124,5 @@ public interface ISecurity extends IInitialization<IApplication>, IDestroyable {
      * @param userPermissions 拥有的权限
      * @return 带权限的菜单
      */
-    List<MenuBean> permissionMenu(boolean isFounder,List<String> userPermissions);
-
-    /**
-     * 解压文件
-     */
-    void unpackFile();
+    List<MenuBean> permissionMenu(String clientName,boolean isFounder,List<String> userPermissions);
 }

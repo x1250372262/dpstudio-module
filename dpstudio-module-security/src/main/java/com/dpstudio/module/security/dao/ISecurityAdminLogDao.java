@@ -11,6 +11,7 @@ public interface ISecurityAdminLogDao {
      * 日志列表
      *
      * @param adminId
+     * @param clientName
      * @param content
      * @param startTime
      * @param endTime
@@ -18,7 +19,7 @@ public interface ISecurityAdminLogDao {
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityAdminLog> findAll(String adminId, String content, Long startTime, Long endTime, PageDTO pageDTO) throws Exception;
+    IResultSet<SecurityAdminLog> findAll(String adminId,String clientName, String content, Long startTime, Long endTime, PageDTO pageDTO) throws Exception;
 
     /**
      * 添加日志

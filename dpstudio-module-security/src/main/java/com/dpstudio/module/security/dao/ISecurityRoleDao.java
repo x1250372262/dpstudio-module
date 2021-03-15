@@ -70,10 +70,11 @@ public interface ISecurityRoleDao {
      * 角色列表
      *
      * @param name
+     * @param clientName
      * @param pageDTO
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityRole> findAll(String name, PageDTO pageDTO) throws Exception;
+    IResultSet<SecurityRole> findAll(String name,String clientName, PageDTO pageDTO) throws Exception;
 
 }

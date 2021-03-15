@@ -30,12 +30,15 @@ public interface ISecurityConfig extends IInitialization<ISecurity> {
     String HOT_LOADING = "hot_loading";
     String PACKAGE_NAME = "package_name";
     String CLIENT_NAME = "client_name";
+    String CLIENT_TITLE = "client_title";
     String AUTHENTICATOR_CLASS = "authenticator_class";
     String MENU_FILE_PATH = "menu_file_path";
     String VERIFY_TIME = "jwt_verify_time";
     String SECRET = "jwt_secret";
     String HEADER_NAME = "jwt_header_name";
     String PARAM_NAME = "jwt_param_name";
+    String HEADER_CLIENT_NAME = "jwt_header_client_name";
+    String PARAM_CLIENT_NAME = "jwt_param_client_name";
     String AUTO_RESPONSE = "jwt_auto_response";
 
     /**
@@ -61,6 +64,13 @@ public interface ISecurityConfig extends IInitialization<ISecurity> {
     String clientName();
 
     /**
+     * 客户端标题
+     *
+     * @return
+     */
+    String clientTitle();
+
+    /**
      * 菜单文件位置
      *
      * @return 返回菜单文件位置
@@ -76,36 +86,56 @@ public interface ISecurityConfig extends IInitialization<ISecurity> {
 
     /**
      * 菜单文件是否支持热加载 正式环境中不建议使用 默认false
+     *
      * @return 返回false标识不开启
      */
     boolean isHotLoading();
 
     /**
      * 有效期，单位豪秒， 默认0  永久有效
+     *
      * @return 有效期
      */
     int verifyTime();
 
     /**
      * 密钥
+     *
      * @return 密钥
      */
     String secret();
 
     /**
      * header参数名
+     *
      * @return header参数名
      */
     String headerName();
 
     /**
      * 参数名
+     *
      * @return 参数名
      */
     String paramName();
 
     /**
+     * header客户端参数名
+     *
+     * @return
+     */
+    String headerClientName();
+
+    /**
+     * 客户端参数名
+     *
+     * @return
+     */
+    String paramClientName();
+
+    /**
      * 是否自动设置到response
+     *
      * @return 是否自动设置到response
      */
     boolean autoResponse();

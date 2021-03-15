@@ -3,6 +3,7 @@ package com.dpstudio.module.security.interCeptor;
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.core.V;
 import com.dpstudio.dev.code.C;
+import com.dpstudio.dev.security.Security;
 import com.dpstudio.dev.security.jwt.JWT;
 import com.dpstudio.dev.support.jwt.JwtHelper;
 import com.dpstudio.module.security.SecurityCache;
@@ -39,10 +40,17 @@ public class JwtOutInterceptor implements IInterceptor {
             if (StringUtils.isBlank(token) && StringUtils.isBlank(JWT.JWT_CONFIG.getParamName())) {
                 token = request.getParameter(JWT.JWT_CONFIG.getParamName());
             }
+
+            String clientName = request.getHeader(Security.get().getConfig().headerClientName());
+
+            if (StringUtils.isBlank(clientName) && StringUtils.isBlank(Security.get().getConfig().paramClientName())) {
+                clientName = request.getParameter(Security.get().getConfig().paramClientName());
+            }
+
             if (StringUtils.isBlank(token)) {
                 return null;
             }
-            SecurityCache.JwtCache.removePara(token);
+            SecurityCache.JwtCache.removePara(token,clientName);
             R r = JwtHelper.parse(token);
             if (!Objects.equals(r.code(), C.SUCCESS.getCode())) {
                 return V.view(r);
@@ -51,13 +59,9 @@ public class JwtOutInterceptor implements IInterceptor {
             if (StringUtils.isBlank(uid)) {
                 return null;
             }
-            SecurityCache.JwtCache.removeParaByAdminId(uid);
+            SecurityCache.JwtCache.removeParaByAdminId(uid,clientName);
             try {
-                SecurityAdmin securityAdmin = YMP.get().getBeanFactory().getBean(ISecurityAdminDao.class).findById(uid,null);
-                if (securityAdmin == null) {
-                    return null;
-                }
-                SecurityCache.AdminCache.removePara(securityAdmin.getId());
+                SecurityCache.AdminCache.removePara(uid);
             } catch (Exception e) {
                 return null;
             }

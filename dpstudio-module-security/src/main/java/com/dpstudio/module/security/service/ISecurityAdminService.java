@@ -10,14 +10,23 @@ import net.ymate.platform.core.persistence.IResultSet;
 public interface ISecurityAdminService {
 
     /**
+     * 模块启动初始化表
+     * @param clientName
+     * @return
+     * @throws Exception
+     */
+    R init(String clientName) throws Exception;
+
+    /**
      * 管理员登陆
      *
      * @param userName
      * @param password
+     * @param clientName
      * @return
      * @throws Exception
      */
-    R login(String userName, String password) throws Exception;
+    R login(String userName, String password,String clientName) throws Exception;
 
     /**
      * 修改密码

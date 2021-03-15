@@ -1,5 +1,6 @@
 package com.dpstudio.module.security.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.dto.PageDTO;
 import com.dpstudio.module.security.vo.detail.SecurityRoleDetailVO;
@@ -67,5 +68,22 @@ public interface ISecurityRoleService {
      * @throws Exception
      */
     R delete(String[] ids) throws Exception;
+
+    /**
+     * 权限详情
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    R permissionDetail(String id) throws Exception;
+
+    /**
+     * 设置权限
+     * @param id
+     * @param permissions
+     * @return
+     * @throws Exception
+     */
+    R permissionSet(String id,String[] permissions) throws Exception;
 
 }

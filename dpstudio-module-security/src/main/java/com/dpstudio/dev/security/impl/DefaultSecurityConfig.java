@@ -35,12 +35,15 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
     private boolean hotLoading = false;
     private String packageName;
     private String clientName;
+    private String clientTitle;
     private String menuFilePath;
     private IAuthenticator authenticatorClass;
     private int verifyTime;
     private String secret;
     private String headerName;
     private String paramName;
+    private String headerClientName;
+    private String paramClientName;
     private boolean autoResponse = true;
 
 
@@ -72,13 +75,16 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
         hotLoading = configReader.getBoolean(HOT_LOADING, confAnn == null || confAnn.hotLoading());
         packageName = configReader.getString(PACKAGE_NAME, confAnn != null ? confAnn.packageName() : "");
         clientName = configReader.getString(CLIENT_NAME, confAnn != null ? confAnn.clientName() : "");
-        menuFilePath = configReader.getString(MENU_FILE_PATH, confAnn != null ? confAnn.menuFilePath() : "${root}/menu/menu.xml");
+        clientTitle = configReader.getString(CLIENT_TITLE, confAnn != null ? confAnn.clientTitle() : "");
+        menuFilePath = configReader.getString(MENU_FILE_PATH, confAnn != null ? confAnn.menuFilePath() : "${root}/menu/");
         String authenticatorClassName = configReader.getString(AUTHENTICATOR_CLASS, confAnn != null ? confAnn.authenticatorClass().getName() : null);
         authenticatorClass = ClassUtils.impl(authenticatorClassName, IAuthenticator.class, this.getClass());
         verifyTime = configReader.getInt(VERIFY_TIME, confAnn != null ? confAnn.verifyTime() : 0);
         secret = configReader.getString(SECRET, confAnn != null ? confAnn.secret() : "dpstudioJwt");
         headerName = configReader.getString(HEADER_NAME, confAnn != null ? confAnn.headerName() : "dpstudioJwt");
         paramName = configReader.getString(PARAM_NAME, confAnn != null ? confAnn.paramName() : "dpstudioJwt");
+        headerClientName = configReader.getString(HEADER_CLIENT_NAME, confAnn != null ? confAnn.paramName() : "dpstudioJwtClientName");
+        paramClientName = configReader.getString(PARAM_CLIENT_NAME, confAnn != null ? confAnn.paramName() : "dpstudioJwtClientName");
         autoResponse = configReader.getBoolean(AUTO_RESPONSE, confAnn == null || confAnn.autoResponse());
     }
 
@@ -118,6 +124,11 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
     }
 
     @Override
+    public String clientTitle() {
+        return clientTitle;
+    }
+
+    @Override
     public String menuFilePath() {
         return menuFilePath;
     }
@@ -153,6 +164,16 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
     }
 
     @Override
+    public String headerClientName() {
+        return headerClientName;
+    }
+
+    @Override
+    public String paramClientName() {
+        return paramClientName;
+    }
+
+    @Override
     public boolean autoResponse() {
         return autoResponse;
     }
@@ -172,6 +193,12 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
     public void setClientName(String clientName) {
         if (!initialized) {
             this.clientName = clientName;
+        }
+    }
+
+    public void setClientTitle(String clientTitle) {
+        if (!initialized) {
+            this.clientTitle = clientTitle;
         }
     }
 
@@ -212,6 +239,17 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
         }
     }
 
+    public void setHeaderClientName(String headerClientName) {
+        if (!initialized) {
+            this.headerClientName = headerClientName;
+        }
+    }
+    public void setParamClientName(String paramClientName) {
+        if (!initialized) {
+            this.paramClientName = paramClientName;
+        }
+    }
+
     public void setAutoResponse(boolean autoResponse) {
         if (!initialized) {
             this.autoResponse = autoResponse;
@@ -237,6 +275,11 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
 
         public Builder clientName(String clientName) {
             config.setClientName(clientName);
+            return this;
+        }
+
+        public Builder clientTitle(String clientTitle) {
+            config.setClientTitle(clientTitle);
             return this;
         }
 
@@ -272,6 +315,16 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
 
         public Builder paramName(String paramName) {
             config.setParamName(paramName);
+            return this;
+        }
+
+        public Builder headerClientName(String headerClientName) {
+            config.setHeaderClientName(headerClientName);
+            return this;
+        }
+
+        public Builder paramClientName(String paramClientName) {
+            config.setParamClientName(paramClientName);
             return this;
         }
 

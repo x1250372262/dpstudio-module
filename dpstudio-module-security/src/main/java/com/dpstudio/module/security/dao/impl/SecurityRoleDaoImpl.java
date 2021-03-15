@@ -48,9 +48,9 @@ public class SecurityRoleDaoImpl implements ISecurityRoleDao {
     }
 
     @Override
-    public IResultSet<SecurityRole> findAll(String name, PageDTO pageDTO) throws Exception {
+    public IResultSet<SecurityRole> findAll(String name,String clientName, PageDTO pageDTO) throws Exception {
 
-        Cond cond = Cond.create().eqOne()
+        Cond cond = Cond.create().eqWrap(SecurityRole.FIELDS.CLIENT_NAME).param(clientName)
                 .exprNotEmpty(name, c -> c.and().likeWrap(SecurityRole.FIELDS.NAME).param("%" + name + "%"));
         return SecurityRole.builder().build().find(Where.create(cond), pageDTO.toPage());
     }

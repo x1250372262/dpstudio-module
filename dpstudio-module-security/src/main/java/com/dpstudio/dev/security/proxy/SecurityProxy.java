@@ -1,6 +1,7 @@
 package com.dpstudio.dev.security.proxy;
 
 import com.dpstudio.dev.security.IAuthenticator;
+import com.dpstudio.dev.security.annotation.Group;
 import com.dpstudio.dev.security.annotation.Permission;
 import com.dpstudio.dev.security.annotation.Security;
 import com.dpstudio.dev.security.exception.PermissionException;
@@ -33,10 +34,10 @@ public class SecurityProxy implements IProxy {
             throw new NullArgumentException("authenticator_class");
         }
         //是总管理
-        if (iAuthenticator.isFounder()) {
+        if (iAuthenticator.isFounder(null)) {
             return true;
         }
-        List<String> userPermissionCodes = iAuthenticator.userPermissions();
+        List<String> userPermissionCodes = iAuthenticator.userPermissions(null);
         if (userPermissionCodes == null) {
             return false;
         }
@@ -52,8 +53,12 @@ public class SecurityProxy implements IProxy {
             return proxyChain.doProxyChain();
         }
         if (proxyChain.getTargetClass().isAnnotationPresent(Security.class)) {
-            Permission[] permissions = proxyChain.getTargetMethod().getAnnotationsByType(Permission.class);
-            if (permissions != null && permissions.length>0) {
+            Group group = proxyChain.getTargetMethod().getAnnotation(Group.class);
+            if(group == null){
+                return proxyChain.doProxyChain();
+            }
+            Permission[] permissions = group.permissions();
+            if (permissions.length>0) {
                 for(Permission permission : permissions){
                     if (StringUtils.isNotBlank(permission.code())) {
                         if (!checkPermission(permission.code())) {

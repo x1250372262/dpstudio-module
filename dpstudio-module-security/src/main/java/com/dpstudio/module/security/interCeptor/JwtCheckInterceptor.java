@@ -1,13 +1,11 @@
 package com.dpstudio.module.security.interCeptor;
 
+import com.dpstudio.dev.code.C;
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.core.V;
-import com.dpstudio.dev.code.C;
-import com.dpstudio.dev.security.ISecurityConfig;
 import com.dpstudio.dev.security.Security;
 import com.dpstudio.dev.security.jwt.JWT;
 import com.dpstudio.dev.support.jwt.JwtBean;
-import com.dpstudio.dev.support.jwt.JwtConfig;
 import com.dpstudio.dev.support.jwt.JwtHelper;
 import com.dpstudio.module.security.SecurityCache;
 import com.dpstudio.module.security.core.Code;
@@ -53,11 +51,22 @@ public class JwtCheckInterceptor implements IInterceptor {
                 token = request.getParameter(JWT_CONFIG.getParamName());
             }
 
+            String clientName = request.getHeader(Security.get().getConfig().headerClientName());
+            String client = request.getHeader("client");
+
+            if(StringUtils.isNotBlank(client) && StringUtils.isNotBlank(client) && !client.equals(clientName)){
+                return timeOut();
+            }
+
+            if (StringUtils.isBlank(clientName) && StringUtils.isBlank(Security.get().getConfig().paramClientName())) {
+                clientName = request.getParameter(Security.get().getConfig().paramClientName());
+            }
+
             if (StringUtils.isBlank(token)) {
                 return timeOut();
             }
             //先看看缓存有没有
-            JwtBean jwtBean = SecurityCache.JwtCache.getPara(token);
+            JwtBean jwtBean = SecurityCache.JwtCache.getPara(token,clientName);
             if (jwtBean == null || StringUtils.isBlank(jwtBean.getToken()) || (jwtBean.getVerifyTime() > 0 && jwtBean.getVerifyTime() < DateTimeUtils.currentTimeMillis())) {
                 return timeOut();
             }
@@ -65,7 +74,7 @@ public class JwtCheckInterceptor implements IInterceptor {
                 return timeOut();
             }
             R r = JwtHelper.parse(token);
-            if (!Objects.equals(r.code(), C.SUCCESS.getCode())) {
+            if (r == null || !Objects.equals(r.code(), C.SUCCESS.getCode())) {
                 return timeOut();
             }
             String uid = r.attr("uid");
@@ -78,18 +87,22 @@ public class JwtCheckInterceptor implements IInterceptor {
                 if (securityAdmin == null) {
                     return timeOut();
                 }
+                SecurityAdmin loginAdmin = SecurityCache.AdminCache.getPara(SecurityCache.userId());
+                if (loginAdmin == null) {
+                    SecurityCache.AdminCache.setPara(securityAdmin);
+                }
                 JWT.Store.setPara(token, r.attrs());
-                SecurityCache.AdminCache.setPara(securityAdmin);
+//                SecurityCache.AdminCache.setPara(securityAdmin);
             } catch (Exception e) {
                 return timeOut();
             }
             //重新刷新时间
             jwtBean.setVerifyTime(DateTimeUtils.currentTimeMillis() + JWT_CONFIG.verifyTime());
             //放到缓存
-            SecurityCache.JwtCache.removePara(token);
-            SecurityCache.JwtCache.removeParaByAdminId(uid);
-            SecurityCache.JwtCache.setPara(jwtBean);
-            SecurityCache.JwtCache.setParaByAdminId(uid, jwtBean);
+            SecurityCache.JwtCache.removePara(token,clientName);
+            SecurityCache.JwtCache.removeParaByAdminId(uid,clientName);
+            SecurityCache.JwtCache.setPara(jwtBean,clientName);
+            SecurityCache.JwtCache.setParaByAdminId(uid, jwtBean,clientName);
             if (JWT_CONFIG.autoResponse()) {
                 WebContext.getResponse().setHeader(JWT_CONFIG.getHeaderName(), JsonWrapper.toJsonString(jwtBean, false, true));
             }
