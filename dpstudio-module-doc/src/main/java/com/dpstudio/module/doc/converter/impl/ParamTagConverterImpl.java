@@ -52,7 +52,7 @@ public class ParamTagConverterImpl implements ITagConverter {
                 paramType = descs[1];
             }
             String requireString = "";
-            if(descs.length > 32){
+            if(descs.length > 2){
                 requireString = descs[2];
             }
             require = Constants.YES_EN.equals(requireString);

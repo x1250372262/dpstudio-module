@@ -299,6 +299,9 @@ public class DefaultAnalysisImpl implements IDocAnalysis {
         for (Type.HttpMethod requestMethod : methods) {
             methodStrs.add(requestMethod.name());
         }
+        if(methodStrs.isEmpty()){
+            methodStrs.add(Type.HttpMethod.GET.name());
+        }
         return methodStrs;
     }
 }
