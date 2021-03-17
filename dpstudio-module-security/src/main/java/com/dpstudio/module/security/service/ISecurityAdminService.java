@@ -76,6 +76,16 @@ public interface ISecurityAdminService {
     R create(SecurityAdminVO securityAdminVO, String password) throws Exception;
 
     /**
+     * 添加管理员
+     * @param securityAdminVO
+     * @param password
+     * @param clientName
+     * @return
+     * @throws Exception
+     */
+    R create(String userName,String realName,String mobile, String password,String clientName) throws Exception;
+
+    /**
      * 删除/禁用管理员
      *
      * @param ids

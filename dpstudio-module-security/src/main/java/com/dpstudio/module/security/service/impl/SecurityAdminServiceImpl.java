@@ -207,7 +207,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
             iSecurityAdminLogService.create(securityAdmin.getId(), clientName, StringUtils.defaultIfBlank(securityAdmin.getRealName(), securityAdmin.getUserName()));
         }
 
-        List<MenuBean> menuBeanList = Security.get().permissionMenu(jwtBean.getToken(),clientName);
+        List<MenuBean> menuBeanList = Security.get().permissionMenu(jwtBean.getToken(), clientName);
         return R.ok().attr("menu_list", menuBeanList).attr("clientName", clientName);
     }
 
@@ -296,7 +296,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         if (loginAdmin == null) {
             return new DefaultResultSet<>(new ArrayList<>());
         }
-        IResultSet<SecurityAdminListVO> list = iSecurityAdminDao.list(loginAdmin.getClientName(),userName, realName, disableStatus, pageDTO);
+        IResultSet<SecurityAdminListVO> list = iSecurityAdminDao.list(loginAdmin.getClientName(), userName, realName, disableStatus, pageDTO);
         Params adminIds = Params.create();
         for (SecurityAdminListVO securityAdminListVO : list.getResultData()) {
             adminIds.add(securityAdminListVO.getId());
@@ -341,6 +341,40 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
             t.setLastModifyTime(DateTimeUtils.currentTimeMillis());
             t.setLastModifyUser(SecurityCache.userId());
         });
+        securityAdmin = iSecurityAdminDao.create(securityAdmin);
+        return R.result(securityAdmin);
+    }
+
+    @Override
+    public R create(String userName, String realName, String mobile, String password, String clientName) throws Exception {
+        if (StringUtils.isBlank(userName)) {
+            return R.create(Code.SECURITY_ADMIN_USER_NAME_EMPTY.getCode()).msg(Code.SECURITY_ADMIN_USER_NAME_EMPTY.getMsg());
+        }
+        if (StringUtils.isBlank(password)) {
+            return R.create(Code.SECURITY_ADMIN_PASSWORD_EMPTY.getCode()).msg(Code.SECURITY_ADMIN_PASSWORD_EMPTY.getMsg());
+        }
+        if (StringUtils.isBlank(clientName)) {
+            return R.create(Code.SECURITY_ADMIN_CLENT_NAME_EMPTY.getCode()).msg(Code.SECURITY_ADMIN_CLENT_NAME_EMPTY.getMsg());
+        }
+        SecurityAdmin securityAdmin = iSecurityAdminDao.findByUserNameAndClientName(userName, clientName);
+        if (securityAdmin != null) {
+            return R.create(Code.SECURITY_ADMIN_EXIST.getCode()).msg(Code.SECURITY_ADMIN_EXIST.getMsg());
+        }
+        String salt = UUIDUtils.randomStr(6, false);
+        password = DigestUtils.md5Hex(Base64.encodeBase64((password + salt).getBytes(Constants.DEFAULT_CHARTSET)));
+        securityAdmin = SecurityAdmin.builder()
+                .id(UUIDUtils.UUID())
+                .clientName(clientName)
+                .userName(userName)
+                .realName(realName)
+                .password(password)
+                .mobile(mobile)
+                .createUser(SecurityCache.userId())
+                .createTime(DateTimeUtils.currentTimeMillis())
+                .lastModifyTime(DateTimeUtils.currentTimeMillis())
+                .lastModifyUser(SecurityCache.userId())
+                .salt(salt)
+                .build();
         securityAdmin = iSecurityAdminDao.create(securityAdmin);
         return R.result(securityAdmin);
     }
