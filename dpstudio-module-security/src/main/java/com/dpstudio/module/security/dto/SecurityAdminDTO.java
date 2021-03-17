@@ -1,4 +1,4 @@
-package com.dpstudio.module.security.vo.op;
+package com.dpstudio.module.security.dto;
 
 import com.dpstudio.module.security.model.SecurityAdmin;
 import net.ymate.platform.validation.validate.VRequired;
@@ -10,7 +10,7 @@ import net.ymate.platform.webmvc.annotation.RequestParam;
  * @Time: 4:11 下午.
  * @Description:
  */
-public class SecurityAdminVO {
+public class SecurityAdminDTO {
 
     @RequestParam(value = SecurityAdmin.FIELDS.REAL_NAME)
     private String realName;

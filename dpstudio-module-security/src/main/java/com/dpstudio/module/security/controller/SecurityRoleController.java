@@ -9,12 +9,12 @@ import com.dpstudio.dev.security.annotation.Permission;
 import com.dpstudio.dev.security.annotation.Security;
 import com.dpstudio.module.security.core.SecurityConstants;
 import com.dpstudio.module.security.core.SecurityPermission;
+import com.dpstudio.module.security.dto.SecurityRoleDTO;
 import com.dpstudio.module.security.interCeptor.JwtCheckInterceptor;
 import com.dpstudio.module.security.model.SecurityRole;
 import com.dpstudio.module.security.service.ISecurityRoleService;
 import com.dpstudio.module.security.vo.detail.SecurityRoleDetailVO;
-import com.dpstudio.module.security.vo.detail.SecurityRoleListVO;
-import com.dpstudio.module.security.vo.op.SecurityRoleVO;
+import com.dpstudio.module.security.vo.list.SecurityRoleListVO;
 import com.dpstudio.module.security.vo.select.SecurityRoleSelectVO;
 import net.ymate.platform.core.beans.annotation.Before;
 import net.ymate.platform.core.beans.annotation.Inject;
@@ -75,7 +75,7 @@ public class SecurityRoleController {
     /**
      * 添加角色
      *
-     * @param securityRoleVO
+     * @param securityRoleDTO
      * @return
      * @throws Exception
      */
@@ -85,8 +85,8 @@ public class SecurityRoleController {
             code = SecurityPermission.PERMISSION_CODE_ROLE_CREATE)})
     @RequestMapping(value = "/create", method = Type.HttpMethod.POST)
     public IView create(@VModel
-                        @ModelBind SecurityRoleVO securityRoleVO) throws Exception {
-        R r = iSecurityRoleService.create(securityRoleVO);
+                        @ModelBind SecurityRoleDTO securityRoleDTO) throws Exception {
+        R r = iSecurityRoleService.create(securityRoleDTO);
         return V.view(r);
     }
 
@@ -112,7 +112,7 @@ public class SecurityRoleController {
      * 修改角色
      *
      * @param id
-     * @param securityRoleVO
+     * @param securityRoleDTO
      * @return
      * @throws Exception
      */
@@ -126,8 +126,8 @@ public class SecurityRoleController {
                         @VRequired(msg = "最后修改时间不能为空")
                         @RequestParam(value = SecurityRole.FIELDS.LAST_MODIFY_TIME) Long lastModifyTime,
                         @VModel
-                        @ModelBind SecurityRoleVO securityRoleVO) throws Exception {
-        R r = iSecurityRoleService.update(id, lastModifyTime, securityRoleVO);
+                        @ModelBind SecurityRoleDTO securityRoleDTO) throws Exception {
+        R r = iSecurityRoleService.update(id, lastModifyTime, securityRoleDTO);
         return V.view(r);
     }
 

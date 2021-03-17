@@ -16,6 +16,7 @@ import com.dpstudio.module.security.core.Code;
 import com.dpstudio.module.security.core.SecurityConstants;
 import com.dpstudio.module.security.dao.ISecurityAdminDao;
 import com.dpstudio.module.security.dao.ISecurityAdminRoleDao;
+import com.dpstudio.module.security.dto.SecurityAdminDTO;
 import com.dpstudio.module.security.model.SecurityAdmin;
 import com.dpstudio.module.security.service.ISecurityAdminLogService;
 import com.dpstudio.module.security.service.ISecurityAdminService;
@@ -25,7 +26,6 @@ import com.dpstudio.module.security.vo.detail.SecurityAdminDetailVO;
 import com.dpstudio.module.security.vo.detail.SecuritySettingDetailVO;
 import com.dpstudio.module.security.vo.list.SecurityAdminListVO;
 import com.dpstudio.module.security.vo.list.SecurityAdminRoleListVO;
-import com.dpstudio.module.security.vo.op.SecurityAdminVO;
 import net.ymate.platform.commons.util.DateTimeUtils;
 import net.ymate.platform.commons.util.UUIDUtils;
 import net.ymate.platform.core.YMP;
@@ -275,16 +275,16 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
     }
 
     @Override
-    public R updateInfo(SecurityAdminVO securityAdminVO) throws Exception {
+    public R updateInfo(SecurityAdminDTO securityAdminDTO) throws Exception {
         SecurityAdmin securityAdmin = iSecurityAdminDao.findById(SecurityCache.userId(), IDBLocker.DEFAULT);
         if (securityAdmin == null) {
             return R.create(Code.SECURITY_ADMIN_NOT_EXIST.getCode())
                     .msg(Code.SECURITY_ADMIN_NOT_EXIST.getMsg());
         }
-        securityAdmin.setRealName(StringUtils.defaultIfBlank(securityAdminVO.getRealName(), ""));
-        securityAdmin.setPhotoUri(StringUtils.defaultIfBlank(securityAdminVO.getThumb(), ""));
-        securityAdmin.setMobile(StringUtils.defaultIfBlank(securityAdminVO.getMobile(), ""));
-        securityAdmin.setGender(securityAdminVO.getGender());
+        securityAdmin.setRealName(StringUtils.defaultIfBlank(securityAdminDTO.getRealName(), ""));
+        securityAdmin.setPhotoUri(StringUtils.defaultIfBlank(securityAdminDTO.getThumb(), ""));
+        securityAdmin.setMobile(StringUtils.defaultIfBlank(securityAdminDTO.getMobile(), ""));
+        securityAdmin.setGender(securityAdminDTO.getGender());
         securityAdmin = iSecurityAdminDao.update(securityAdmin, SecurityAdmin.FIELDS.REAL_NAME, SecurityAdmin.FIELDS.PHOTO_URI, SecurityAdmin.FIELDS.MOBILE, SecurityAdmin.FIELDS.GENDER);
         SecurityCache.AdminCache.setPara(securityAdmin);
         return R.result(securityAdmin);
@@ -319,19 +319,29 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
     }
 
     @Override
-    public R create(SecurityAdminVO securityAdminVO, String password) throws Exception {
+    @Transaction
+    public R create(SecurityAdminDTO securityAdminDTO, String password) throws Exception {
         SecurityAdmin loginAdmin = SecurityCache.AdminCache.getPara(SecurityCache.userId());
         if (loginAdmin == null) {
             return R.create(Code.SECURITY_ADMIN_INVALID_OR_TIMEOUT.getCode()).msg(Code.SECURITY_ADMIN_INVALID_OR_TIMEOUT.getMsg());
         }
-        SecurityAdmin securityAdmin = iSecurityAdminDao.findByUserNameAndClientName(securityAdminVO.getUserName(), loginAdmin.getClientName());
+        ISecurityAdminHandler securityAdminHandler = SpiLoader.load(ISecurityAdminHandler.class, null);
+        if (securityAdminHandler == null) {
+            securityAdminHandler = new ISecurityAdminHandler.SecurityAdminHandler();
+        }
+        //处理添加之前的逻辑 返回成功往下走
+        R createBeforeResult = securityAdminHandler.createBefore(securityAdminDTO, password);
+        if (!Objects.equals(createBeforeResult.code(), C.SUCCESS.getCode())) {
+            return createBeforeResult;
+        }
+        SecurityAdmin securityAdmin = iSecurityAdminDao.findByUserNameAndClientName(securityAdminDTO.getUserName(), loginAdmin.getClientName());
         if (securityAdmin != null) {
             return R.create(Code.SECURITY_ADMIN_EXIST.getCode()).msg(Code.SECURITY_ADMIN_EXIST.getMsg());
         }
         String salt = UUIDUtils.randomStr(6, false);
         password = DigestUtils.md5Hex(Base64.encodeBase64((password + salt).getBytes(Constants.DEFAULT_CHARTSET)));
         String finalPassword = password;
-        securityAdmin = BeanUtils.copy(securityAdminVO, SecurityAdmin::new, (s, t) -> {
+        securityAdmin = BeanUtils.copy(securityAdminDTO, SecurityAdmin::new, (s, t) -> {
             t.setId(UUIDUtils.UUID());
             t.setSalt(salt);
             t.setClientName(loginAdmin.getClientName());
@@ -342,6 +352,11 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
             t.setLastModifyUser(SecurityCache.userId());
         });
         securityAdmin = iSecurityAdminDao.create(securityAdmin);
+        //处理登录之后的逻辑 返回成功往下走
+        R createAfterResult = securityAdminHandler.loginAfter(securityAdmin);
+        if (!Objects.equals(createAfterResult.code(), C.SUCCESS.getCode())) {
+            return createAfterResult;
+        }
         return R.result(securityAdmin);
     }
 

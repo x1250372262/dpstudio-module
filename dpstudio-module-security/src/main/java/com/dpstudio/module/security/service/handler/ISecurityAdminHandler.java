@@ -1,6 +1,7 @@
 package com.dpstudio.module.security.service.handler;
 
 import com.dpstudio.dev.core.R;
+import com.dpstudio.module.security.dto.SecurityAdminDTO;
 import com.dpstudio.module.security.model.SecurityAdmin;
 
 /**
@@ -10,9 +11,40 @@ import com.dpstudio.module.security.model.SecurityAdmin;
  */
 public interface ISecurityAdminHandler {
 
+    /**
+     * 登录之前
+     * @param userName
+     * @param password
+     * @return
+     * @throws Exception
+     */
     R loginBefore(String userName, String password) throws Exception;
 
+    /**
+     * 登录之后
+     * @param securityAdmin
+     * @return
+     * @throws Exception
+     */
     R loginAfter(SecurityAdmin securityAdmin) throws Exception;
+
+    /**
+     * 添加之前
+     * @param securityAdminDTO
+     * @param password
+     * @return
+     * @throws Exception
+     */
+    R createBefore(SecurityAdminDTO securityAdminDTO, String password) throws Exception;
+
+
+    /**
+     * 添加之后
+     * @param securityAdmin
+     * @return
+     * @throws Exception
+     */
+    R createAfter(SecurityAdmin securityAdmin) throws Exception;
 
      class SecurityAdminHandler implements ISecurityAdminHandler{
 
@@ -23,6 +55,16 @@ public interface ISecurityAdminHandler {
 
          @Override
          public R loginAfter(SecurityAdmin securityAdmin) throws Exception {
+             return R.ok();
+         }
+
+         @Override
+         public R createBefore(SecurityAdminDTO securityAdminDTO, String password) throws Exception {
+             return R.ok();
+         }
+
+         @Override
+         public R createAfter(SecurityAdmin securityAdmin) throws Exception {
              return R.ok();
          }
      }

@@ -1,11 +1,10 @@
 package com.dpstudio.module.security.service;
 
-import com.alibaba.fastjson.JSONObject;
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.dto.PageDTO;
+import com.dpstudio.module.security.dto.SecurityRoleDTO;
 import com.dpstudio.module.security.vo.detail.SecurityRoleDetailVO;
-import com.dpstudio.module.security.vo.detail.SecurityRoleListVO;
-import com.dpstudio.module.security.vo.op.SecurityRoleVO;
+import com.dpstudio.module.security.vo.list.SecurityRoleListVO;
 import com.dpstudio.module.security.vo.select.SecurityRoleSelectVO;
 import net.ymate.platform.core.persistence.IResultSet;
 
@@ -34,11 +33,11 @@ public interface ISecurityRoleService {
     /**
      * 添加角色
      *
-     * @param securityRoleVO
+     * @param securityRoleDTO
      * @return
      * @throws Exception
      */
-    R create(SecurityRoleVO securityRoleVO) throws Exception;
+    R create(SecurityRoleDTO securityRoleDTO) throws Exception;
 
     /**
      * 角色详情
@@ -54,11 +53,11 @@ public interface ISecurityRoleService {
      * 修改角色
      *
      * @param id
-     * @param securityRoleVO
+     * @param securityRoleDTO
      * @return
      * @throws Exception
      */
-    R update(String id, Long lastModifyTime, SecurityRoleVO securityRoleVO) throws Exception;
+    R update(String id, Long lastModifyTime, SecurityRoleDTO securityRoleDTO) throws Exception;
 
     /**
      * 删除角色
@@ -71,6 +70,7 @@ public interface ISecurityRoleService {
 
     /**
      * 权限详情
+     *
      * @param id
      * @return
      * @throws Exception
@@ -79,11 +79,12 @@ public interface ISecurityRoleService {
 
     /**
      * 设置权限
+     *
      * @param id
      * @param permissions
      * @return
      * @throws Exception
      */
-    R permissionSet(String id,String[] permissions) throws Exception;
+    R permissionSet(String id, String[] permissions) throws Exception;
 
 }

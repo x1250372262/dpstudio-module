@@ -6,11 +6,11 @@ import com.dpstudio.dev.utils.BeanUtils;
 import com.dpstudio.module.security.SecurityCache;
 import com.dpstudio.module.security.core.Code;
 import com.dpstudio.module.security.dao.ISecuritySettingDao;
+import com.dpstudio.module.security.dto.SecuritySettingDTO;
 import com.dpstudio.module.security.model.SecurityAdmin;
 import com.dpstudio.module.security.model.SecuritySetting;
 import com.dpstudio.module.security.service.ISecuritySettingService;
 import com.dpstudio.module.security.vo.detail.SecuritySettingDetailVO;
-import com.dpstudio.module.security.vo.op.SecuritySettingVO;
 import net.ymate.platform.commons.util.DateTimeUtils;
 import net.ymate.platform.commons.util.UUIDUtils;
 import net.ymate.platform.core.beans.annotation.Bean;
@@ -27,9 +27,9 @@ public class SecuritySettingServiceImpl implements ISecuritySettingService {
     private ISecuritySettingDao iSecuritySettingDao;
 
     @Override
-    public R update(Long lastModifyTime, SecuritySettingVO securitySettingVO) throws Exception {
+    public R update(Long lastModifyTime, SecuritySettingDTO securitySettingDTO) throws Exception {
         SecurityAdmin securityAdmin = SecurityCache.AdminCache.getPara(SecurityCache.userId());
-        if(securityAdmin == null){
+        if (securityAdmin == null) {
             return R.create(Code.SECURITY_ADMIN_NOT_EXIST.getCode())
                     .msg(Code.SECURITY_ADMIN_NOT_EXIST.getMsg());
         }
@@ -40,7 +40,7 @@ public class SecuritySettingServiceImpl implements ISecuritySettingService {
         if (!R.checkVersion(lastModifyTime, securitySetting.getLastModifyTime())) {
             return R.create(C.VERSION_NOT_SAME.getCode()).msg(C.VERSION_NOT_SAME.getMsg());
         }
-        securitySetting = BeanUtils.duplicate(securitySettingVO, securitySetting, (s, t) -> {
+        securitySetting = BeanUtils.duplicate(securitySettingDTO, securitySetting, (s, t) -> {
             t.setLastModifyTime(DateTimeUtils.currentTimeMillis());
             t.setLastModifyUser(SecurityCache.userId());
         });
@@ -53,7 +53,7 @@ public class SecuritySettingServiceImpl implements ISecuritySettingService {
 
     @Override
     public SecuritySettingDetailVO detail(String clientName) throws Exception {
-        if(StringUtils.isBlank(clientName)){
+        if (StringUtils.isBlank(clientName)) {
             SecurityAdmin loginAdmin = SecurityCache.AdminCache.getPara(SecurityCache.userId());
             if (loginAdmin == null) {
                 return new SecuritySettingDetailVO();
@@ -80,15 +80,15 @@ public class SecuritySettingServiceImpl implements ISecuritySettingService {
     public R init(String clientName) throws Exception {
         if (StringUtils.isBlank(clientName)) {
             SecuritySetting securitySetting = iSecuritySettingDao.findByClientName(clientName);
-            if(securitySetting == null){
+            if (securitySetting == null) {
                 securitySetting = initSecuritySetting("");
                 securitySetting = iSecuritySettingDao.create(securitySetting);
             }
             return R.result(securitySetting);
-        }else{
+        } else {
             if (!clientName.contains("|")) {
                 SecuritySetting securitySetting = iSecuritySettingDao.findByClientName(clientName);
-                if(securitySetting == null){
+                if (securitySetting == null) {
                     securitySetting = initSecuritySetting(clientName);
                     securitySetting = iSecuritySettingDao.create(securitySetting);
                 }
@@ -98,11 +98,11 @@ public class SecuritySettingServiceImpl implements ISecuritySettingService {
             List<SecuritySetting> securitySettingList = new ArrayList<>();
             for (String clientNameStr : clientNameArray) {
                 SecuritySetting securitySetting = iSecuritySettingDao.findByClientName(clientNameStr);
-                if(securitySetting == null){
+                if (securitySetting == null) {
                     securitySettingList.add(initSecuritySetting(clientNameStr));
                 }
             }
-            if(securitySettingList.isEmpty()){
+            if (securitySettingList.isEmpty()) {
                 return R.ok();
             }
             securitySettingList = iSecuritySettingDao.createAll(securitySettingList);

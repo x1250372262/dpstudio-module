@@ -2,8 +2,8 @@ package com.dpstudio.module.security.service;
 
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.dto.PageDTO;
+import com.dpstudio.module.security.dto.SecurityAdminRoleDTO;
 import com.dpstudio.module.security.vo.list.SecurityAdminRoleListVO;
-import com.dpstudio.module.security.vo.op.SecurityAdminRoleVO;
 import net.ymate.platform.core.persistence.IResultSet;
 
 public interface ISecurityAdminRoleService {
@@ -21,11 +21,11 @@ public interface ISecurityAdminRoleService {
     /**
      * 添加角色
      *
-     * @param adminRoleVO
+     * @param securityAdminRoleDTO
      * @return
      * @throws Exception
      */
-    R create(SecurityAdminRoleVO adminRoleVO) throws Exception;
+    R create(SecurityAdminRoleDTO securityAdminRoleDTO) throws Exception;
 
     /**
      * 删除角色

@@ -1,10 +1,10 @@
-package com.dpstudio.module.security.vo.op;
+package com.dpstudio.module.security.dto;
 
 import com.dpstudio.module.security.model.SecurityAdminRole;
 import net.ymate.platform.validation.validate.VRequired;
 import net.ymate.platform.webmvc.annotation.RequestParam;
 
-public class SecurityAdminRoleVO {
+public class SecurityAdminRoleDTO {
 
     @VRequired(msg = "管理员id不能为空")
     @RequestParam(value = SecurityAdminRole.FIELDS.ADMIN_ID)

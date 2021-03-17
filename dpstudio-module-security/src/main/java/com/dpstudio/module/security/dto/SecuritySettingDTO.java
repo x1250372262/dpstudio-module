@@ -1,9 +1,9 @@
-package com.dpstudio.module.security.vo.op;
+package com.dpstudio.module.security.dto;
 
 import com.dpstudio.module.security.model.SecuritySetting;
 import net.ymate.platform.webmvc.annotation.RequestParam;
 
-public class SecuritySettingVO {
+public class SecuritySettingDTO {
 
     @RequestParam(value = SecuritySetting.FIELDS.LOGIN_LOG_STATUS)
     private Integer loginLogStatus;

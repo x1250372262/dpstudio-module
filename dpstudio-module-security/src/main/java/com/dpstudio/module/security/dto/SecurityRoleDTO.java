@@ -1,9 +1,9 @@
-package com.dpstudio.module.security.vo.op;
+package com.dpstudio.module.security.dto;
 
 import net.ymate.platform.validation.validate.VRequired;
 import net.ymate.platform.webmvc.annotation.RequestParam;
 
-public class SecurityRoleVO {
+public class SecurityRoleDTO {
 
     @VRequired(msg = "角色名称不能为空")
     @RequestParam

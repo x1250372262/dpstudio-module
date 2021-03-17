@@ -6,18 +6,15 @@ import com.dpstudio.dev.utils.BeanUtils;
 import com.dpstudio.module.security.SecurityCache;
 import com.dpstudio.module.security.core.Code;
 import com.dpstudio.module.security.dao.ISecurityAdminRoleDao;
+import com.dpstudio.module.security.dto.SecurityAdminRoleDTO;
 import com.dpstudio.module.security.model.SecurityAdminRole;
 import com.dpstudio.module.security.service.ISecurityAdminRoleService;
 import com.dpstudio.module.security.vo.list.SecurityAdminRoleListVO;
-import com.dpstudio.module.security.vo.op.SecurityAdminRoleVO;
 import net.ymate.platform.commons.util.DateTimeUtils;
 import net.ymate.platform.commons.util.UUIDUtils;
 import net.ymate.platform.core.beans.annotation.Bean;
 import net.ymate.platform.core.beans.annotation.Inject;
 import net.ymate.platform.core.persistence.IResultSet;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Bean
 public class SecurityAdminRoleServiceImpl implements ISecurityAdminRoleService {
@@ -27,21 +24,21 @@ public class SecurityAdminRoleServiceImpl implements ISecurityAdminRoleService {
 
     @Override
     public IResultSet<SecurityAdminRoleListVO> list(String adminId, PageDTO pageDTO) throws Exception {
-        return iSecurityAdminRoleDao.findAll(adminId,pageDTO);
+        return iSecurityAdminRoleDao.findAll(adminId, pageDTO);
     }
 
     @Override
-    public R create(SecurityAdminRoleVO adminRoleVO) throws Exception {
-        SecurityAdminRole securityAdminRole = iSecurityAdminRoleDao.findByRoleIdAndAdminId(adminRoleVO.getRoleId(), adminRoleVO.getAdminId());
+    public R create(SecurityAdminRoleDTO securityAdminRoleDTO) throws Exception {
+        SecurityAdminRole securityAdminRole = iSecurityAdminRoleDao.findByRoleIdAndAdminId(securityAdminRoleDTO.getRoleId(), securityAdminRoleDTO.getAdminId());
         if (securityAdminRole != null) {
             return R.create(Code.SECURITY_SYSTEM_ADMIN_ROLE_EXIST.getCode()).msg(Code.SECURITY_SYSTEM_ADMIN_ROLE_EXIST.getMsg());
         }
-        securityAdminRole = BeanUtils.copy(adminRoleVO, SecurityAdminRole::new, (adminRoleOPVOCopy, securityAdminRoleCopy) -> {
-            securityAdminRoleCopy.setId(UUIDUtils.UUID());
-            securityAdminRoleCopy.setCreateTime(DateTimeUtils.currentTimeMillis());
-            securityAdminRoleCopy.setCreateUser(SecurityCache.userId());
-            securityAdminRoleCopy.setLastModifyTime(DateTimeUtils.currentTimeMillis());
-            securityAdminRoleCopy.setLastModifyUser(SecurityCache.userId());
+        securityAdminRole = BeanUtils.copy(securityAdminRoleDTO, SecurityAdminRole::new, (s, t) -> {
+            t.setId(UUIDUtils.UUID());
+            t.setCreateTime(DateTimeUtils.currentTimeMillis());
+            t.setCreateUser(SecurityCache.userId());
+            t.setLastModifyTime(DateTimeUtils.currentTimeMillis());
+            t.setLastModifyUser(SecurityCache.userId());
         });
         securityAdminRole = iSecurityAdminRoleDao.create(securityAdminRole);
         return R.result(securityAdminRole);
@@ -49,10 +46,6 @@ public class SecurityAdminRoleServiceImpl implements ISecurityAdminRoleService {
 
     @Override
     public R delete(String[] ids) throws Exception {
-        List<SecurityAdminRole> list = new ArrayList<>();
-        for (String id : ids) {
-            list.add(SecurityAdminRole.builder().id(id).build());
-        }
         int[] result = iSecurityAdminRoleDao.delete(ids);
         return R.result(result);
     }

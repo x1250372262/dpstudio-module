@@ -7,11 +7,11 @@ import com.dpstudio.dev.security.annotation.Permission;
 import com.dpstudio.dev.security.annotation.Security;
 import com.dpstudio.module.security.core.SecurityConstants;
 import com.dpstudio.module.security.core.SecurityPermission;
+import com.dpstudio.module.security.dto.SecuritySettingDTO;
 import com.dpstudio.module.security.interCeptor.JwtCheckInterceptor;
 import com.dpstudio.module.security.model.SecuritySetting;
 import com.dpstudio.module.security.service.ISecuritySettingService;
 import com.dpstudio.module.security.vo.detail.SecuritySettingDetailVO;
-import com.dpstudio.module.security.vo.op.SecuritySettingVO;
 import net.ymate.platform.core.beans.annotation.Before;
 import net.ymate.platform.core.beans.annotation.Inject;
 import net.ymate.platform.validation.annotation.VModel;
@@ -36,11 +36,11 @@ public class SecuritySettingController {
     /**
      * 修改安全设置信息
      *
-     * @param securitySettingVO
+     * @param securitySettingDTO
      * @return
      * @throws Exception
      */
-    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME,permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_SETTING,
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME, permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_SETTING,
             groupName = SecurityPermission.GROUP_NAME_SETTING,
             name = SecurityPermission.PERMISSION_NAME_SETTING_UPDATE,
             code = SecurityPermission.PERMISSION_CODE_SETTING_UPDATE)})
@@ -48,8 +48,8 @@ public class SecuritySettingController {
     public IView update(@VRequired(msg = "最后修改时间不能为空")
                         @RequestParam(value = SecuritySetting.FIELDS.LAST_MODIFY_TIME) Long lastModifyTime,
                         @VModel
-                        @ModelBind SecuritySettingVO securitySettingVO) throws Exception {
-        R r = iSecuritySettingService.update(lastModifyTime, securitySettingVO);
+                        @ModelBind SecuritySettingDTO securitySettingDTO) throws Exception {
+        R r = iSecuritySettingService.update(lastModifyTime, securitySettingDTO);
         return V.view(r);
     }
 
@@ -60,7 +60,7 @@ public class SecuritySettingController {
      * @return
      * @throws Exception
      */
-    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME,permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_SETTING,
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME, permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_SETTING,
             groupName = SecurityPermission.GROUP_NAME_SETTING,
             name = SecurityPermission.PERMISSION_NAME_SETTING_DETAIL,
             code = SecurityPermission.PERMISSION_CODE_SETTING_DETAIL)})

@@ -2,15 +2,16 @@ package com.dpstudio.module.security.service;
 
 import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.dto.PageDTO;
+import com.dpstudio.module.security.dto.SecurityAdminDTO;
 import com.dpstudio.module.security.vo.detail.SecurityAdminDetailVO;
 import com.dpstudio.module.security.vo.list.SecurityAdminListVO;
-import com.dpstudio.module.security.vo.op.SecurityAdminVO;
 import net.ymate.platform.core.persistence.IResultSet;
 
 public interface ISecurityAdminService {
 
     /**
      * 模块启动初始化表
+     *
      * @param clientName
      * @return
      * @throws Exception
@@ -26,7 +27,7 @@ public interface ISecurityAdminService {
      * @return
      * @throws Exception
      */
-    R login(String userName, String password,String clientName) throws Exception;
+    R login(String userName, String password, String clientName) throws Exception;
 
     /**
      * 修改密码
@@ -50,11 +51,11 @@ public interface ISecurityAdminService {
     /**
      * 更新用户
      *
-     * @param securityAdminVO
+     * @param securityAdminDTO
      * @return
      * @throws Exception
      */
-    R updateInfo(SecurityAdminVO securityAdminVO) throws Exception;
+    R updateInfo(SecurityAdminDTO securityAdminDTO) throws Exception;
 
     /**
      * 管理员列表
@@ -69,14 +70,15 @@ public interface ISecurityAdminService {
     /**
      * 添加管理员
      *
-     * @param securityAdminVO
+     * @param securityAdminDTO
      * @return
      * @throws Exception
      */
-    R create(SecurityAdminVO securityAdminVO, String password) throws Exception;
+    R create(SecurityAdminDTO securityAdminDTO, String password) throws Exception;
 
     /**
      * 添加管理员
+     *
      * @param userName
      * @param realName
      * @param mobile
@@ -85,7 +87,7 @@ public interface ISecurityAdminService {
      * @return
      * @throws Exception
      */
-    R create(String userName,String realName,String mobile, String password,String clientName) throws Exception;
+    R create(String userName, String realName, String mobile, String password, String clientName) throws Exception;
 
     /**
      * 删除/禁用管理员

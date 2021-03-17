@@ -1,4 +1,4 @@
-package com.dpstudio.module.security.vo.detail;
+package com.dpstudio.module.security.vo.list;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.dpstudio.module.security.model.SecurityRole;

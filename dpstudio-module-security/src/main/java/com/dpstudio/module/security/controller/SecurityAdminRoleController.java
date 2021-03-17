@@ -9,11 +9,11 @@ import com.dpstudio.dev.security.annotation.Permission;
 import com.dpstudio.dev.security.annotation.Security;
 import com.dpstudio.module.security.core.SecurityConstants;
 import com.dpstudio.module.security.core.SecurityPermission;
+import com.dpstudio.module.security.dto.SecurityAdminRoleDTO;
 import com.dpstudio.module.security.interCeptor.JwtCheckInterceptor;
 import com.dpstudio.module.security.model.SecurityAdminRole;
 import com.dpstudio.module.security.service.ISecurityAdminRoleService;
 import com.dpstudio.module.security.vo.list.SecurityAdminRoleListVO;
-import com.dpstudio.module.security.vo.op.SecurityAdminRoleVO;
 import net.ymate.platform.core.beans.annotation.Before;
 import net.ymate.platform.core.beans.annotation.Inject;
 import net.ymate.platform.core.persistence.IResultSet;
@@ -58,7 +58,7 @@ public class SecurityAdminRoleController {
     /**
      * 添加角色
      *
-     * @param securityAdminRoleVO
+     * @param securityAdminRoleDTO
      * @return
      * @throws Exception
      */
@@ -68,8 +68,8 @@ public class SecurityAdminRoleController {
             code = SecurityPermission.PERMISSION_CODE_ADMIN_ROLE_CREATE)})
     @RequestMapping(value = "/create", method = Type.HttpMethod.POST)
     public IView create(@VModel
-                        @ModelBind SecurityAdminRoleVO securityAdminRoleVO) throws Exception {
-        R r = iSecurityAdminRoleService.create(securityAdminRoleVO);
+                        @ModelBind SecurityAdminRoleDTO securityAdminRoleDTO) throws Exception {
+        R r = iSecurityAdminRoleService.create(securityAdminRoleDTO);
         return V.view(r);
     }
 

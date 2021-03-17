@@ -7,18 +7,16 @@ import com.dpstudio.dev.dto.PageDTO;
 import com.dpstudio.dev.security.annotation.Group;
 import com.dpstudio.dev.security.annotation.Permission;
 import com.dpstudio.dev.security.annotation.Security;
-import com.dpstudio.dev.security.jwt.JWT;
 import com.dpstudio.module.security.SecurityCache;
 import com.dpstudio.module.security.core.SecurityConstants;
 import com.dpstudio.module.security.core.SecurityPermission;
+import com.dpstudio.module.security.dto.SecurityAdminDTO;
 import com.dpstudio.module.security.interCeptor.JwtCheckInterceptor;
 import com.dpstudio.module.security.interCeptor.JwtOutInterceptor;
 import com.dpstudio.module.security.model.SecurityAdmin;
 import com.dpstudio.module.security.service.ISecurityAdminService;
 import com.dpstudio.module.security.vo.detail.SecurityAdminDetailVO;
 import com.dpstudio.module.security.vo.list.SecurityAdminListVO;
-import com.dpstudio.module.security.vo.op.SecurityAdminVO;
-import net.ymate.platform.commons.lang.BlurObject;
 import net.ymate.platform.core.beans.annotation.Before;
 import net.ymate.platform.core.beans.annotation.Clean;
 import net.ymate.platform.core.beans.annotation.Inject;
@@ -120,14 +118,14 @@ public class SecurityAdminController {
     /**
      * 修改用户信息
      *
-     * @param securityAdminVO
+     * @param securityAdminDTO
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/update/info", method = Type.HttpMethod.POST)
     public IView updateUser(@VModel
-                            @ModelBind SecurityAdminVO securityAdminVO) throws Exception {
-        R result = iSecurityAdminService.updateInfo(securityAdminVO);
+                            @ModelBind SecurityAdminDTO securityAdminDTO) throws Exception {
+        R result = iSecurityAdminService.updateInfo(securityAdminDTO);
         return V.view(result);
     }
 
@@ -139,7 +137,7 @@ public class SecurityAdminController {
      * @return
      * @throws Exception
      */
-    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME,permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ADMIN,
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME, permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ADMIN,
             groupName = SecurityPermission.GROUP_NAME_ADMIN,
             name = SecurityPermission.PERMISSION_NAME_ADMIN_LIST,
             code = SecurityPermission.PERMISSION_CODE_ADMIN_LIST)})
@@ -155,20 +153,20 @@ public class SecurityAdminController {
     /**
      * 添加管理员
      *
-     * @param securityAdminVO
+     * @param securityAdminDTO
      * @return
      * @throws Exception
      */
-    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME,permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ADMIN,
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME, permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ADMIN,
             groupName = SecurityPermission.GROUP_NAME_ADMIN,
             name = SecurityPermission.PERMISSION_NAME_ADMIN_CREATE,
             code = SecurityPermission.PERMISSION_CODE_ADMIN_CREATE)})
     @RequestMapping(value = "/create", method = Type.HttpMethod.POST)
     public IView create(@VModel
-                        @ModelBind SecurityAdminVO securityAdminVO,
+                        @ModelBind SecurityAdminDTO securityAdminDTO,
                         @VRequired(msg = "密码不能为空")
                         @RequestParam String password) throws Exception {
-        R result = iSecurityAdminService.create(securityAdminVO, password);
+        R result = iSecurityAdminService.create(securityAdminDTO, password);
         return V.view(result);
     }
 
@@ -180,7 +178,7 @@ public class SecurityAdminController {
      * @return
      * @throws Exception
      */
-    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME,permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ADMIN,
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME, permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ADMIN,
             groupName = SecurityPermission.GROUP_NAME_ADMIN,
             name = SecurityPermission.PERMISSION_NAME_ADMIN_DISABLED,
             code = SecurityPermission.PERMISSION_CODE_ADMIN_DISABLED)})
@@ -200,7 +198,7 @@ public class SecurityAdminController {
      * @return
      * @throws Exception
      */
-    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME,permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ADMIN,
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME, permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ADMIN,
             groupName = SecurityPermission.GROUP_NAME_ADMIN,
             name = SecurityPermission.PERMISSION_NAME_ADMIN_PASSWORD,
             code = SecurityPermission.PERMISSION_CODE_ADMIN_PASSWORD)})
@@ -218,7 +216,7 @@ public class SecurityAdminController {
      * @return
      * @throws Exception
      */
-    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME,permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ADMIN,
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME, permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ADMIN,
             groupName = SecurityPermission.GROUP_NAME_ADMIN,
             name = SecurityPermission.PERMISSION_NAME_ADMIN_UNLOCK,
             code = SecurityPermission.PERMISSION_CODE_ADMIN_UNLOCK)})
@@ -236,7 +234,7 @@ public class SecurityAdminController {
      * @return
      * @throws Exception
      */
-    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME,permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ADMIN,
+    @Group(clientName = SecurityConstants.PERMISSION_CLIENT_NAME, permissions = {@Permission(groupId = SecurityPermission.GROUP_ID_ADMIN,
             groupName = SecurityPermission.GROUP_NAME_ADMIN,
             name = SecurityPermission.PERMISSION_NAME_ADMIN_DELETE,
             code = SecurityPermission.PERMISSION_CODE_ADMIN_DELETE)})

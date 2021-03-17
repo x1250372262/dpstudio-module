@@ -12,13 +12,13 @@ import com.dpstudio.module.security.SecurityCache;
 import com.dpstudio.module.security.core.Code;
 import com.dpstudio.module.security.dao.ISecurityRoleDao;
 import com.dpstudio.module.security.dao.ISecurityRolePermissionDao;
+import com.dpstudio.module.security.dto.SecurityRoleDTO;
 import com.dpstudio.module.security.model.SecurityAdmin;
 import com.dpstudio.module.security.model.SecurityRole;
 import com.dpstudio.module.security.model.SecurityRolePermission;
 import com.dpstudio.module.security.service.ISecurityRoleService;
 import com.dpstudio.module.security.vo.detail.SecurityRoleDetailVO;
-import com.dpstudio.module.security.vo.detail.SecurityRoleListVO;
-import com.dpstudio.module.security.vo.op.SecurityRoleVO;
+import com.dpstudio.module.security.vo.list.SecurityRoleListVO;
 import com.dpstudio.module.security.vo.select.SecurityRoleSelectVO;
 import net.ymate.platform.commons.util.DateTimeUtils;
 import net.ymate.platform.commons.util.UUIDUtils;
@@ -59,16 +59,16 @@ public class SecurityRoleServiceImpl implements ISecurityRoleService {
     }
 
     @Override
-    public R create(SecurityRoleVO securityRoleVO) throws Exception {
+    public R create(SecurityRoleDTO securityRoleDTO) throws Exception {
         SecurityAdmin loginAdmin = SecurityCache.AdminCache.getPara(SecurityCache.userId());
         if (loginAdmin == null) {
             return R.create(Code.SECURITY_ADMIN_INVALID_OR_TIMEOUT.getCode()).msg(Code.SECURITY_ADMIN_INVALID_OR_TIMEOUT.getMsg());
         }
-        SecurityRole securityRole = iSecurityRoleDao.findByName(securityRoleVO.getName());
+        SecurityRole securityRole = iSecurityRoleDao.findByName(securityRoleDTO.getName());
         if (securityRole != null) {
             return R.create(Code.SECURITY_SYSTEM_ROLE_NAME_EXIST.getCode()).msg(Code.SECURITY_SYSTEM_ROLE_NAME_EXIST.getMsg());
         }
-        securityRole = BeanUtils.copy(securityRoleVO, SecurityRole::new, (s, t) -> {
+        securityRole = BeanUtils.copy(securityRoleDTO, SecurityRole::new, (s, t) -> {
             t.setId(UUIDUtils.UUID());
             t.setClientName(loginAdmin.getClientName());
             t.setCreateTime(DateTimeUtils.currentTimeMillis());
@@ -87,9 +87,9 @@ public class SecurityRoleServiceImpl implements ISecurityRoleService {
     }
 
     @Override
-    public R update(String id, Long lastModifyTime, SecurityRoleVO securityRoleVO) throws Exception {
+    public R update(String id, Long lastModifyTime, SecurityRoleDTO securityRoleDTO) throws Exception {
         SecurityAdmin loginAdmin = SecurityCache.AdminCache.getPara(SecurityCache.userId());
-        SecurityRole securityRole = iSecurityRoleDao.findByNameNotId(securityRoleVO.getName(), id);
+        SecurityRole securityRole = iSecurityRoleDao.findByNameNotId(securityRoleDTO.getName(), id);
         if (securityRole != null) {
             return R.create(Code.SECURITY_SYSTEM_ROLE_NAME_EXIST.getCode()).msg(Code.SECURITY_SYSTEM_ROLE_NAME_EXIST.getMsg());
         }
@@ -100,7 +100,7 @@ public class SecurityRoleServiceImpl implements ISecurityRoleService {
         if (!R.checkVersion(lastModifyTime, securityRole.getLastModifyTime())) {
             return R.create(C.VERSION_NOT_SAME.getCode()).msg(C.VERSION_NOT_SAME.getMsg());
         }
-        securityRole = BeanUtils.duplicate(securityRoleVO, securityRole, (s, t) -> {
+        securityRole = BeanUtils.duplicate(securityRoleDTO, securityRole, (s, t) -> {
             t.setLastModifyTime(DateTimeUtils.currentTimeMillis());
             t.setLastModifyUser(SecurityCache.userId());
         });
