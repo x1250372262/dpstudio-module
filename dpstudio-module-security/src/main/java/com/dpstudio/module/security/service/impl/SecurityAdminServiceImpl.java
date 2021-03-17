@@ -429,5 +429,4 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         return R.result(result);
     }
 
-
 }
