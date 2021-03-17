@@ -77,7 +77,9 @@ public interface ISecurityAdminService {
 
     /**
      * 添加管理员
-     * @param securityAdminVO
+     * @param userName
+     * @param realName
+     * @param mobile
      * @param password
      * @param clientName
      * @return

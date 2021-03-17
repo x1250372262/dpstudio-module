@@ -376,7 +376,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
                 .salt(salt)
                 .build();
         securityAdmin = iSecurityAdminDao.create(securityAdmin);
-        return R.result(securityAdmin);
+        return R.result(securityAdmin).data(securityAdmin);
     }
 
     @Override
