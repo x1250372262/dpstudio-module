@@ -353,7 +353,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         });
         securityAdmin = iSecurityAdminDao.create(securityAdmin);
         //处理登录之后的逻辑 返回成功往下走
-        R createAfterResult = securityAdminHandler.loginAfter(securityAdmin);
+        R createAfterResult = securityAdminHandler.createAfter(securityAdmin);
         if (!Objects.equals(createAfterResult.code(), C.SUCCESS.getCode())) {
             return createAfterResult;
         }

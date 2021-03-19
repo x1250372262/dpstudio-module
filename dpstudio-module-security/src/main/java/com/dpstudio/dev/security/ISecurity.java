@@ -104,6 +104,14 @@ public interface ISecurity extends IInitialization<IApplication>, IDestroyable {
     PermissionBean findByCode(List<PermissionBean> permissionBeans,String code,String clientName);
 
     /**
+     * 根据文件获取菜单
+     * @param filePath
+     * @return
+     * @throws Exception
+     */
+    List<MenuBean> menuListByFile(String filePath) throws Exception;
+
+    /**
      * 菜单列表
      *
      * @return 菜单列表
