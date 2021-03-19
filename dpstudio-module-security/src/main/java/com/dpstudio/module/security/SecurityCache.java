@@ -9,6 +9,7 @@ import net.ymate.platform.cache.Caches;
 import net.ymate.platform.cache.ICaches;
 import net.ymate.platform.commons.lang.BlurObject;
 import net.ymate.platform.webmvc.context.WebContext;
+import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -65,6 +66,9 @@ public class SecurityCache {
     public static class JwtCache {
 
         private static String fixKey(String key, String clientName) {
+            if(StringUtils.isBlank(clientName)){
+                throw new NullArgumentException("clientName");
+            }
             return key.concat("_").concat(clientName);
         }
 

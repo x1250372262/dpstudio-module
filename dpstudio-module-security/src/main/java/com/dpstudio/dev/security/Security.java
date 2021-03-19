@@ -197,6 +197,7 @@ public final class Security implements IModule, ISecurity {
         if (!file.exists()) {
             return menuList;
         }
+
         try {
             IConfigFileParser handler = new XMLConfigFileParser(file).load(true);
             Map<String, IConfigFileParser.Category> categoryMap = handler.getCategories();
