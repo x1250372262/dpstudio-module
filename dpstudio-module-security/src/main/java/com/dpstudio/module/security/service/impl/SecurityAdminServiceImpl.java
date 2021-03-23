@@ -10,6 +10,7 @@ import com.dpstudio.dev.security.jwt.JWT;
 import com.dpstudio.dev.support.jwt.JwtBean;
 import com.dpstudio.dev.support.jwt.JwtHelper;
 import com.dpstudio.dev.support.spi.SpiLoader;
+import com.dpstudio.dev.support.spi.annotation.SpiInject;
 import com.dpstudio.dev.utils.BeanUtils;
 import com.dpstudio.module.security.SecurityCache;
 import com.dpstudio.module.security.core.Code;
@@ -60,6 +61,8 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
     private ISecurityAdminLogService iSecurityAdminLogService;
     @Inject
     private ISecuritySettingService iSecuritySettingService;
+    @SpiInject
+    private ISecurityAdminHandler iSecurityAdminHandler;
 
     private SecurityAdmin initSecurityAdmin(String clientName) throws Exception {
         String salt = UUIDUtils.randomStr(6, false);
@@ -118,12 +121,11 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
     @Override
     @Transaction
     public R login(String userName, String password, String clientName) throws Exception {
-        ISecurityAdminHandler securityAdminHandler = SpiLoader.load(ISecurityAdminHandler.class, null);
-        if (securityAdminHandler == null) {
-            securityAdminHandler = new ISecurityAdminHandler.SecurityAdminHandler();
+        if (iSecurityAdminHandler == null) {
+            iSecurityAdminHandler = new ISecurityAdminHandler.SecurityAdminHandler();
         }
         //处理登录之前的逻辑 返回成功往下走
-        R loginBeforeResult = securityAdminHandler.loginBefore(userName, password);
+        R loginBeforeResult = iSecurityAdminHandler.loginBefore(userName, password);
         if (!Objects.equals(loginBeforeResult.code(), C.SUCCESS.getCode())) {
             return loginBeforeResult;
         }
@@ -179,7 +181,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         }
 
         //处理登录之后的逻辑 返回成功往下走
-        R loginAfterResult = securityAdminHandler.loginAfter(securityAdmin);
+        R loginAfterResult = iSecurityAdminHandler.loginAfter(securityAdmin);
         if (!Objects.equals(loginAfterResult.code(), C.SUCCESS.getCode())) {
             return loginAfterResult;
         }
@@ -325,12 +327,11 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         if (loginAdmin == null) {
             return R.create(Code.SECURITY_ADMIN_INVALID_OR_TIMEOUT.getCode()).msg(Code.SECURITY_ADMIN_INVALID_OR_TIMEOUT.getMsg());
         }
-        ISecurityAdminHandler securityAdminHandler = SpiLoader.load(ISecurityAdminHandler.class, null);
-        if (securityAdminHandler == null) {
-            securityAdminHandler = new ISecurityAdminHandler.SecurityAdminHandler();
+        if (iSecurityAdminHandler == null) {
+            iSecurityAdminHandler = new ISecurityAdminHandler.SecurityAdminHandler();
         }
         //处理添加之前的逻辑 返回成功往下走
-        R createBeforeResult = securityAdminHandler.createBefore(securityAdminDTO, password);
+        R createBeforeResult = iSecurityAdminHandler.createBefore(securityAdminDTO, password);
         if (!Objects.equals(createBeforeResult.code(), C.SUCCESS.getCode())) {
             return createBeforeResult;
         }
@@ -353,7 +354,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         });
         securityAdmin = iSecurityAdminDao.create(securityAdmin);
         //处理登录之后的逻辑 返回成功往下走
-        R createAfterResult = securityAdminHandler.createAfter(securityAdmin);
+        R createAfterResult = iSecurityAdminHandler.createAfter(securityAdmin);
         if (!Objects.equals(createAfterResult.code(), C.SUCCESS.getCode())) {
             return createAfterResult;
         }

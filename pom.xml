@@ -11,6 +11,7 @@
         <module>dpstudio-module-security</module>
         <module>dpstudio-module-doc</module>
         <module>dpstudio-module-mybatis</module>
+        <module>dpstudio-module-message</module>
     </modules>
     <packaging>pom</packaging>
 

@@ -1,6 +1,7 @@
 package com.dpstudio.module.security.service.handler;
 
 import com.dpstudio.dev.core.R;
+import com.dpstudio.dev.support.spi.annotation.SpiBean;
 import com.dpstudio.module.security.dto.SecurityAdminDTO;
 import com.dpstudio.module.security.model.SecurityAdmin;
 
@@ -46,6 +47,7 @@ public interface ISecurityAdminHandler {
      */
     R createAfter(SecurityAdmin securityAdmin) throws Exception;
 
+    @SpiBean
      class SecurityAdminHandler implements ISecurityAdminHandler{
 
          @Override
