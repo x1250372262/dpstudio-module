@@ -6,7 +6,7 @@ import net.ymate.platform.core.persistence.IResultSet;
 import java.util.List;
 
 /**
- * @Author: 徐建鹏.
+ * @Author: mengxiang.
  * @create: 2021-03-15 11:56
  * @Description:
  */
