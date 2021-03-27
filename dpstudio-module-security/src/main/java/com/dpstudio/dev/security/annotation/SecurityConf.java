@@ -52,6 +52,12 @@ public @interface SecurityConf {
     String clientTitle() default "后台管理系统";
 
     /**
+     * 项目名称
+     * @return
+     */
+    String projectName() default "";
+
+    /**
      * @return 菜单文件位置
      */
     String menuFilePath() default "${root}/menu/";

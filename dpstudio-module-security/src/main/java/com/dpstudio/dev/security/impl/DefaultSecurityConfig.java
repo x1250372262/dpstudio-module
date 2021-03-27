@@ -36,6 +36,7 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
     private String packageName;
     private String clientName;
     private String clientTitle;
+    private String projectName;
     private String menuFilePath;
     private IAuthenticator authenticatorClass;
     private int verifyTime;
@@ -76,6 +77,7 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
         packageName = configReader.getString(PACKAGE_NAME, confAnn != null ? confAnn.packageName() : "");
         clientName = configReader.getString(CLIENT_NAME, confAnn != null ? confAnn.clientName() : "admin");
         clientTitle = configReader.getString(CLIENT_TITLE, confAnn != null ? confAnn.clientTitle() : "后台管理系统");
+        projectName = configReader.getString(PROJECT_NAME, confAnn != null ? confAnn.projectName() : "");
         menuFilePath = configReader.getString(MENU_FILE_PATH, confAnn != null ? confAnn.menuFilePath() : "${root}/menu/");
         String authenticatorClassName = configReader.getString(AUTHENTICATOR_CLASS, confAnn != null ? confAnn.authenticatorClass().getName() : null);
         authenticatorClass = ClassUtils.impl(authenticatorClassName, IAuthenticator.class, this.getClass());
@@ -126,6 +128,11 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
     @Override
     public String clientTitle() {
         return clientTitle;
+    }
+
+    @Override
+    public String projectName() {
+        return projectName;
     }
 
     @Override
@@ -199,6 +206,12 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
     public void setClientTitle(String clientTitle) {
         if (!initialized) {
             this.clientTitle = clientTitle;
+        }
+    }
+
+    public void setProjectName(String projectName) {
+        if (!initialized) {
+            this.projectName = projectName;
         }
     }
 
@@ -280,6 +293,11 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
 
         public Builder clientTitle(String clientTitle) {
             config.setClientTitle(clientTitle);
+            return this;
+        }
+
+        public Builder projectName(String projectName) {
+            config.setProjectName(projectName);
             return this;
         }
 

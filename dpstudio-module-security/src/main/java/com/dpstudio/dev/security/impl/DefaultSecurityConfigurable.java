@@ -63,6 +63,11 @@ public final class DefaultSecurityConfigurable extends DefaultModuleConfigurable
             return this;
         }
 
+        public Builder projectName(String projectName) {
+            configurable.addConfig(ISecurityConfig.PROJECT_NAME, projectName);
+            return this;
+        }
+
         public Builder menuFilePath(String menuFilePath) {
             configurable.addConfig(ISecurityConfig.MENU_FILE_PATH, menuFilePath);
             return this;

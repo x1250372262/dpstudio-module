@@ -29,11 +29,13 @@ import java.util.Objects;
 public class UnpackUtils {
 
 
-    public static void unpackErrorFile() {
+    public static void unpackErrorFile(ISecurityConfig config) {
         String rootPath = RuntimeUtils.getRootPath();
         File targetPath = new File(RuntimeUtils.getRootPath(false));
         File locker = new File(rootPath, String.format(".unpack%s%s", File.separator, "dpstudio.error"));
-
+        if(StringUtils.isNotBlank(config.projectName())){
+            targetPath = new File(RuntimeUtils.getRootPath(true),config.projectName());
+        }
         if (!locker.exists()) {
             try {
                 if (FileUtils.unpackJarFile("dpstudio.error", targetPath, Security.class)) {
@@ -70,15 +72,18 @@ public class UnpackUtils {
         fileWriter.write(htmlText);
     }
 
-    private static void unpack(String clientName, String title) {
-        File targetPath;
+    private static void unpack(ISecurityConfig config,String clientName, String title) {
+        File targetPath = new File(RuntimeUtils.getRootPath(false));
         File locker;
+        if(StringUtils.isNotBlank(config.projectName())){
+            targetPath = new File(RuntimeUtils.getRootPath(true),config.projectName());
+        }
         String rootPath = RuntimeUtils.getRootPath();
         if (StringUtils.isBlank(clientName)) {
-            targetPath = new File(RuntimeUtils.getRootPath(false));
+//            targetPath = new File(RuntimeUtils.getRootPath(false));
             locker = new File(rootPath, String.format(".unpack%s%s", File.separator, "dpstudio.security"));
         } else {
-            targetPath = new File(RuntimeUtils.getRootPath(false), clientName);
+            targetPath = new File(targetPath, clientName);
             if (!targetPath.exists()) {
                 targetPath.mkdirs();
             }
@@ -143,17 +148,17 @@ public class UnpackUtils {
         }
         try {
             if (StringUtils.isBlank(clientName) || !clientName.contains("|")) {
-                unpack("", titleList.get(0));
+                unpack(config,"", titleList.get(0));
             }
             String[] clientNameArray = clientName.split("\\|");
             if (clientNameArray.length <= 0) {
-                unpack("", titleList.get(0));
+                unpack(config,"", titleList.get(0));
             }
             for (int i = 0; i < clientNameArray.length; i++) {
                 if (titleList.size() == clientNameArray.length) {
-                    unpack(clientNameArray[i], titleList.get(i));
+                    unpack(config,clientNameArray[i], titleList.get(i));
                 } else {
-                    unpack(clientNameArray[i], titleList.get(0));
+                    unpack(config,clientNameArray[i], titleList.get(0));
                 }
 
             }

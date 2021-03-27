@@ -127,7 +127,7 @@ public final class Security implements IModule, ISecurity {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        UnpackUtils.unpackErrorFile();
+                        UnpackUtils.unpackErrorFile(config);
                         UnpackUtils.initDatabase(config);
                     }
                     return false;

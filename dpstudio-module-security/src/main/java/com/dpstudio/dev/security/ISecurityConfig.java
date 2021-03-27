@@ -31,6 +31,7 @@ public interface ISecurityConfig extends IInitialization<ISecurity> {
     String PACKAGE_NAME = "package_name";
     String CLIENT_NAME = "client_name";
     String CLIENT_TITLE = "client_title";
+    String PROJECT_NAME = "project_name";
     String AUTHENTICATOR_CLASS = "authenticator_class";
     String MENU_FILE_PATH = "menu_file_path";
     String VERIFY_TIME = "jwt_verify_time";
@@ -69,6 +70,13 @@ public interface ISecurityConfig extends IInitialization<ISecurity> {
      * @return
      */
     String clientTitle();
+
+    /**
+     * 客户端标题
+     *
+     * @return
+     */
+    String projectName();
 
     /**
      * 菜单文件位置
