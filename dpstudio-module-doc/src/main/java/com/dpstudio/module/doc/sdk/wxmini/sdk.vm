@@ -1,14 +1,27 @@
 /**
 * http请求
 */
-function http(url, method, param, success, fail) {
-    let timeStart = Date.now();
+function http(url, method, param,isLogin,loginBack, success, fail) {
     //设置header
     CreateHeader(url, function (header) {
         if (method === "post") {
             header = {
             'content-type': 'application/x-www-form-urlencoded',
             'X-Requested-With': 'XMLHttpRequest'
+            }
+        }
+        if(isLogin){
+            var accessToken = wx.getStorageSync('access_token')
+            if(accessToken===undefined || accessToken===null || accessToken === ""){
+                wx.showToast({
+                    title: "请先登录",
+                    icon: 'none',
+                    duration: 1000
+                })
+                loginBack();
+                return false;
+            }else{
+                header.access_token = accessToken;
             }
         }
         //发起请求
@@ -62,9 +75,10 @@ function CreateHeader(url, complete) {
 #foreach($sdkInfo in $sdkInfos)
 //$sdkInfo.comment
 function $sdkInfo.name (){
+    var host = "$host";
     #foreach($apiInfo in $sdkInfo.apiInfos)
-    function $sdkInfo.name$apiInfo.methodName (param,success,fail){
-        http("$host/$apiInfo.uri","$apiInfo.method",param,success,fail);
+    function $sdkInfo.name$apiInfo.methodName (param,isLogin,loginBack,success,fail){
+        http(host+"/$apiInfo.uri","$apiInfo.method",param,isLogin,loginBack,success,fail);
     }
     #end
     return{
