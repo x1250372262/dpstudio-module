@@ -79,13 +79,13 @@ function $sdkInfo.name (){
 
     #foreach($apiInfo in $sdkInfo.apiInfos)
     //$apiInfo.title
-    function $sdkInfo.name$apiInfo.methodName (param,isLogin,loginBack,success,fail){
+    function $sdkInfo.name$apiInfo.sdkMethodName (param,isLogin,loginBack,success,fail){
         http(host+"/$apiInfo.uri","$apiInfo.method",param,isLogin,loginBack,success,fail);
     }
     #end
     return{
         #foreach($apiInfo in $sdkInfo.apiInfos)
-        $sdkInfo.name$apiInfo.methodName:$sdkInfo.name$apiInfo.methodName,
+        $sdkInfo.name$apiInfo.sdkMethodName:$sdkInfo.name$apiInfo.sdkMethodName,
         #end
     }
 }

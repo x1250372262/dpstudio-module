@@ -20,6 +20,8 @@ public class SdkInfo {
 
         private String title;
 
+        private String sdkMethodName;
+
         private String methodName;
 
         private String method;
@@ -56,6 +58,14 @@ public class SdkInfo {
 
         public void setUri(String uri) {
             this.uri = uri;
+        }
+
+        public String getSdkMethodName() {
+            return sdkMethodName;
+        }
+
+        public void setSdkMethodName(String sdkMethodName) {
+            this.sdkMethodName = sdkMethodName;
         }
     }
 

@@ -5,6 +5,7 @@ import com.dpstudio.module.doc.annotation.Doc;
 import com.dpstudio.module.doc.bean.ApiResult;
 import com.dpstudio.module.doc.bean.SdkInfo;
 import com.dpstudio.module.doc.exception.DocException;
+import net.ymate.platform.webmvc.annotation.RequestMapping;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -27,6 +28,7 @@ public interface ISdk {
      */
     File create(ApiResult apiResult) throws Exception;
 
+
     /**
      * 准备数据
      *
@@ -38,14 +40,25 @@ public interface ISdk {
         apiResult.getApiInfoList().forEach(apiInfo -> {
             SdkInfo sdkInfo = new SdkInfo();
             sdkInfo.setComment(apiInfo.getDocName());
-            String sdkName = createSdkName(com.dpstudio.module.doc.Doc.get().getConfig(),apiInfo.getApiModuleList().get(0).getType().getPackage());
+            String sdkName = createSdkName(com.dpstudio.module.doc.Doc.get().getConfig(), apiInfo.getApiModuleList().get(0).getType().getPackage());
             sdkInfo.setName(sdkName);
             List<SdkInfo.ApiInfo> apiInfos = new ArrayList<>();
             apiInfo.getApiModuleList().forEach(apiModule -> {
+                String methodNamePrefix = "";
+                RequestMapping requestMapping = apiModule.getType().getAnnotation(RequestMapping.class);
+                if (requestMapping != null) {
+                    methodNamePrefix = StringUtils.replace(requestMapping.value(),"/","_");
+                }
+                String finalMethodNamePrefix = methodNamePrefix;
                 apiModule.getApiActions().forEach(apiAction -> {
                     SdkInfo.ApiInfo api = new SdkInfo.ApiInfo();
                     api.setTitle(apiAction.getTitle());
                     api.setUri(apiAction.getUri());
+                    if (StringUtils.isNotBlank(finalMethodNamePrefix)) {
+                        api.setSdkMethodName(finalMethodNamePrefix + "_" + apiAction.getName());
+                    } else {
+                        api.setSdkMethodName(apiAction.getName());
+                    }
                     api.setMethodName(apiAction.getName());
                     api.setMethod(apiAction.getMethods().get(0));
                     apiInfos.add(api);
