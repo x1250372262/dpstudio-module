@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @Author: mengxiang.
@@ -60,7 +61,7 @@ public interface ISdk {
                         api.setSdkMethodName(apiAction.getName());
                     }
                     api.setMethodName(apiAction.getName());
-                    api.setMethod(apiAction.getMethods().get(0));
+                    api.setMethod(apiAction.getMethods().get(0).toUpperCase(Locale.ROOT));
                     apiInfos.add(api);
                 });
             });

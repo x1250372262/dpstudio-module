@@ -4,7 +4,7 @@
 function http(url, method, param,isLogin,loginBack, success, fail) {
     //设置header
     CreateHeader(url, function (header) {
-        if (method === "post") {
+        if (method === "POST") {
             header = {
             'content-type': 'application/x-www-form-urlencoded',
             'X-Requested-With': 'XMLHttpRequest'
