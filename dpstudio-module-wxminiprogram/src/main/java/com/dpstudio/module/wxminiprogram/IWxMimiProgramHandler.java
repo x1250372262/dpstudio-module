@@ -3,6 +3,7 @@ package com.dpstudio.module.wxminiprogram;
 import com.dpstudio.dev.core.R;
 import com.dpstudio.module.wxminiprogram.bean.WxPhoneInfo;
 import com.dpstudio.module.wxminiprogram.bean.WxUserInfo;
+import com.dpstudio.module.wxminiprogram.dto.UserInfoDTO;
 
 /**
  * @Author: mengxiang.
@@ -30,4 +31,13 @@ public interface IWxMimiProgramHandler {
      * @throws Exception
      */
     R handlerMobileData(String attach, String token, WxPhoneInfo wxPhoneInfo) throws Exception;
+
+
+    /**
+     * 修改用户信息
+     * @param userInfoDTO
+     * @return
+     * @throws Exception
+     */
+    R updateUserData(UserInfoDTO userInfoDTO) throws Exception;
 }

@@ -9,6 +9,7 @@ import com.dpstudio.module.wxminiprogram.bean.WxPhoneInfo;
 import com.dpstudio.module.wxminiprogram.bean.WxUserInfo;
 import com.dpstudio.module.wxminiprogram.dto.MobileDTO;
 import com.dpstudio.module.wxminiprogram.dto.UserDTO;
+import com.dpstudio.module.wxminiprogram.dto.UserInfoDTO;
 import com.dpstudio.module.wxminiprogram.service.IWxMimiProgramUserService;
 import net.ymate.platform.core.beans.annotation.Bean;
 
@@ -53,6 +54,15 @@ public class IWxMimiProgramUserServiceImpl implements IWxMimiProgramUserService 
         R r = iWxMimiProgram.getHandler().handlerUserData(wxUserInfo, userDTO.getAttach());
         return R.create(r.code()).msg(r.msg()).attrs(r.attrs());
 
+    }
+
+    @Override
+    public R update(UserInfoDTO userInfoDTO) throws Exception {
+
+        IWxMiniProgram iWxMimiProgram = WxMiniProgram.get();
+
+        R r = iWxMimiProgram.getHandler().updateUserData(userInfoDTO);
+        return R.create(r.code()).msg(r.msg()).attrs(r.attrs());
     }
 
     @Override

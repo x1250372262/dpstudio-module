@@ -4,6 +4,7 @@ package com.dpstudio.module.wxminiprogram.service;
 import com.dpstudio.dev.core.R;
 import com.dpstudio.module.wxminiprogram.dto.MobileDTO;
 import com.dpstudio.module.wxminiprogram.dto.UserDTO;
+import com.dpstudio.module.wxminiprogram.dto.UserInfoDTO;
 
 /**
  * @Author: mengxiang.
@@ -30,6 +31,15 @@ public interface IWxMimiProgramUserService {
      * @throws Exception
      */
     R userInfo(UserDTO userDTO) throws Exception;
+
+    /**
+     * 修改用户信息
+     *
+     * @param userInfoDTO
+     * @return
+     * @throws Exception
+     */
+    R update(UserInfoDTO userInfoDTO) throws Exception;
 
     /**
      * 手机号信息

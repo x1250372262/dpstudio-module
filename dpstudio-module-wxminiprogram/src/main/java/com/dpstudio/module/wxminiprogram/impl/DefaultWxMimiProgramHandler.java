@@ -7,6 +7,7 @@ import com.dpstudio.module.wxminiprogram.IWxMimiProgramHandler;
 import com.dpstudio.module.wxminiprogram.WxMiniProgram;
 import com.dpstudio.module.wxminiprogram.bean.WxPhoneInfo;
 import com.dpstudio.module.wxminiprogram.bean.WxUserInfo;
+import com.dpstudio.module.wxminiprogram.dto.UserInfoDTO;
 import com.dpstudio.module.wxminiprogram.model.MimiprogramUser;
 import net.ymate.platform.commons.util.DateTimeUtils;
 import net.ymate.platform.commons.util.UUIDUtils;
@@ -28,29 +29,10 @@ public class DefaultWxMimiProgramHandler implements IWxMimiProgramHandler {
             if (mimiprogramUser == null) {
                 //保存微信用户信息
                 MimiprogramUser.builder().id(UUIDUtils.UUID())
-                        .avatarUrl(wxUserInfo.getAvatarUrl())
-                        .city(wxUserInfo.getCity())
-                        .country(wxUserInfo.getCountry())
                         .lastModifyTime(DateTimeUtils.currentTimeMillis())
                         .createTime(DateTimeUtils.currentTimeMillis())
-                        .gender(wxUserInfo.getGender())
-                        .nickName(wxUserInfo.getNickName())
                         .openId(wxUserInfo.getOpenId())
-                        .province(wxUserInfo.getProvince())
-                        .unionId(wxUserInfo.getUnionId())
                         .build().save();
-            } else {
-                mimiprogramUser.setAvatarUrl(wxUserInfo.getAvatarUrl());
-                mimiprogramUser.setCity(wxUserInfo.getCity());
-                mimiprogramUser.setCountry(wxUserInfo.getCountry());
-                mimiprogramUser.setLastModifyTime(DateTimeUtils.currentTimeMillis());
-                mimiprogramUser.setGender(wxUserInfo.getGender());
-                mimiprogramUser.setNickName(wxUserInfo.getNickName());
-                mimiprogramUser.setProvince(wxUserInfo.getProvince());
-                mimiprogramUser.setUnionId(wxUserInfo.getUnionId());
-                mimiprogramUser.update(Fields.create(MimiprogramUser.FIELDS.AVATAR_URL, MimiprogramUser.FIELDS.CITY, MimiprogramUser.FIELDS.COUNTRY,
-                        MimiprogramUser.FIELDS.LAST_MODIFY_TIME, MimiprogramUser.FIELDS.GENDER, MimiprogramUser.FIELDS.NICK_NAME, MimiprogramUser.FIELDS.PROVINCE,
-                        MimiprogramUser.FIELDS.UNION_ID));
             }
         } else {
             System.out.println("默认数据处理实现输出微信用户信息:" + JSONObject.toJSONString(wxUserInfo));
@@ -76,6 +58,32 @@ public class DefaultWxMimiProgramHandler implements IWxMimiProgramHandler {
             }
         } else {
             System.out.println("默认数据处理实现输出微信手机号信息:" + JSONObject.toJSONString(wxPhoneInfo));
+        }
+
+        return R.ok();
+    }
+
+    @Override
+    public R updateUserData(UserInfoDTO userInfoDTO) throws Exception {
+        boolean defaultHandlerByDatabase = WxMiniProgram.get().getConfig().dataHandlerDefaultByDatabases();
+        if (defaultHandlerByDatabase) {
+            MimiprogramUser mimiprogramUser = MimiprogramUser.builder().openId(userInfoDTO.getOpenId()).build().findFirst();
+            if (mimiprogramUser != null) {
+                mimiprogramUser.setAvatarUrl(userInfoDTO.getAvatarUrl());
+                mimiprogramUser.setCity(userInfoDTO.getCity());
+                mimiprogramUser.setCountry(userInfoDTO.getCountry());
+                mimiprogramUser.setLastModifyTime(DateTimeUtils.currentTimeMillis());
+                mimiprogramUser.setGender(userInfoDTO.getGender());
+                mimiprogramUser.setNickName(userInfoDTO.getNickName());
+                mimiprogramUser.setProvince(userInfoDTO.getProvince());
+                mimiprogramUser.update(Fields.create(MimiprogramUser.FIELDS.AVATAR_URL, MimiprogramUser.FIELDS.CITY, MimiprogramUser.FIELDS.COUNTRY,
+                        MimiprogramUser.FIELDS.LAST_MODIFY_TIME, MimiprogramUser.FIELDS.GENDER, MimiprogramUser.FIELDS.NICK_NAME, MimiprogramUser.FIELDS.PROVINCE));
+                return R.ok()
+                        .attr("token", mimiprogramUser.getOpenId());
+            }
+
+        } else {
+            System.out.println("默认数据处理实现输出微信用户信息:" + JSONObject.toJSONString(userInfoDTO));
         }
 
         return R.ok();

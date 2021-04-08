@@ -4,6 +4,7 @@ import com.dpstudio.dev.core.R;
 import com.dpstudio.dev.core.V;
 import com.dpstudio.module.wxminiprogram.dto.MobileDTO;
 import com.dpstudio.module.wxminiprogram.dto.UserDTO;
+import com.dpstudio.module.wxminiprogram.dto.UserInfoDTO;
 import com.dpstudio.module.wxminiprogram.service.IWxMimiProgramUserService;
 import net.ymate.platform.core.beans.annotation.Inject;
 import net.ymate.platform.validation.annotation.VModel;
@@ -65,6 +66,24 @@ public class WxMimiProgramUserController {
     public IView userInfo(@VModel
                           @ModelBind UserDTO userDTO) throws Exception {
         R result = iWxMimiProgramUserService.userInfo(userDTO);
+        return V.view(result);
+    }
+
+    /**
+     * 修改
+     *
+     * @return 用户信息
+     * @throws Exception
+     * @paramObj UserDTO
+     * @resp ret 错误码|int|Y|0
+     * @resp msg 错误描述|String|N|
+     * @resp token 用户小程序id|String|Y|xxxxxx
+     * @respbody 返回示例数据 例子:{"ret":0,"msg":"","token":"xxxxx"}
+     */
+    @RequestMapping(value = "update", method = Type.HttpMethod.POST)
+    public IView update(@VModel
+                          @ModelBind UserInfoDTO userInfoDTO) throws Exception {
+        R result = iWxMimiProgramUserService.update(userInfoDTO);
         return V.view(result);
     }
 
