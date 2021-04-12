@@ -1,6 +1,5 @@
 package com.dpstudio.dev.security.init;
 
-import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ClassUtil;
 import com.dpstudio.dev.security.ISecurity;
 import com.dpstudio.dev.security.ISecurityConfig;
