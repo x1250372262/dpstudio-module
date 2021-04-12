@@ -1,5 +1,7 @@
 package com.dpstudio.dev.security.init;
 
+import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.ClassUtil;
 import com.dpstudio.dev.security.ISecurity;
 import com.dpstudio.dev.security.ISecurityConfig;
 import com.dpstudio.dev.security.annotation.Group;
@@ -9,11 +11,9 @@ import com.dpstudio.dev.security.bean.GroupBean;
 import com.dpstudio.dev.security.bean.PermissionBean;
 import com.dpstudio.module.security.core.SecurityConstants;
 import com.dpstudio.module.security.core.SecurityPermission;
-import net.ymate.platform.commons.util.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -70,7 +70,7 @@ public class PermissionMeta {
     /**
      * 获取权限列表
      */
-    public static List<PermissionBean> getPermissions(String groupId,String clientName) {
+    public static List<PermissionBean> getPermissions(String groupId, String clientName) {
         if (StringUtils.isNotBlank(groupId)) {
             return PERMISSIONS_CACHES.get(ISecurity.CacheKey.PERMISSIONS_CACHE_KEY.name())
                     .stream()
@@ -85,14 +85,14 @@ public class PermissionMeta {
     /**
      * 根据code获取权限
      */
-    public static PermissionBean findByCode(List<PermissionBean> permissionBeans,String clientName, String code) {
+    public static PermissionBean findByCode(List<PermissionBean> permissionBeans, String clientName, String code) {
         if (permissionBeans == null) {
-            permissionBeans = getPermissions(null,clientName);
+            permissionBeans = getPermissions(null, clientName);
         }
         if (StringUtils.isBlank(code)) {
             return null;
         }
-        if(permissionBeans == null){
+        if (permissionBeans == null) {
             return null;
         }
         return permissionBeans.stream().filter(permissionBean -> code.equals(permissionBean.getCode())).findFirst().get();
@@ -119,13 +119,25 @@ public class PermissionMeta {
      */
     private static void create(ISecurityConfig securityConfig) {
         String packageName = securityConfig.packageName();
-        Reflections reflections;
-        if (StringUtils.isNotBlank(packageName)) {
-            reflections = new Reflections(packageName);
+        Set<Class<?>> classesList = new HashSet<>();
+        if (StringUtils.isBlank(packageName)) {
+            classesList = ClassUtil.scanPackageByAnnotation(packageName, Security.class);
         } else {
-            reflections = new Reflections();
+            if (!packageName.contains("|")) {
+                classesList = ClassUtil.scanPackageByAnnotation(packageName, Security.class);
+            } else {
+                String[] packageNameArray = packageName.split("\\|");
+                for (String packName : packageNameArray) {
+                    Set<Class<?>> packClassesList = ClassUtil.scanPackageByAnnotation(packName, Security.class);
+                    if (packClassesList != null && !packClassesList.isEmpty()) {
+                        classesList.addAll(packClassesList);
+                    }
+                }
+            }
         }
-        Set<Class<?>> classesList = reflections.getTypesAnnotatedWith(Security.class);
+        if (classesList == null) {
+            return;
+        }
         List<PermissionBean> permissionBeans = new ArrayList<>();
         List<GroupBean> groupBeans = new ArrayList<>();
         for (Class<?> classes : classesList) {
@@ -160,7 +172,7 @@ public class PermissionMeta {
                 SecurityPermission.GROUP_ID_SECURITY,
                 SecurityPermission.GROUP_NAME_SECURITY,
                 SecurityConstants.PERMISSION_CLIENT_NAME));
-        groupBeans.add(new GroupBean( SecurityPermission.GROUP_NAME_SECURITY,  SecurityPermission.GROUP_ID_SECURITY,SecurityConstants.PERMISSION_CLIENT_NAME));
+        groupBeans.add(new GroupBean(SecurityPermission.GROUP_NAME_SECURITY, SecurityPermission.GROUP_ID_SECURITY, SecurityConstants.PERMISSION_CLIENT_NAME));
         GROUP_CACHES.put(ISecurity.CacheKey.GROUP_CACHE_KEY.name(), groupBeans);
         PERMISSIONS_CACHES.put(ISecurity.CacheKey.PERMISSIONS_CACHE_KEY.name(), permissionBeans);
     }
