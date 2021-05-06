@@ -147,20 +147,25 @@ public class UnpackUtils {
             }
         }
         try {
-            if (StringUtils.isBlank(clientName) || !clientName.contains("|")) {
+            if (StringUtils.isBlank(clientName)) {
                 unpack(config,"", titleList.get(0));
-            }
-            String[] clientNameArray = clientName.split("\\|");
-            if (clientNameArray.length <= 0) {
-                unpack(config,"", titleList.get(0));
-            }
-            for (int i = 0; i < clientNameArray.length; i++) {
-                if (titleList.size() == clientNameArray.length) {
-                    unpack(config,clientNameArray[i], titleList.get(i));
-                } else {
-                    unpack(config,clientNameArray[i], titleList.get(0));
-                }
+            }else{
+                if(!clientName.contains("|")){
+                    unpack(config,clientName, titleList.get(0));
+                }else{
+                    String[] clientNameArray = clientName.split("\\|");
+                    if (clientNameArray.length <= 0) {
+                        unpack(config,"", titleList.get(0));
+                    }
+                    for (int i = 0; i < clientNameArray.length; i++) {
+                        if (titleList.size() == clientNameArray.length) {
+                            unpack(config,clientNameArray[i], titleList.get(i));
+                        } else {
+                            unpack(config,clientNameArray[i], titleList.get(0));
+                        }
 
+                    }
+                }
             }
         } catch (Exception e) {
             throw new RuntimeException("解压文件失败", e);
