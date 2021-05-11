@@ -7,6 +7,8 @@ import com.dpstudio.module.security.vo.detail.SecurityAdminDetailVO;
 import com.dpstudio.module.security.vo.list.SecurityAdminListVO;
 import net.ymate.platform.core.persistence.IResultSet;
 
+import java.util.Map;
+
 public interface ISecurityAdminService {
 
     /**

@@ -28,8 +28,11 @@ import net.ymate.platform.webmvc.annotation.ModelBind;
 import net.ymate.platform.webmvc.annotation.RequestMapping;
 import net.ymate.platform.webmvc.annotation.RequestParam;
 import net.ymate.platform.webmvc.base.Type;
+import net.ymate.platform.webmvc.context.WebContext;
 import net.ymate.platform.webmvc.util.WebResult;
 import net.ymate.platform.webmvc.view.IView;
+
+import java.util.Map;
 
 
 /**
@@ -63,7 +66,6 @@ public class SecurityAdminController {
             @VRequired(msg = "密码名不能为空")
             @RequestParam String password,
             @RequestParam(value = "client_name") String clientName) throws Exception {
-
         R result = iSecurityAdminService.login(userName, password, clientName);
         return V.view(result);
     }

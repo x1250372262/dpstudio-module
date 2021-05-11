@@ -9,7 +9,6 @@ import com.dpstudio.dev.security.bean.MenuBean;
 import com.dpstudio.dev.security.jwt.JWT;
 import com.dpstudio.dev.support.jwt.JwtBean;
 import com.dpstudio.dev.support.jwt.JwtHelper;
-import com.dpstudio.dev.support.spi.SpiLoader;
 import com.dpstudio.dev.support.spi.annotation.SpiInject;
 import com.dpstudio.dev.utils.BeanUtils;
 import com.dpstudio.module.security.SecurityCache;
@@ -43,10 +42,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 
 @Bean
@@ -125,7 +121,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
             iSecurityAdminHandler = new ISecurityAdminHandler.SecurityAdminHandler();
         }
         //处理登录之前的逻辑 返回成功往下走
-        R loginBeforeResult = iSecurityAdminHandler.loginBefore(userName, password);
+        R loginBeforeResult = iSecurityAdminHandler.loginBefore(userName, password,clientName);
         if (!Objects.equals(loginBeforeResult.code(), C.SUCCESS.getCode())) {
             return loginBeforeResult;
         }

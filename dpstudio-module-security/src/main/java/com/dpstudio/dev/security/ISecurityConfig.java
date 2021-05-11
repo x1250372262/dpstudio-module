@@ -41,6 +41,7 @@ public interface ISecurityConfig extends IInitialization<ISecurity> {
     String HEADER_CLIENT_NAME = "jwt_header_client_name";
     String PARAM_CLIENT_NAME = "jwt_param_client_name";
     String AUTO_RESPONSE = "jwt_auto_response";
+    String UNPACK_FILE_LOGIN = "unpack_file_login";
 
     /**
      * 模块是否已启用, 默认值: true
@@ -147,5 +148,11 @@ public interface ISecurityConfig extends IInitialization<ISecurity> {
      * @return 是否自动设置到response
      */
     boolean autoResponse();
+
+    /**
+     * 是否解压login页面
+     * @return
+     */
+    boolean unpackFileLogin();
 
 }

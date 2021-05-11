@@ -111,4 +111,10 @@ public @interface SecurityConf {
      * @return 是否自动设置到response
      */
     boolean autoResponse() default true;
+
+    /**
+     *
+     * @return 是否解压login页面
+     */
+    boolean unpackFileLogin() default true;
 }

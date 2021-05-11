@@ -93,13 +93,15 @@ public class UnpackUtils {
             try {
                 String outFilePrefix = "dpstudio" + File.separator + "security" + File.separator;
                 //输出loginView.html
-                String loginHtmlText = IoUtil.read(Objects.requireNonNull(Security.class.getResourceAsStream("/META-INF/dpstudio.templates/login_view.html")), StandardCharsets.UTF_8);
-                loginHtmlText = StrUtil.replace(loginHtmlText, "{{title}}", title);
-                loginHtmlText = StrUtil.replace(loginHtmlText, "{{clientName}}", clientName);
-                loginHtmlText = StrUtil.replace(loginHtmlText, "{{baseDir}}", StringUtils.defaultIfBlank(clientName, "admin"));
-                File outFile = new File(targetPath, outFilePrefix + "login_view.html");
-                FileWriter fileWriter = FileWriter.create(outFile, StandardCharsets.UTF_8);
-                fileWriter.write(loginHtmlText);
+                if(config.unpackFileLogin()){
+                    String loginHtmlText = IoUtil.read(Objects.requireNonNull(Security.class.getResourceAsStream("/META-INF/dpstudio.templates/login_view.html")), StandardCharsets.UTF_8);
+                    loginHtmlText = StrUtil.replace(loginHtmlText, "{{title}}", title);
+                    loginHtmlText = StrUtil.replace(loginHtmlText, "{{clientName}}", clientName);
+                    loginHtmlText = StrUtil.replace(loginHtmlText, "{{baseDir}}", StringUtils.defaultIfBlank(clientName, "admin"));
+                    File outFile = new File(targetPath, outFilePrefix + "login_view.html");
+                    FileWriter fileWriter = FileWriter.create(outFile, StandardCharsets.UTF_8);
+                    fileWriter.write(loginHtmlText);
+                }
                 //输出administrator/admin_log.html
                 replaceFile(targetPath,"administrator/admin_log.html", outFilePrefix + "administrator" + File.separator + "admin_log.html",clientName);
                 //输出administrator/admin_role.html

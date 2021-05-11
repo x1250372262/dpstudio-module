@@ -46,6 +46,7 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
     private String headerClientName;
     private String paramClientName;
     private boolean autoResponse = true;
+    private boolean unpackFileLogin = true;
 
 
     private boolean initialized;
@@ -88,6 +89,7 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
         headerClientName = configReader.getString(HEADER_CLIENT_NAME, confAnn != null ? confAnn.paramName() : "dpstudioJwtClientName");
         paramClientName = configReader.getString(PARAM_CLIENT_NAME, confAnn != null ? confAnn.paramName() : "dpstudioJwtClientName");
         autoResponse = configReader.getBoolean(AUTO_RESPONSE, confAnn == null || confAnn.autoResponse());
+        unpackFileLogin = configReader.getBoolean(UNPACK_FILE_LOGIN, confAnn == null || confAnn.unpackFileLogin());
     }
 
     @Override
@@ -185,6 +187,11 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
         return autoResponse;
     }
 
+    @Override
+    public boolean unpackFileLogin() {
+        return unpackFileLogin;
+    }
+
     public void setEnabled(boolean enabled) {
         if (!initialized) {
             this.enabled = enabled;
@@ -269,6 +276,12 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
         }
     }
 
+    public void setUnpackFileLogin(boolean unpackFileLogin) {
+        if (!initialized) {
+            this.unpackFileLogin = unpackFileLogin;
+        }
+    }
+
     public static final class Builder {
 
         private final DefaultSecurityConfig config = new DefaultSecurityConfig();
@@ -348,6 +361,11 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
 
         public Builder autoResponse(boolean autoResponse) {
             config.setAutoResponse(autoResponse);
+            return this;
+        }
+
+        public Builder unpackFileLogin(boolean unpackFileLogin) {
+            config.setUnpackFileLogin(unpackFileLogin);
             return this;
         }
 

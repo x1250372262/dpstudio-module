@@ -118,6 +118,11 @@ public final class DefaultSecurityConfigurable extends DefaultModuleConfigurable
             return this;
         }
 
+        public Builder unpackFileLogin(boolean unpackFileLogin) {
+            configurable.addConfig(ISecurityConfig.UNPACK_FILE_LOGIN, String.valueOf(unpackFileLogin));
+            return this;
+        }
+
         public IModuleConfigurer build() {
             return configurable.toModuleConfigurer();
         }

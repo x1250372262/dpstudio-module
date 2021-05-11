@@ -5,6 +5,8 @@ import com.dpstudio.dev.support.spi.annotation.SpiBean;
 import com.dpstudio.module.security.dto.SecurityAdminDTO;
 import com.dpstudio.module.security.model.SecurityAdmin;
 
+import java.util.Map;
+
 /**
  * @Author: mengxiang.
  * @create: 2021-02-09 20:58
@@ -19,11 +21,12 @@ public interface ISecurityAdminHandler {
      * @return
      * @throws Exception
      */
-    R loginBefore(String userName, String password) throws Exception;
+    R loginBefore(String userName, String password, String clientName) throws Exception;
 
     /**
      * 登录之后
      * @param securityAdmin
+     * @param params
      * @return
      * @throws Exception
      */
@@ -51,7 +54,7 @@ public interface ISecurityAdminHandler {
      class SecurityAdminHandler implements ISecurityAdminHandler{
 
          @Override
-         public R loginBefore(String userName, String password) throws Exception {
+         public R loginBefore(String userName, String password, String clientName) throws Exception {
              return R.ok();
          }
 
