@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.mx.dev.security.jwt.JWT.JWT_CONFIG;
 
@@ -44,45 +45,47 @@ public class JwtCheckInterceptor implements IInterceptor {
         // 判断当前拦截器执行方向
         if (Direction.BEFORE.equals(context.getDirection())) {
 
-            HttpServletRequest request = WebContext.getRequest();
-            String token = request.getHeader(JWT_CONFIG.getHeaderName());
-
-            if (StringUtils.isBlank(token) && StringUtils.isBlank(JWT_CONFIG.getParamName())) {
-                token = request.getParameter(JWT_CONFIG.getParamName());
-            }
-
-            String clientName = request.getHeader(Security.get().getConfig().headerClientName());
-            String client = request.getHeader("client");
-
-            if(StringUtils.isNotBlank(client) && StringUtils.isNotBlank(client) && !client.equals(clientName)){
-                return timeOut();
-            }
-
-            if (StringUtils.isBlank(clientName) && StringUtils.isBlank(Security.get().getConfig().paramClientName())) {
-                clientName = request.getParameter(Security.get().getConfig().paramClientName());
-            }
-
-            if (StringUtils.isBlank(token)) {
-                return timeOut();
-            }
-            //先看看缓存有没有
-            JwtBean jwtBean = SecurityCache.JwtCache.getPara(token,clientName);
-            if (jwtBean == null || StringUtils.isBlank(jwtBean.getToken()) || (jwtBean.getVerifyTime() > 0 && jwtBean.getVerifyTime() < DateTimeUtils.currentTimeMillis())) {
-                return timeOut();
-            }
-            if (!jwtBean.getToken().equals(token)) {
-                return timeOut();
-            }
-            R r = JwtHelper.parse(token);
-            if (r == null || !Objects.equals(r.code(), C.SUCCESS.getCode())) {
-                return timeOut();
-            }
-            String uid = r.attr("uid");
-            if (StringUtils.isBlank(uid)) {
-                return timeOut();
-            }
-
+            ReentrantLock lock = new ReentrantLock();
             try {
+                lock.lock();
+                HttpServletRequest request = WebContext.getRequest();
+                String token = request.getHeader(JWT_CONFIG.getHeaderName());
+
+                if (StringUtils.isBlank(token) && StringUtils.isBlank(JWT_CONFIG.getParamName())) {
+                    token = request.getParameter(JWT_CONFIG.getParamName());
+                }
+
+                String clientName = request.getHeader(Security.get().getConfig().headerClientName());
+                String client = request.getHeader("client");
+
+                if (StringUtils.isNotBlank(client) && StringUtils.isNotBlank(client) && !client.equals(clientName)) {
+                    return timeOut();
+                }
+
+                if (StringUtils.isBlank(clientName) && StringUtils.isBlank(Security.get().getConfig().paramClientName())) {
+                    clientName = request.getParameter(Security.get().getConfig().paramClientName());
+                }
+
+                if (StringUtils.isBlank(token)) {
+                    return timeOut();
+                }
+                //先看看缓存有没有
+                JwtBean jwtBean = SecurityCache.JwtCache.getPara(token, clientName);
+                if (jwtBean == null || StringUtils.isBlank(jwtBean.getToken()) || (jwtBean.getVerifyTime() > 0 && jwtBean.getVerifyTime() < DateTimeUtils.currentTimeMillis())) {
+                    return timeOut();
+                }
+                if (!jwtBean.getToken().equals(token)) {
+                    return timeOut();
+                }
+                R r = JwtHelper.parse(token);
+                if (r == null || !Objects.equals(r.code(), C.SUCCESS.getCode())) {
+                    return timeOut();
+                }
+                String uid = r.attr("uid");
+                if (StringUtils.isBlank(uid)) {
+                    return timeOut();
+                }
+
                 SecurityAdmin securityAdmin = YMP.get().getBeanFactory().getBean(ISecurityAdminDao.class).findById(uid, null);
                 if (securityAdmin == null) {
                     return timeOut();
@@ -92,22 +95,23 @@ public class JwtCheckInterceptor implements IInterceptor {
                     SecurityCache.AdminCache.setPara(securityAdmin);
                 }
                 JWT.Store.setPara(token, r.attrs());
-//                SecurityCache.AdminCache.setPara(securityAdmin);
+                //重新刷新时间
+                jwtBean.setVerifyTime(DateTimeUtils.currentTimeMillis() + JWT_CONFIG.verifyTime());
+                //放到缓存
+                SecurityCache.JwtCache.removePara(token, clientName);
+                SecurityCache.JwtCache.removeParaByAdminId(uid, clientName);
+                SecurityCache.JwtCache.setPara(jwtBean, clientName);
+                SecurityCache.JwtCache.setParaByAdminId(uid, jwtBean, clientName);
+                if (JWT_CONFIG.autoResponse()) {
+                    WebContext.getResponse().setHeader(JWT_CONFIG.getHeaderName(), JsonWrapper.toJsonString(jwtBean, false, true));
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 return timeOut();
+            } finally {
+                lock.unlock();
             }
-            //重新刷新时间
-            jwtBean.setVerifyTime(DateTimeUtils.currentTimeMillis() + JWT_CONFIG.verifyTime());
-            //放到缓存
-            SecurityCache.JwtCache.removePara(token,clientName);
-            SecurityCache.JwtCache.removeParaByAdminId(uid,clientName);
-            SecurityCache.JwtCache.setPara(jwtBean,clientName);
-            SecurityCache.JwtCache.setParaByAdminId(uid, jwtBean,clientName);
-            if (JWT_CONFIG.autoResponse()) {
-                WebContext.getResponse().setHeader(JWT_CONFIG.getHeaderName(), JsonWrapper.toJsonString(jwtBean, false, true));
-            }
-//            }
+
         }
         return null;
     }
