@@ -44,10 +44,7 @@ public class JwtCheckInterceptor implements IInterceptor {
 
         // 判断当前拦截器执行方向
         if (Direction.BEFORE.equals(context.getDirection())) {
-
-            ReentrantLock lock = new ReentrantLock();
             try {
-                lock.lock();
                 HttpServletRequest request = WebContext.getRequest();
                 String token = request.getHeader(JWT_CONFIG.getHeaderName());
 
@@ -98,8 +95,8 @@ public class JwtCheckInterceptor implements IInterceptor {
                 //重新刷新时间
                 jwtBean.setVerifyTime(DateTimeUtils.currentTimeMillis() + JWT_CONFIG.verifyTime());
                 //放到缓存
-                SecurityCache.JwtCache.removePara(token, clientName);
-                SecurityCache.JwtCache.removeParaByAdminId(uid, clientName);
+//                SecurityCache.JwtCache.removePara(token, clientName);
+//                SecurityCache.JwtCache.removeParaByAdminId(uid, clientName);
                 SecurityCache.JwtCache.setPara(jwtBean, clientName);
                 SecurityCache.JwtCache.setParaByAdminId(uid, jwtBean, clientName);
                 if (JWT_CONFIG.autoResponse()) {
@@ -108,8 +105,6 @@ public class JwtCheckInterceptor implements IInterceptor {
             } catch (Exception e) {
                 e.printStackTrace();
                 return timeOut();
-            } finally {
-                lock.unlock();
             }
 
         }

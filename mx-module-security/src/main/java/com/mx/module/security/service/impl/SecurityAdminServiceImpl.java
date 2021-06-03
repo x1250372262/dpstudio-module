@@ -125,12 +125,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
         if (!Objects.equals(loginBeforeResult.code(), C.SUCCESS.getCode())) {
             return loginBeforeResult;
         }
-        SecurityAdmin securityAdmin = iSecurityAdminDao.findByUserNameAndClientName(userName, clientName, SecurityAdmin.FIELDS.ID,
-                SecurityAdmin.FIELDS.GENDER, SecurityAdmin.FIELDS.PHOTO_URI, SecurityAdmin.FIELDS.PASSWORD,
-                SecurityAdmin.FIELDS.USER_NAME, SecurityAdmin.FIELDS.SALT, SecurityAdmin.FIELDS.CLIENT_NAME,
-                SecurityAdmin.FIELDS.REAL_NAME, SecurityAdmin.FIELDS.LOGIN_ERROR_COUNT,
-                SecurityAdmin.FIELDS.FOUNDER, SecurityAdmin.FIELDS.DISABLE_STATUS,
-                SecurityAdmin.FIELDS.LOGIN_LOCK_END_TIME, SecurityAdmin.FIELDS.SESSION_TOKEN);
+        SecurityAdmin securityAdmin = loginBeforeResult.attr("securityAdmin");
         if (securityAdmin == null) {
             return R.create(Code.SECURITY_ADMIN_USERNAME_NOT_EXIST.getCode()).msg(Code.SECURITY_ADMIN_USERNAME_NOT_EXIST.getMsg());
         }
