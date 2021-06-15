@@ -1,6 +1,6 @@
 package com.mx.module.security.dao.impl;
 
-import com.mx.dev.dto.PageDTO;
+import com.mx.dev.bean.PageBean;
 import com.mx.module.security.dao.ISecurityAdminRoleDao;
 import com.mx.module.security.model.SecurityAdmin;
 import com.mx.module.security.model.SecurityAdminRole;
@@ -18,7 +18,7 @@ import net.ymate.platform.persistence.jdbc.query.*;
 public class SecurityAdminRoleDaoImpl implements ISecurityAdminRoleDao {
 
     @Override
-    public IResultSet<SecurityAdminRoleListVO> findAll(String adminId, PageDTO pageDTO) throws Exception {
+    public IResultSet<SecurityAdminRoleListVO> findAll(String adminId, PageBean pageBean) throws Exception {
 
         Cond cond = Cond.create().eqWrap(Fields.field("sa", SecurityAdmin.FIELDS.ID)).param(adminId);
 
@@ -40,17 +40,17 @@ public class SecurityAdminRoleDaoImpl implements ISecurityAdminRoleDao {
                     .field("sr", SecurityRole.FIELDS.NAME, "role_name")
                     .where(Where.create(cond).orderByDesc("sa", SecurityAdmin.FIELDS.CREATE_TIME));
             return session.find(SQL.create(select),
-                    new BeanResultSetHandler<>(SecurityAdminRoleListVO.class), pageDTO.toPage());
+                    new BeanResultSetHandler<>(SecurityAdminRoleListVO.class), pageBean.toPage());
         });
     }
 
     @Override
-    public IResultSet<SecurityAdminRole> findAll(String adminId,String...fields) throws Exception {
+    public IResultSet<SecurityAdminRole> findAll(String adminId, String... fields) throws Exception {
         return SecurityAdminRole.builder().adminId(adminId).build().find(Fields.create(fields));
     }
 
     @Override
-    public IResultSet<SecurityAdminRoleListVO> findByAdminIds(Params adminIds, PageDTO pageDTO) throws Exception {
+    public IResultSet<SecurityAdminRoleListVO> findByAdminIds(Params adminIds, PageBean pageBean) throws Exception {
 
         Cond cond = Cond.create().eqOne();
         if (adminIds.params().size() > 0) {
@@ -75,7 +75,7 @@ public class SecurityAdminRoleDaoImpl implements ISecurityAdminRoleDao {
                     .field("sr", SecurityRole.FIELDS.NAME, "role_name")
                     .where(Where.create(cond).orderByDesc("sa", SecurityAdmin.FIELDS.CREATE_TIME));
             return session.find(SQL.create(select),
-                    new BeanResultSetHandler<>(SecurityAdminRoleListVO.class), pageDTO.toPage());
+                    new BeanResultSetHandler<>(SecurityAdminRoleListVO.class), pageBean.toPage());
         });
     }
 

@@ -1,6 +1,6 @@
 package com.mx.module.security.dao.impl;
 
-import com.mx.dev.dto.PageDTO;
+import com.mx.dev.bean.PageBean;
 import com.mx.module.security.core.SecurityConstants;
 import com.mx.module.security.dao.ISecurityAdminDao;
 import com.mx.module.security.model.SecurityAdmin;
@@ -53,10 +53,10 @@ public class SecurityAdminDaoImpl implements ISecurityAdminDao {
     }
 
     @Override
-    public IResultSet<SecurityAdminListVO> list(String clientName,String userName, String realName, Integer disableStatus, PageDTO pageDTO) throws Exception {
+    public IResultSet<SecurityAdminListVO> list(String clientName, String userName, String realName, Integer disableStatus, PageBean pageBean) throws Exception {
         Cond cond = Cond.create().eqWrap(Fields.field("sa", SecurityAdmin.FIELDS.FOUNDER)).param(SecurityConstants.BOOL_FALSE)
                 .and().eqWrap(Fields.field("sa", SecurityAdmin.FIELDS.DELETE_STATUS)).param(SecurityConstants.BOOL_FALSE)
-                .and().eqWrap(Fields.field("sa",SecurityAdmin.FIELDS.CLIENT_NAME)).param(clientName)
+                .and().eqWrap(Fields.field("sa", SecurityAdmin.FIELDS.CLIENT_NAME)).param(clientName)
                 .exprNotEmpty(userName, c -> c.and().likeWrap(Fields.field("sa", SecurityAdmin.FIELDS.USER_NAME)).param("%" + userName + "%"))
                 .exprNotEmpty(realName, c -> c.and().likeWrap(Fields.field("sa", SecurityAdmin.FIELDS.REAL_NAME)).param("%" + realName + "%"))
                 .exprNotEmpty(disableStatus, c -> c.and().eqWrap(Fields.field("sa", SecurityAdmin.FIELDS.DISABLE_STATUS)).param(disableStatus));
@@ -73,7 +73,7 @@ public class SecurityAdminDaoImpl implements ISecurityAdminDao {
                     .field("sa", SecurityAdmin.FIELDS.PHOTO_URI)
                     .where(Where.create(cond).orderByDesc("sa", SecurityAdmin.FIELDS.CREATE_TIME));
             return session.find(SQL.create(select),
-                    new BeanResultSetHandler<>(SecurityAdminListVO.class), pageDTO.toPage());
+                    new BeanResultSetHandler<>(SecurityAdminListVO.class), pageBean.toPage());
         });
 
     }

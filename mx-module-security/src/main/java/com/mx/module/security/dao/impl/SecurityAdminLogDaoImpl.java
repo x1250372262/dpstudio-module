@@ -1,6 +1,6 @@
 package com.mx.module.security.dao.impl;
 
-import com.mx.dev.dto.PageDTO;
+import com.mx.dev.bean.PageBean;
 import com.mx.module.security.dao.ISecurityAdminLogDao;
 import com.mx.module.security.model.SecurityAdminLog;
 import net.ymate.platform.core.beans.annotation.Bean;
@@ -14,14 +14,14 @@ public class SecurityAdminLogDaoImpl implements ISecurityAdminLogDao {
 
 
     @Override
-    public IResultSet<SecurityAdminLog> findAll(String adminId, String clientName, String content, Long startTime, Long endTime, PageDTO pageDTO) throws Exception {
+    public IResultSet<SecurityAdminLog> findAll(String adminId, String clientName, String content, Long startTime, Long endTime, PageBean pageBean) throws Exception {
 
         Cond cond = Cond.create().eqWrap(SecurityAdminLog.FIELDS.CLIENT_NAME).param(clientName)
                 .exprNotEmpty(adminId, c -> c.and().eqWrap(SecurityAdminLog.FIELDS.ADMIN_ID).param(adminId))
                 .exprNotEmpty(content, c -> c.and().likeWrap(SecurityAdminLog.FIELDS.CONTENT).param("%" + content + "%"))
                 .exprNotEmpty(startTime, c -> c.and().gtEqWrap(SecurityAdminLog.FIELDS.CREATE_TIME).param(startTime))
                 .exprNotEmpty(endTime, c -> c.and().ltEqWrap(SecurityAdminLog.FIELDS.CREATE_TIME).param(endTime));
-        return SecurityAdminLog.builder().build().find(Where.create(cond).orderByDesc(SecurityAdminLog.FIELDS.CREATE_TIME), pageDTO.toPage());
+        return SecurityAdminLog.builder().build().find(Where.create(cond).orderByDesc(SecurityAdminLog.FIELDS.CREATE_TIME), pageBean.toPage());
     }
 
     @Override

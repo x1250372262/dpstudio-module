@@ -1,7 +1,7 @@
 package com.mx.module.security.service.impl;
 
+import com.mx.dev.bean.PageBean;
 import com.mx.dev.core.R;
-import com.mx.dev.dto.PageDTO;
 import com.mx.dev.utils.BeanUtils;
 import com.mx.module.security.SecurityCache;
 import com.mx.module.security.core.Code;
@@ -23,8 +23,8 @@ public class SecurityAdminRoleServiceImpl implements ISecurityAdminRoleService {
     private ISecurityAdminRoleDao iSecurityAdminRoleDao;
 
     @Override
-    public IResultSet<SecurityAdminRoleListVO> list(String adminId, PageDTO pageDTO) throws Exception {
-        return iSecurityAdminRoleDao.findAll(adminId, pageDTO);
+    public IResultSet<SecurityAdminRoleListVO> list(String adminId, PageBean pageBean) throws Exception {
+        return iSecurityAdminRoleDao.findAll(adminId, pageBean);
     }
 
     @Override

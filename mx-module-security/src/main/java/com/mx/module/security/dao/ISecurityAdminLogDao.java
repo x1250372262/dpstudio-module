@@ -1,6 +1,6 @@
 package com.mx.module.security.dao;
 
-import com.mx.dev.dto.PageDTO;
+import com.mx.dev.bean.PageBean;
 import com.mx.module.security.model.SecurityAdminLog;
 import net.ymate.platform.core.persistence.IResultSet;
 
@@ -15,11 +15,11 @@ public interface ISecurityAdminLogDao {
      * @param content
      * @param startTime
      * @param endTime
-     * @param pageDTO
+     * @param pageBean
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityAdminLog> findAll(String adminId, String clientName, String content, Long startTime, Long endTime, PageDTO pageDTO) throws Exception;
+    IResultSet<SecurityAdminLog> findAll(String adminId, String clientName, String content, Long startTime, Long endTime, PageBean pageBean) throws Exception;
 
     /**
      * 添加日志

@@ -54,7 +54,7 @@ public class SecurityAdminLogController {
                       @RequestParam(value = "start_time") Long startTime,
                       @RequestParam(value = "end_time") Long endTime,
                       @ModelBind PageDTO pageDTO) throws Exception {
-        IResultSet<SecurityAdminLogListVO> adminLogListResultSet = iAdminLogService.list(adminId, content, startTime, endTime, pageDTO);
+        IResultSet<SecurityAdminLogListVO> adminLogListResultSet = iAdminLogService.list(adminId, content, startTime, endTime, pageDTO.toBean());
         return new L<SecurityAdminLogListVO>().listView(adminLogListResultSet, pageDTO.getPage());
     }
 

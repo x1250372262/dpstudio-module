@@ -51,7 +51,7 @@ public class SecurityAdminRoleController {
     public IView list(@VRequired(msg = "adminId不能为空")
                       @RequestParam(value = SecurityAdminRole.FIELDS.ADMIN_ID) String adminId,
                       @ModelBind PageDTO pageDTO) throws Exception {
-        IResultSet<SecurityAdminRoleListVO> securityAdminRoleListResultSet = iSecurityAdminRoleService.list(adminId, pageDTO);
+        IResultSet<SecurityAdminRoleListVO> securityAdminRoleListResultSet = iSecurityAdminRoleService.list(adminId, pageDTO.toBean());
         return new L<SecurityAdminRoleListVO>().listView(securityAdminRoleListResultSet, pageDTO.getPage());
     }
 

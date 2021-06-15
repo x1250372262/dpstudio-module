@@ -1,6 +1,6 @@
 package com.mx.module.security.dao.impl;
 
-import com.mx.dev.dto.PageDTO;
+import com.mx.dev.bean.PageBean;
 import com.mx.module.security.dao.ISecurityRoleDao;
 import com.mx.module.security.model.SecurityRole;
 import net.ymate.platform.core.beans.annotation.Bean;
@@ -41,14 +41,14 @@ public class SecurityRoleDaoImpl implements ISecurityRoleDao {
 
     @Override
     public int[] delete(String[] ids) throws Exception {
-        return JDBC.get().openSession(session -> session.delete(SecurityRole.class,ids));
+        return JDBC.get().openSession(session -> session.delete(SecurityRole.class, ids));
     }
 
     @Override
-    public IResultSet<SecurityRole> findAll(String name,String clientName, PageDTO pageDTO) throws Exception {
+    public IResultSet<SecurityRole> findAll(String name, String clientName, PageBean pageBean) throws Exception {
 
         Cond cond = Cond.create().eqWrap(SecurityRole.FIELDS.CLIENT_NAME).param(clientName)
                 .exprNotEmpty(name, c -> c.and().likeWrap(SecurityRole.FIELDS.NAME).param("%" + name + "%"));
-        return SecurityRole.builder().build().find(Where.create(cond), pageDTO.toPage());
+        return SecurityRole.builder().build().find(Where.create(cond), pageBean.toPage());
     }
 }

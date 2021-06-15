@@ -47,6 +47,7 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
     private String paramClientName;
     private boolean autoResponse = true;
     private boolean unpackFileLogin = true;
+    private boolean unpackSecurityMenu = true;
 
 
     private boolean initialized;
@@ -90,6 +91,7 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
         paramClientName = configReader.getString(PARAM_CLIENT_NAME, confAnn != null ? confAnn.paramName() : "mxJwtClientName");
         autoResponse = configReader.getBoolean(AUTO_RESPONSE, confAnn == null || confAnn.autoResponse());
         unpackFileLogin = configReader.getBoolean(UNPACK_FILE_LOGIN, confAnn == null || confAnn.unpackFileLogin());
+        unpackSecurityMenu = configReader.getBoolean(UNPACK_SECURITY_MENU, confAnn == null || confAnn.unpackSecurityMenu());
     }
 
     @Override
@@ -192,6 +194,11 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
         return unpackFileLogin;
     }
 
+    @Override
+    public boolean unpackSecurityMenu() {
+        return unpackSecurityMenu;
+    }
+
     public void setEnabled(boolean enabled) {
         if (!initialized) {
             this.enabled = enabled;
@@ -281,6 +288,11 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
             this.unpackFileLogin = unpackFileLogin;
         }
     }
+    public void setUnpackSecurityMenu(boolean unpackSecurityMenu) {
+        if (!initialized) {
+            this.unpackSecurityMenu = unpackSecurityMenu;
+        }
+    }
 
     public static final class Builder {
 
@@ -366,6 +378,10 @@ public final class DefaultSecurityConfig implements ISecurityConfig {
 
         public Builder unpackFileLogin(boolean unpackFileLogin) {
             config.setUnpackFileLogin(unpackFileLogin);
+            return this;
+        }
+        public Builder unpackSecurityMenu(boolean unpackSecurityMenu) {
+            config.setUnpackSecurityMenu(unpackSecurityMenu);
             return this;
         }
 

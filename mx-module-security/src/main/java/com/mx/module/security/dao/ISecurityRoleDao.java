@@ -1,6 +1,6 @@
 package com.mx.module.security.dao;
 
-import com.mx.dev.dto.PageDTO;
+import com.mx.dev.bean.PageBean;
 import com.mx.module.security.model.SecurityRole;
 import net.ymate.platform.core.persistence.IResultSet;
 
@@ -69,10 +69,10 @@ public interface ISecurityRoleDao {
      *
      * @param name
      * @param clientName
-     * @param pageDTO
+     * @param pageBean
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityRole> findAll(String name,String clientName, PageDTO pageDTO) throws Exception;
+    IResultSet<SecurityRole> findAll(String name,String clientName, PageBean pageBean) throws Exception;
 
 }

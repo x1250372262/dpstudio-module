@@ -4,6 +4,7 @@ import com.mx.dev.security.ISecurityConfig;
 import com.mx.dev.security.Security;
 import com.mx.dev.security.bean.MenuBean;
 import com.mx.dev.security.utils.Objects;
+import com.mx.dev.utils.ListUtils;
 import net.ymate.platform.commons.util.RuntimeUtils;
 import net.ymate.platform.configuration.impl.XMLConfigFileParser;
 import net.ymate.platform.core.configuration.IConfigFileParser;
@@ -62,7 +63,10 @@ public class MenuMeta {
         LOG.info("菜单收集成功");
     }
 
-    private static List<MenuBean> securityMenu(String clientName) throws Exception {
+    private static List<MenuBean> securityMenu(ISecurityConfig securityConfig,String clientName) throws Exception {
+        if(!securityConfig.unpackSecurityMenu()){
+            return null;
+        }
         List<MenuBean> menuList = new ArrayList<>();
         InputStream inputStream = Security.class.getResourceAsStream("/META-INF/menu/security.xml");
         if (inputStream == null) {
@@ -121,8 +125,8 @@ public class MenuMeta {
                 });
             });
             String clientName = file.getName().substring(0, file.getName().lastIndexOf("."));
-            List<MenuBean> securityMenuList = securityMenu(clientName);
-            if (!securityMenuList.isEmpty()) {
+            List<MenuBean> securityMenuList = securityMenu(securityConfig,clientName);
+            if (ListUtils.isNotEmpty(securityMenuList)) {
                 menuList.addAll(securityMenuList);
             }
             menuMap.put(clientName, menuList);
@@ -154,8 +158,8 @@ public class MenuMeta {
                 menuList.add(menuBean);
             });
         });
-        List<MenuBean> securityMenuList = securityMenu(clientName);
-        if (!securityMenuList.isEmpty()) {
+        List<MenuBean> securityMenuList = securityMenu(securityConfig,clientName);
+        if (ListUtils.isNotEmpty(securityMenuList)) {
             menuList.addAll(securityMenuList);
         }
         return menuList;

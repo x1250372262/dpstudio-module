@@ -1,7 +1,7 @@
 package com.mx.module.security.service.impl;
 
+import com.mx.dev.bean.PageBean;
 import com.mx.dev.core.R;
-import com.mx.dev.dto.PageDTO;
 import com.mx.dev.utils.ResultSetUtils;
 import com.mx.module.security.SecurityCache;
 import com.mx.module.security.core.SecurityConstants;
@@ -28,12 +28,12 @@ public class SecurityAdminLogServiceImpl implements ISecurityAdminLogService {
     private ISecurityAdminLogDao iSecurityAdminLogDao;
 
     @Override
-    public IResultSet<SecurityAdminLogListVO> list(String adminId, String content, Long startTime, Long endTime, PageDTO pageDTO) throws Exception {
+    public IResultSet<SecurityAdminLogListVO> list(String adminId, String content, Long startTime, Long endTime, PageBean pageBean) throws Exception {
         SecurityAdmin loginAdmin = SecurityCache.AdminCache.getPara(SecurityCache.userId());
         if (loginAdmin == null) {
-           return new DefaultResultSet<>(new ArrayList<>());
+            return new DefaultResultSet<>(new ArrayList<>());
         }
-        IResultSet<SecurityAdminLog> adminLogResultSet = iSecurityAdminLogDao.findAll(adminId,loginAdmin.getClientName(), content, startTime, endTime, pageDTO);
+        IResultSet<SecurityAdminLog> adminLogResultSet = iSecurityAdminLogDao.findAll(adminId, loginAdmin.getClientName(), content, startTime, endTime, pageBean);
         return ResultSetUtils.copy(adminLogResultSet, SecurityAdminLogListVO::new);
     }
 
@@ -44,7 +44,7 @@ public class SecurityAdminLogServiceImpl implements ISecurityAdminLogService {
     }
 
     @Override
-    public R create(String adminId,String clientName, String userName) throws Exception {
+    public R create(String adminId, String clientName, String userName) throws Exception {
         SecurityAdminLog securityAdminLog = SecurityAdminLog.builder()
                 .id(UUIDUtils.UUID())
                 .clientName(clientName)

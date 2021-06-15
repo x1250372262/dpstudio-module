@@ -1,7 +1,7 @@
 package com.mx.module.security.service;
 
+import com.mx.dev.bean.PageBean;
 import com.mx.dev.core.R;
-import com.mx.dev.dto.PageDTO;
 import com.mx.module.security.dto.SecurityRoleDTO;
 import com.mx.module.security.vo.detail.SecurityRoleDetailVO;
 import com.mx.module.security.vo.list.SecurityRoleListVO;
@@ -16,11 +16,11 @@ public interface ISecurityRoleService {
      * 角色列表
      *
      * @param name
-     * @param pageDTO
+     * @param pageBean
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityRoleListVO> list(String name, PageDTO pageDTO) throws Exception;
+    IResultSet<SecurityRoleListVO> list(String name, PageBean pageBean) throws Exception;
 
     /**
      * 角色下拉选

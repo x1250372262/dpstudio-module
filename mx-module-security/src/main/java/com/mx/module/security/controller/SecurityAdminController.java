@@ -145,7 +145,7 @@ public class SecurityAdminController {
                       @RequestParam(value = SecurityAdmin.FIELDS.REAL_NAME) String realName,
                       @RequestParam(value = SecurityAdmin.FIELDS.DISABLE_STATUS) Integer disableStatus,
                       @ModelBind PageDTO pageDTO) throws Exception {
-        IResultSet<SecurityAdminListVO> securityAdminListResultSet = iSecurityAdminService.list(userName, realName, disableStatus, pageDTO);
+        IResultSet<SecurityAdminListVO> securityAdminListResultSet = iSecurityAdminService.list(userName, realName, disableStatus, pageDTO.toBean());
         return new L<SecurityAdminListVO>().listView(securityAdminListResultSet, pageDTO.getPage());
     }
 

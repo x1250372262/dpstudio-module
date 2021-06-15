@@ -42,6 +42,7 @@ public interface ISecurityConfig extends IInitialization<ISecurity> {
     String PARAM_CLIENT_NAME = "jwt_param_client_name";
     String AUTO_RESPONSE = "jwt_auto_response";
     String UNPACK_FILE_LOGIN = "unpack_file_login";
+    String UNPACK_SECURITY_MENU = "unpack_security_menu";
 
     /**
      * 模块是否已启用, 默认值: true
@@ -154,5 +155,11 @@ public interface ISecurityConfig extends IInitialization<ISecurity> {
      * @return
      */
     boolean unpackFileLogin();
+
+    /**
+     * 是否解压安全模块菜单
+     * @return
+     */
+    boolean unpackSecurityMenu();
 
 }

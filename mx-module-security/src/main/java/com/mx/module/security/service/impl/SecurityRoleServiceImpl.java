@@ -1,9 +1,9 @@
 package com.mx.module.security.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.mx.dev.bean.PageBean;
 import com.mx.dev.code.C;
 import com.mx.dev.core.R;
-import com.mx.dev.dto.PageDTO;
 import com.mx.dev.security.Security;
 import com.mx.dev.security.bean.PermissionBean;
 import com.mx.dev.utils.BeanUtils;
@@ -39,12 +39,12 @@ public class SecurityRoleServiceImpl implements ISecurityRoleService {
     private ISecurityRolePermissionDao iSecurityRolePermissionDao;
 
     @Override
-    public IResultSet<SecurityRoleListVO> list(String name, PageDTO pageDTO) throws Exception {
+    public IResultSet<SecurityRoleListVO> list(String name, PageBean pageBean) throws Exception {
         SecurityAdmin loginAdmin = SecurityCache.AdminCache.getPara(SecurityCache.userId());
         if (loginAdmin == null) {
             return new DefaultResultSet<>(new ArrayList<>());
         }
-        IResultSet<SecurityRole> securityRoleResultSet = iSecurityRoleDao.findAll(name, loginAdmin.getClientName(), pageDTO);
+        IResultSet<SecurityRole> securityRoleResultSet = iSecurityRoleDao.findAll(name, loginAdmin.getClientName(), pageBean);
         return ResultSetUtils.copy(securityRoleResultSet, SecurityRoleListVO::new);
     }
 
@@ -54,7 +54,7 @@ public class SecurityRoleServiceImpl implements ISecurityRoleService {
         if (loginAdmin == null) {
             return new ArrayList<>();
         }
-        IResultSet<SecurityRole> securityRoleResultSet = iSecurityRoleDao.findAll(null, loginAdmin.getClientName(), PageDTO.get());
+        IResultSet<SecurityRole> securityRoleResultSet = iSecurityRoleDao.findAll(null, loginAdmin.getClientName(), PageBean.noPage());
         return BeanUtils.copyList(securityRoleResultSet.getResultData(), SecurityRoleSelectVO::new);
     }
 

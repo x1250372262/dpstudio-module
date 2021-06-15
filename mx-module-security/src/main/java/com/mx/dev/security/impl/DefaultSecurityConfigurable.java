@@ -122,6 +122,10 @@ public final class DefaultSecurityConfigurable extends DefaultModuleConfigurable
             configurable.addConfig(ISecurityConfig.UNPACK_FILE_LOGIN, String.valueOf(unpackFileLogin));
             return this;
         }
+        public Builder unpackSecurityMenu(boolean unpackSecurityMenu) {
+            configurable.addConfig(ISecurityConfig.UNPACK_SECURITY_MENU, String.valueOf(unpackSecurityMenu));
+            return this;
+        }
 
         public IModuleConfigurer build() {
             return configurable.toModuleConfigurer();

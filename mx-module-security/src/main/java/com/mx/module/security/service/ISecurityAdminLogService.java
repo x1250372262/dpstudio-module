@@ -1,7 +1,7 @@
 package com.mx.module.security.service;
 
+import com.mx.dev.bean.PageBean;
 import com.mx.dev.core.R;
-import com.mx.dev.dto.PageDTO;
 import com.mx.module.security.vo.list.SecurityAdminLogListVO;
 import net.ymate.platform.core.persistence.IResultSet;
 
@@ -14,11 +14,11 @@ public interface ISecurityAdminLogService {
      * @param content
      * @param startTime
      * @param endTime
-     * @param pageDTO
+     * @param pageBean
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityAdminLogListVO> list(String adminId, String content, Long startTime, Long endTime, PageDTO pageDTO) throws Exception;
+    IResultSet<SecurityAdminLogListVO> list(String adminId, String content, Long startTime, Long endTime, PageBean pageBean) throws Exception;
 
     /**
      * 删除日志
@@ -38,6 +38,6 @@ public interface ISecurityAdminLogService {
      * @return
      * @throws Exception
      */
-    R create(String adminId,String clientName, String userName) throws Exception;
+    R create(String adminId, String clientName, String userName) throws Exception;
 
 }

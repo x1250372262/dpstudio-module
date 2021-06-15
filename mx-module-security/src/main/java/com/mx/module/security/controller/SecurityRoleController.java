@@ -52,7 +52,7 @@ public class SecurityRoleController {
     @RequestMapping(value = "/list", method = Type.HttpMethod.GET)
     public IView list(@RequestParam String name,
                       @ModelBind PageDTO pageDTO) throws Exception {
-        IResultSet<SecurityRoleListVO> securityRoleListResultSet = iSecurityRoleService.list(name, pageDTO);
+        IResultSet<SecurityRoleListVO> securityRoleListResultSet = iSecurityRoleService.list(name, pageDTO.toBean());
         return new L<SecurityRoleListVO>().listView(securityRoleListResultSet, pageDTO.getPage());
     }
 

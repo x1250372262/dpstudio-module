@@ -1,9 +1,9 @@
 package com.mx.module.security.service.impl;
 
+import com.mx.dev.bean.PageBean;
 import com.mx.dev.code.C;
 import com.mx.dev.core.Constants;
 import com.mx.dev.core.R;
-import com.mx.dev.dto.PageDTO;
 import com.mx.dev.security.Security;
 import com.mx.dev.security.bean.MenuBean;
 import com.mx.dev.security.jwt.JWT;
@@ -42,7 +42,10 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 
 @Bean
@@ -121,7 +124,7 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
             iSecurityAdminHandler = new ISecurityAdminHandler.SecurityAdminHandler();
         }
         //处理登录之前的逻辑 返回成功往下走
-        R loginBeforeResult = iSecurityAdminHandler.loginBefore(userName, password,clientName);
+        R loginBeforeResult = iSecurityAdminHandler.loginBefore(userName, password, clientName);
         if (!Objects.equals(loginBeforeResult.code(), C.SUCCESS.getCode())) {
             return loginBeforeResult;
         }
@@ -284,17 +287,17 @@ public class SecurityAdminServiceImpl implements ISecurityAdminService {
     }
 
     @Override
-    public IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, PageDTO pageDTO) throws Exception {
+    public IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, PageBean pageBean) throws Exception {
         SecurityAdmin loginAdmin = SecurityCache.AdminCache.getPara(SecurityCache.userId());
         if (loginAdmin == null) {
             return new DefaultResultSet<>(new ArrayList<>());
         }
-        IResultSet<SecurityAdminListVO> list = iSecurityAdminDao.list(loginAdmin.getClientName(), userName, realName, disableStatus, pageDTO);
+        IResultSet<SecurityAdminListVO> list = iSecurityAdminDao.list(loginAdmin.getClientName(), userName, realName, disableStatus, pageBean);
         Params adminIds = Params.create();
         for (SecurityAdminListVO securityAdminListVO : list.getResultData()) {
             adminIds.add(securityAdminListVO.getId());
         }
-        IResultSet<SecurityAdminRoleListVO> iResultSet = iSecurityAdminRoleDao.findByAdminIds(adminIds, pageDTO);
+        IResultSet<SecurityAdminRoleListVO> iResultSet = iSecurityAdminRoleDao.findByAdminIds(adminIds, pageBean);
         for (SecurityAdminListVO securityAdminListVO : list.getResultData()) {
             String roleName = "";
             for (SecurityAdminRoleListVO securityAdminRoleListVO : iResultSet.getResultData()) {

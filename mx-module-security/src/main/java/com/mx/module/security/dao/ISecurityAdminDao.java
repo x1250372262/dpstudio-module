@@ -1,7 +1,7 @@
 package com.mx.module.security.dao;
 
 
-import com.mx.dev.dto.PageDTO;
+import com.mx.dev.bean.PageBean;
 import com.mx.module.security.model.SecurityAdmin;
 import com.mx.module.security.vo.list.SecurityAdminListVO;
 import net.ymate.platform.core.persistence.IResultSet;
@@ -72,11 +72,11 @@ public interface ISecurityAdminDao {
      * 管理员列表
      *
      * @param userName
-     * @param pageDTO
+     * @param pageBean
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityAdminListVO> list(String clientName,String userName, String realName, Integer disableStatus, PageDTO pageDTO) throws Exception;
+    IResultSet<SecurityAdminListVO> list(String clientName,String userName, String realName, Integer disableStatus, PageBean pageBean) throws Exception;
 
     /**
      * 添加管理员

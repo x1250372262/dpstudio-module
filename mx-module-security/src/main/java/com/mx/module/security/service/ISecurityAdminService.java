@@ -1,7 +1,7 @@
 package com.mx.module.security.service;
 
+import com.mx.dev.bean.PageBean;
 import com.mx.dev.core.R;
-import com.mx.dev.dto.PageDTO;
 import com.mx.module.security.dto.SecurityAdminDTO;
 import com.mx.module.security.vo.detail.SecurityAdminDetailVO;
 import com.mx.module.security.vo.list.SecurityAdminListVO;
@@ -61,11 +61,11 @@ public interface ISecurityAdminService {
      * 管理员列表
      *
      * @param userName
-     * @param pageDTO
+     * @param pageBean
      * @return
      * @throws Exception
      */
-    IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, PageDTO pageDTO) throws Exception;
+    IResultSet<SecurityAdminListVO> list(String userName, String realName, Integer disableStatus, PageBean pageBean) throws Exception;
 
     /**
      * 添加管理员
